@@ -15,11 +15,11 @@
         #app-body { height: calc(100vh - 80px); width: 100%; overflow-y: auto; background: #fff;}
         
         /* --- STATUS CELL COLORS --- */
-        input.bg-green   { background-color: #c8e6c9 !important; color: #1b5e20 !important; }
-        input.bg-yellow  { background-color: #fff9c4 !important; color: #f57f17 !important; }
-        input.bg-red     { background-color: #ffcdd2 !important; color: #b71c1c !important; }
-        input.bg-grey    { background-color: #f5f5f5 !important; color: #616161 !important; }
-        input.bg-filled  { background-color: #e1f5fe !important; color: #01579b !important; }
+        .bg-green   { background-color: #c8e6c9 !important; color: #1b5e20 !important; }
+        .bg-yellow  { background-color: #fff9c4 !important; color: #f57f17 !important; }
+        .bg-red     { background-color: #ffcdd2 !important; color: #b71c1c !important; }
+        .bg-grey    { background-color: #f5f5f5 !important; color: #616161 !important; }
+        .bg-filled  { background-color: #e1f5fe !important; color: #01579b !important; }
 
         /* --- EQUIPMENT TRACKER GRID --- */
         .tracker-container { width: 95%; margin: 20px auto; border: 2px solid #2e7d32; border-radius: 8px; background: #ffffff; overflow-x: auto; }
@@ -38,11 +38,36 @@
         .group-header { flex: 3; transition: flex 0.2s ease; } 
         .col-single { flex: 1; min-width: 75px; }
         
-        /* --- DYNAMIC DETAILED EXPANSIONS --- */
-        .col-details { display: none; flex: 2; min-width: 160px; border-right: 1px solid #e0e0e0; }
-        .col-details.expanded { display: block; }
-        .header-cell.col-details { font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; }
-        input.col-details { text-align: left !important; font-size: 11px; font-family: 'Courier New', monospace; background-color: #fffde7 !important; color: #424242 !important; font-weight: bold; text-overflow: ellipsis;}
+        /* --- DYNAMIC DETAILED EXPANSIONS (UPDATED FOR MULTIPLE CELLS) --- */
+        .col-details { display: none; }
+        .col-details.expanded { display: flex; }
+        
+        /* Header specific expansion styling */
+        .header-cell.col-details { flex: 2; min-width: 250px; font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; border-right: 1px solid #1b5e20; }
+        
+        /* Row specific expansion styling (Holds the cards) */
+        .row-details.col-details { flex: 2; min-width: 250px; border-right: 1px solid #e0e0e0; background-color: #f4f5f7; }
+        .row-details.col-details.expanded { flex-direction: row; align-items: center; overflow-x: auto; padding: 4px; gap: 6px; }
+        
+        /* Thin scrollbar for the detailed row */
+        .row-details::-webkit-scrollbar { height: 5px; }
+        .row-details::-webkit-scrollbar-thumb { background: #b0bec5; border-radius: 4px; }
+
+        /* The individual Checklist/Issue Cards */
+        .detail-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-width: 85px;
+            padding: 4px 6px;
+            border-radius: 4px;
+            border: 1px solid rgba(0,0,0,0.1);
+            flex-shrink: 0; /* Prevents cards from squishing together */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .detail-id { font-weight: 800; font-size: 12px; }
+        .detail-status { font-size: 9px; text-transform: uppercase; font-weight: bold; margin-top: 3px; text-align: center;}
         
         /* Action Toggles */
         .expand-btn { cursor: pointer; color: white; background: #4caf50; border: 1px solid #1b5e20; border-radius: 3px; padding: 1px 4px; font-weight: bold; font-size: 11px; margin-left: 4px; user-select: none; display: inline-block;}
@@ -104,12 +129,12 @@
                     <div><span class="col-title" data-original="Open CLs">Open CLs</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div>
                     <div class="expand-btn" data-target="l2-cl" onclick="toggleExpansion('l2', 'cl')">+</div>
                 </div>
-                <div class="header-cell col-details l2-cl-details">L2 Checklists Live Registry</div>
+                <div class="header-cell col-details l2-cl-details">L2 Checklists Registry</div>
                 <div class="header-cell col-single divider-right">
                     <div><span class="col-title" data-original="Issues">Issues</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div>
                     <div class="expand-btn" data-target="l2-iss" onclick="toggleExpansion('l2', 'iss')">+</div>
                 </div>
-                <div class="header-cell col-details l2-iss-details divider-right">L2 Live Ticket Backlog</div>
+                <div class="header-cell col-details l2-iss-details divider-right">L2 Ticket Backlog</div>
                 
                 <div class="header-cell col-single">
                     <span class="col-title" data-original="L3 Status">L3 Status</span> <span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span>
@@ -118,12 +143,12 @@
                     <div><span class="col-title" data-original="Open CLs">Open CLs</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div>
                     <div class="expand-btn" data-target="l3-cl" onclick="toggleExpansion('l3', 'cl')">+</div>
                 </div>
-                <div class="header-cell col-details l3-cl-details">L3 Checklists Live Registry</div>
+                <div class="header-cell col-details l3-cl-details">L3 Checklists Registry</div>
                 <div class="header-cell col-single divider-right">
                     <div><span class="col-title" data-original="Issues">Issues</span><span class="filter-icon" data-col="9" onclick="toggleFilter(event, 9)">▼</span></div>
                     <div class="expand-btn" data-target="l3-iss" onclick="toggleExpansion('l3', 'iss')">+</div>
                 </div>
-                <div class="header-cell col-details l3-iss-details divider-right">L3 Live Ticket Backlog</div>
+                <div class="header-cell col-details l3-iss-details divider-right">L3 Ticket Backlog</div>
                 
                 <div class="header-cell col-single">
                     <span class="col-title" data-original="L4 Status">L4 Status</span> <span class="filter-icon" data-col="11" onclick="toggleFilter(event, 11)">▼</span>
@@ -132,12 +157,12 @@
                     <div><span class="col-title" data-original="Open CLs">Open CLs</span><span class="filter-icon" data-col="12" onclick="toggleFilter(event, 12)">▼</span></div>
                     <div class="expand-btn" data-target="l4-cl" onclick="toggleExpansion('l4', 'cl')">+</div>
                 </div>
-                <div class="header-cell col-details l4-details l4-cl-details">L4 Checklists Live Registry</div>
+                <div class="header-cell col-details l4-details l4-cl-details">L4 Checklists Registry</div>
                 <div class="header-cell col-single">
                     <div><span class="col-title" data-original="Issues">Issues</span><span class="filter-icon" data-col="14" onclick="toggleFilter(event, 14)">▼</span></div>
                     <div class="expand-btn" data-target="l4-iss" onclick="toggleExpansion('l4', 'iss')">+</div>
                 </div>
-                <div class="header-cell col-details l4-iss-details">L4 Live Ticket Backlog</div>
+                <div class="header-cell col-details l4-iss-details">L4 Ticket Backlog</div>
             </div>
         </div>
 
@@ -150,6 +175,7 @@
 <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbz-dXKX2ASq6J-lmkh9SU3FpGbb0s6tzWlPUeaIarshYo3pjko5kxs_gT9Eu6UAgbS4Vw/exec'; 
 
+    // General color logic for text inputs
     function getColorClass(value) {
         if (!value || value === "N/A" || value === "") return 'bg-grey';
         let lowerVal = value.toString().toLowerCase();
@@ -162,6 +188,44 @@
             if (num > 0) return 'bg-red';
         }
         return 'bg-grey';
+    }
+
+    // NEW: Smart Parser for turning text strings into Sub-Cells
+    function renderDetailCards(detailString) {
+        if (!detailString || detailString === 'Clear' || detailString === 'N/A') {
+            return `<div style="margin: auto; color: #999; font-size: 11px; font-style: italic;">None</div>`;
+        }
+        
+        // Split by the comma delimiter
+        const items = detailString.split(', ');
+        
+        return items.map(item => {
+            // Regex to separate the ID from the (Status)
+            const match = item.match(/(.+?)\s*\((.+)\)/);
+            
+            if (match) {
+                const id = match[1];
+                const status = match[2];
+                
+                // Color code the individual card based on its specific status
+                let bgClass = 'bg-grey';
+                const s = status.toLowerCase();
+                
+                if (s.includes('closed') || s.includes('complete') || s.includes('verified')) bgClass = 'bg-green';
+                else if (s.includes('open') || s.includes('progress') || s.includes('assigned') || s.includes('pending')) bgClass = 'bg-yellow';
+                else if (s.includes('issue') || s.includes('gap') || s.includes('high')) bgClass = 'bg-red';
+                
+                return `
+                <div class="detail-card ${bgClass}">
+                    <div class="detail-id">${id}</div>
+                    <div class="detail-status">${status}</div>
+                </div>`;
+            }
+            
+            // Fallback if parsing fails
+            return `<div class="detail-card bg-grey"><div class="detail-id">${item}</div></div>`;
+            
+        }).join('');
     }
 
     async function fetchTrackerData() {
@@ -180,21 +244,36 @@
                     
                     <input type="text" class="col-single ${getColorClass(row['L2 Status'])}" value="${row['L2 Status'] || 'N/A'}" readonly>
                     <input type="text" class="col-single ${getColorClass(row['L2 CLs'])}" value="${row['L2 CLs'] || 0}" readonly>
-                    <input type="text" class="col-details l2-cl-details" value="${row['L2 CL Details'] || 'Clear'}" readonly title="${row['L2 CL Details'] || ''}">
+                    <div class="row-details col-details l2-cl-details">
+                        ${renderDetailCards(row['L2 CL Details'])}
+                    </div>
+                    
                     <input type="text" class="col-single divider-right ${getColorClass(row['L2 Issues'])}" value="${row['L2 Issues'] || 0}" readonly>
-                    <input type="text" class="col-details l2-iss-details divider-right" value="${row['L2 Issue Details'] || 'Clear'}" readonly title="${row['L2 Issue Details'] || ''}">
+                    <div class="row-details col-details l2-iss-details divider-right">
+                        ${renderDetailCards(row['L2 Issue Details'])}
+                    </div>
                     
                     <input type="text" class="col-single ${getColorClass(row['L3 Status'])}" value="${row['L3 Status'] || 'N/A'}" readonly>
                     <input type="text" class="col-single ${getColorClass(row['L3 CLs'])}" value="${row['L3 CLs'] || 0}" readonly>
-                    <input type="text" class="col-details l3-cl-details" value="${row['L3 CL Details'] || 'Clear'}" readonly title="${row['L3 CL Details'] || ''}">
+                    <div class="row-details col-details l3-cl-details">
+                        ${renderDetailCards(row['L3 CL Details'])}
+                    </div>
+                    
                     <input type="text" class="col-single divider-right ${getColorClass(row['L3 Issues'])}" value="${row['L3 Issues'] || 0}" readonly>
-                    <input type="text" class="col-details l3-iss-details divider-right" value="${row['L3 Issue Details'] || 'Clear'}" readonly title="${row['L3 Issue Details'] || ''}">
+                    <div class="row-details col-details l3-iss-details divider-right">
+                        ${renderDetailCards(row['L3 Issue Details'])}
+                    </div>
                     
                     <input type="text" class="col-single ${getColorClass(row['L4 Status'])}" value="${row['L4 Status'] || 'N/A'}" readonly>
                     <input type="text" class="col-single ${getColorClass(row['L4 CLs'])}" value="${row['L4 CLs'] || 0}" readonly>
-                    <input type="text" class="col-details l4-cl-details" value="${row['L4 CL Details'] || 'Clear'}" readonly title="${row['L4 CL Details'] || ''}">
+                    <div class="row-details col-details l4-cl-details">
+                        ${renderDetailCards(row['L4 CL Details'])}
+                    </div>
+                    
                     <input type="text" class="col-single ${getColorClass(row['L4 Issues'])}" value="${row['L4 Issues'] || 0}" readonly>
-                    <input type="text" class="col-details l4-iss-details" value="${row['L4 Issue Details'] || 'Clear'}" readonly title="${row['L4 Issue Details'] || ''}">
+                    <div class="row-details col-details l4-iss-details">
+                        ${renderDetailCards(row['L4 Issue Details'])}
+                    </div>
                 </div>`;
                 container.insertAdjacentHTML('beforeend', rowHTML);
             });
