@@ -3,149 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Equipment Status Tracker</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+    <title>QCx LaunchPad - Live Equipment Tracker</title>
     <style>
-        /* --- BASE LAUNCHPAD STYLES (From your code) --- */
+        /* --- BASE STYLES --- */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; overflow: hidden; }
         .header { height: 80px; background-color: #ffffff; border-bottom: 1px solid #dcdcdc; display: flex; align-items: center; padding: 0 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
-        .header-left, .header-right { flex: 1; display: flex; align-items: center; }
-        .header-right { justify-content: flex-end; }
-        .header-center { flex: 0; white-space: nowrap; }
+        .header-center { flex: 0; white-space: nowrap; margin-right: auto;}
         .header-center span { color: #2e7d32; font-weight: 800; font-size: 36px; letter-spacing: -1px; }
-        .view-btn { background: none; border: none; padding: 5px 15px; cursor: pointer; font-weight: bold; color: #5f6368; border-bottom: 2px solid transparent; }
-        .view-btn.active { color: #2e7d32; border-bottom: 2px solid #2e7d32; }
         .subheader { position: sticky; top: 0; z-index: 1000; background-color: #f1f3f4; height: 50px; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; }
         
-        #sidebar { position: fixed; left: 0; top: 80px; height: calc(100vh - 80px); width: 60px; background-color: #ffffff; border-right: 1px solid #dcdcdc; z-index: 1500; display: flex; flex-direction: column; }
-        #app-body { margin-left: 60px; height: calc(100vh - 80px); width: calc(100% - 60px); overflow-y: auto; position: relative; background: #fff;}
+        #app-body { height: calc(100vh - 80px); width: 100%; overflow-y: auto; background: #fff;}
         
-        /* --- STATUS COLORS (From your code) --- */
+        /* --- STATUS COLORS --- */
         input.bg-green   { background-color: #c8e6c9 !important; color: #1b5e20 !important; }
         input.bg-yellow  { background-color: #fff9c4 !important; color: #f57f17 !important; }
         input.bg-red     { background-color: #ffcdd2 !important; color: #b71c1c !important; }
         input.bg-grey    { background-color: #f5f5f5 !important; color: #616161 !important; }
         input.bg-filled  { background-color: #e1f5fe !important; color: #01579b !important; }
 
-        /* --- EQUIPMENT TRACKER SPECIFIC STYLES --- */
-        .tracker-container {
-            width: 95%;
-            margin: 20px auto;
-            border: 2px solid #2e7d32;
-            border-radius: 8px;
-            background: #ffffff;
-            overflow: hidden;
-        }
-
-        /* 2-Tier Sticky Header Wrapper */
-        .tracker-header-wrapper {
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        /* Top Grouping Header */
-        .frozen-group-bar {
-            background-color: #1b5e20;
-            color: white;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            padding: 0 10px;
-            border-bottom: 1px solid #0d3b10;
-        }
-
-        /* Sub-columns Header */
-        .frozen-col-bar {
-            background-color: #2e7d32; /* Match your frozen bar */
-            color: white;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            padding: 0 10px;
-        }
-
-        /* Standard cell alignment */
-        .header-cell {
-            text-align: center;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            padding: 0 4px;
-        }
-
-        .cell-row {
-            display: flex;
-            align-items: stretch;
-            padding: 4px 10px;
-            border-bottom: 1px solid #ccc;
-            gap: 0; /* Removing gap to handle borders cleanly */
-        }
-        
+        /* --- EQUIPMENT TRACKER GRID --- */
+        .tracker-container { width: 95%; margin: 20px auto; border: 2px solid #2e7d32; border-radius: 8px; background: #ffffff; overflow: hidden; }
+        .tracker-header-wrapper { position: sticky; top: 0; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: center; padding: 0 10px; border-bottom: 1px solid #0d3b10; }
+        .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: center; padding: 0 10px; }
+        .header-cell { text-align: center; font-size: 11px; font-weight: bold; text-transform: uppercase; padding: 0 4px; }
+        .cell-row { display: flex; align-items: stretch; padding: 4px 10px; border-bottom: 1px solid #ccc; gap: 0; }
         .cell-row:hover { background-color: rgba(0,0,0,0.02); }
 
-        /* Inputs styled as cells */
-        .cell-row input {
-            padding: 8px 6px;
-            font-size: 13px;
-            border: none;
-            border-right: 1px solid #f0f0f0;
-            border-radius: 0;
-            text-align: center;
-            background-color: #f9f9f9;
-            transition: all 0.2s ease;
-            min-width: 0;
-        }
-
-        .cell-row input:focus {
-            background-color: #ffffff;
-            outline: 2px solid #2e7d32;
-            outline-offset: -2px;
-            z-index: 10;
-        }
-
-        /* --- THE MAGIC: GROUPING SIZES & THICK BORDERS --- */
+        .cell-row input { padding: 8px 6px; font-size: 13px; border: none; border-right: 1px solid #f0f0f0; text-align: center; background-color: #f9f9f9; width: 100%; box-sizing: border-box;}
         
-        /* Flex sizes for groups */
-        .group-asset { flex: 1.5; } /* Asset Name slightly wider */
-        .group-l2 { flex: 3; display: flex; } /* 3 Columns */
-        .group-l3 { flex: 3; display: flex; } /* 3 Columns */
-        .group-l4 { flex: 3; display: flex; } /* 3 Columns */
-        
-        /* Flex sizes for columns */
+        /* Layout Flex Sizes */
+        .group-asset { flex: 1.5; }
+        .group-l2, .group-l3, .group-l4 { flex: 3; display: flex; }
         .col-single { flex: 1; }
         
-        /* Group Dividers (Thick vertical lines) */
-        .divider-right {
-            border-right: 3px solid #b0bec5 !important;
-        }
-        
-        /* Header group dividers */
-        .frozen-group-bar .divider-right { border-right: 2px solid #4caf50 !important; }
-        .frozen-col-bar .divider-right { border-right: 2px solid #4caf50 !important; }
+        /* Borders */
+        .divider-right { border-right: 3px solid #b0bec5 !important; }
+        .frozen-group-bar .divider-right, .frozen-col-bar .divider-right { border-right: 2px solid #4caf50 !important; }
+
+        .loading-text { text-align: center; padding: 30px; color: #555; font-weight: bold; font-size: 18px; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div class="header-left"></div>
-    <div class="header-center"><span>Equipment Status Tracker</span></div>
-    <div class="header-right">
-    </div>
+    <div class="header-center"><span>LaunchPad</span></div>
 </div>
-
 
 <div id="app-body">
     <div class="subheader">
-        <div style="font-size: 13px; color: #2e7d32; font-weight: bold;">Sync Active</div>
+        <div style="font-weight: bold; color: #555;">Zone 1 • Asset Tracker</div>
+        <div style="font-size: 13px; color: #2e7d32; font-weight: bold;" id="sync-status">Fetching Data...</div>
     </div>
 
     <div class="tracker-container">
-        
         <div class="tracker-header-wrapper">
             <div class="frozen-group-bar">
                 <div class="header-cell group-asset divider-right">Asset Details</div>
@@ -153,18 +64,14 @@
                 <div class="header-cell group-l3 divider-right" style="justify-content: center;">L3 Functional</div>
                 <div class="header-cell group-l4" style="justify-content: center;">L4 Integrated</div>
             </div>
-            
             <div class="frozen-col-bar">
                 <div class="header-cell group-asset divider-right">Asset ID</div>
-                
                 <div class="header-cell col-single">L2 Status</div>
                 <div class="header-cell col-single">Open CLs</div>
                 <div class="header-cell col-single divider-right">Gating Issues</div>
-                
                 <div class="header-cell col-single">L3 Status</div>
                 <div class="header-cell col-single">Open CLs</div>
                 <div class="header-cell col-single divider-right">Gating Issues</div>
-                
                 <div class="header-cell col-single">L4 Status</div>
                 <div class="header-cell col-single">Open CLs</div>
                 <div class="header-cell col-single">Gating Issues</div>
@@ -172,74 +79,119 @@
         </div>
 
         <div class="rows-container" id="tracker-rows">
-            
-            <div class="cell-row">
-                <input type="text" class="group-asset divider-right bg-grey" value="AMCOP-01A" readonly style="font-weight: bold;">
-                
-                <input type="text" class="col-single bg-green" value="L2 Complete">
-                <input type="text" class="col-single bg-filled" value="0">
-                <input type="text" class="col-single divider-right bg-filled" value="0">
-                
-                <input type="text" class="col-single bg-yellow" value="In Progress">
-                <input type="text" class="col-single bg-red" value="17011, 10339" title="L3 CHK(s) Open: 17011, 10339">
-                <input type="text" class="col-single divider-right bg-red" value="2">
-                
-                <input type="text" class="col-single bg-grey" value="No L4">
-                <input type="text" class="col-single bg-grey" value="N/A">
-                <input type="text" class="col-single bg-grey" value="N/A">
-            </div>
-
-            <div class="cell-row">
-                <input type="text" class="group-asset divider-right bg-grey" value="AMCOP-01B" readonly style="font-weight: bold;">
-                
-                <input type="text" class="col-single bg-green" value="L2 Complete">
-                <input type="text" class="col-single bg-filled" value="0">
-                <input type="text" class="col-single divider-right bg-filled" value="0">
-                
-                <input type="text" class="col-single bg-yellow" value="In Progress">
-                <input type="text" class="col-single bg-red" value="17012, 10344">
-                <input type="text" class="col-single divider-right bg-red" value="2">
-                
-                <input type="text" class="col-single bg-grey" value="No L4">
-                <input type="text" class="col-single bg-grey" value="N/A">
-                <input type="text" class="col-single bg-grey" value="N/A">
-            </div>
-
-            <div class="cell-row">
-                <input type="text" class="group-asset divider-right bg-grey" value="AMCOP-01F" readonly style="font-weight: bold;">
-                
-                <input type="text" class="col-single bg-green" value="L2 Complete">
-                <input type="text" class="col-single bg-filled" value="0">
-                <input type="text" class="col-single divider-right bg-filled" value="0">
-                
-                <input type="text" class="col-single bg-green" value="L3 Complete">
-                <input type="text" class="col-single bg-filled" value="0">
-                <input type="text" class="col-single divider-right bg-filled" value="0">
-                
-                <input type="text" class="col-single bg-grey" value="No L4">
-                <input type="text" class="col-single bg-grey" value="N/A">
-                <input type="text" class="col-single bg-grey" value="N/A">
-            </div>
-            
-            <div class="cell-row">
-                <input type="text" class="group-asset divider-right bg-grey" value="PDC-02A-1" readonly style="font-weight: bold;">
-                
-                <input type="text" class="col-single bg-green" value="L2 Complete">
-                <input type="text" class="col-single bg-filled" value="0">
-                <input type="text" class="col-single divider-right bg-filled" value="0">
-                
-                <input type="text" class="col-single bg-green" value="L3 Complete">
-                <input type="text" class="col-single bg-filled" value="0">
-                <input type="text" class="col-single divider-right bg-filled" value="0">
-                
-                <input type="text" class="col-single bg-yellow" value="In Progress">
-                <input type="text" class="col-single bg-red" value="12091">
-                <input type="text" class="col-single bg-red" value="1">
-            </div>
-
+            <div class="loading-text">Connecting to Google Sheets... 🚀</div>
         </div>
     </div>
 </div>
 
+<script>
+    // ---------------------------------------------------------
+    // 1. SET YOUR GOOGLE SHEET ID HERE
+    // ---------------------------------------------------------
+    const SHEET_ID = '14Pjf9-CN0ex5EM0L6NRg9F1Yy67xQJUn0hv58kT8I_o'; // Replace with your new sheet ID
+    const SHEET_TITLE = 'Assets';
+    
+    // Google Visualization API endpoint (returns JSON)
+    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${SHEET_TITLE}&tqx=out:json`;
+
+    // Helper to determine CSS class based on the text value in the cell
+    function getColorClass(value) {
+        if (!value) return 'bg-grey';
+        let lowerVal = value.toString().toLowerCase();
+        
+        if (lowerVal.includes('complete')) return 'bg-green';
+        if (lowerVal.includes('in progress')) return 'bg-yellow';
+        if (lowerVal.includes('no l4') || lowerVal.includes('n/a')) return 'bg-grey';
+        
+        // If it's a number (like Open CLs or Issues)
+        if (!isNaN(lowerVal)) {
+            let num = parseFloat(lowerVal);
+            if (num === 0) return 'bg-filled'; // 0 issues is good (blue/filled)
+            if (num > 0) return 'bg-red';      // > 0 issues is bad (red)
+        }
+        
+        // If it contains a comma (list of checklist IDs)
+        if (lowerVal.includes(',')) return 'bg-red'; 
+
+        return 'bg-grey'; // Fallback
+    }
+
+    // Helper to safely extract cell values from Google's JSON format
+    function getVal(cell) {
+        if (cell && cell.v !== null && cell.v !== undefined) {
+            return cell.v;
+        }
+        return "N/A";
+    }
+
+    // Fetch and render the data
+    async function fetchTrackerData() {
+        try {
+            const response = await fetch(SHEET_URL);
+            const text = await response.text();
+            
+            // Google wraps the JSON in a function call like /*O_o*/ google.visualization.Query.setResponse({ ... })
+            // We use Regex to extract just the JSON part
+            const jsonString = text.match(/(?<=.*\().*(?=\);)/s)[0];
+            const data = JSON.parse(jsonString);
+            
+            const rows = data.table.rows;
+            const container = document.getElementById('tracker-rows');
+            container.innerHTML = ''; // Clear loading text
+
+            rows.forEach(row => {
+                const cells = row.c;
+                
+                // Assuming sheet order: Asset(0), L2 Status(1), L2 CLs(2), L2 Iss(3), L3 Status(4), L3 CLs(5), L3 Iss(6), L4 Status(7), L4 CLs(8), L4 Iss(9)
+                const assetId = getVal(cells[0]);
+                const l2Status = getVal(cells[1]);
+                const l2Cls = getVal(cells[2]);
+                const l2Iss = getVal(cells[3]);
+                
+                const l3Status = getVal(cells[4]);
+                const l3Cls = getVal(cells[5]);
+                const l3Iss = getVal(cells[6]);
+                
+                const l4Status = getVal(cells[7]);
+                const l4Cls = getVal(cells[8]);
+                const l4Iss = getVal(cells[9]);
+
+                const rowHTML = `
+                <div class="cell-row">
+                    <input type="text" class="group-asset divider-right bg-grey" value="${assetId}" readonly style="font-weight: bold;">
+                    
+                    <input type="text" class="col-single ${getColorClass(l2Status)}" value="${l2Status}" readonly>
+                    <input type="text" class="col-single ${getColorClass(l2Cls)}" value="${l2Cls}" readonly>
+                    <input type="text" class="col-single divider-right ${getColorClass(l2Iss)}" value="${l2Iss}" readonly>
+                    
+                    <input type="text" class="col-single ${getColorClass(l3Status)}" value="${l3Status}" readonly>
+                    <input type="text" class="col-single ${getColorClass(l3Cls)}" value="${l3Cls}" readonly title="${l3Cls}">
+                    <input type="text" class="col-single divider-right ${getColorClass(l3Iss)}" value="${l3Iss}" readonly>
+                    
+                    <input type="text" class="col-single ${getColorClass(l4Status)}" value="${l4Status}" readonly>
+                    <input type="text" class="col-single ${getColorClass(l4Cls)}" value="${l4Cls}" readonly title="${l4Cls}">
+                    <input type="text" class="col-single ${getColorClass(l4Iss)}" value="${l4Iss}" readonly>
+                </div>
+                `;
+                
+                container.insertAdjacentHTML('beforeend', rowHTML);
+            });
+            
+            document.getElementById('sync-status').innerText = 'Live Sync Active 🟢';
+
+        } catch (error) {
+            console.error("Error loading Google Sheet data:", error);
+            document.getElementById('tracker-rows').innerHTML = `
+                <div class="loading-text" style="color:#b71c1c;">
+                    Failed to load data. Ensure the Sheet ID is correct and the sheet is shared as "Anyone with the link can view".
+                </div>`;
+            document.getElementById('sync-status').innerText = 'Sync Failed 🔴';
+        }
+    }
+
+    // Run when page loads
+    window.onload = fetchTrackerData;
+
+</script>
 </body>
 </html>
