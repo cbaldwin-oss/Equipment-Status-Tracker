@@ -86,22 +86,18 @@
 
 <script>
     // ---------------------------------------------------------
-    // 1. SET YOUR GOOGLE SHEET ID HERE
+    // 1. SET YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
     // ---------------------------------------------------------
-    const SHEET_ID = '14Pjf9-CN0ex5EM0L6NRg9F1Yy67xQJUn0hv58kT8I_o'; // Replace with your new sheet ID
-    const SHEET_TITLE = 'Assets';
-    
-    // Google Visualization API endpoint (returns JSON)
-    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${SHEET_TITLE}&tqx=out:json`;
+    const API_URL = 'https://script.google.com/macros/s/AKfycbz-dXKX2ASq6J-lmkh9SU3FpGbb0s6tzWlPUeaIarshYo3pjko5kxs_gT9Eu6UAgbS4Vw/exec'; // Paste the URL you copied in Step 2
 
     // Helper to determine CSS class based on the text value in the cell
     function getColorClass(value) {
-        if (!value) return 'bg-grey';
+        if (!value || value === "N/A" || value === "") return 'bg-grey';
         let lowerVal = value.toString().toLowerCase();
         
         if (lowerVal.includes('complete')) return 'bg-green';
         if (lowerVal.includes('in progress')) return 'bg-yellow';
-        if (lowerVal.includes('no l4') || lowerVal.includes('n/a')) return 'bg-grey';
+        if (lowerVal.includes('no l4')) return 'bg-grey';
         
         // If it's a number (like Open CLs or Issues)
         if (!isNaN(lowerVal)) {
@@ -116,45 +112,37 @@
         return 'bg-grey'; // Fallback
     }
 
-    // Helper to safely extract cell values from Google's JSON format
-    function getVal(cell) {
-        if (cell && cell.v !== null && cell.v !== undefined) {
-            return cell.v;
-        }
-        return "N/A";
-    }
-
     // Fetch and render the data
     async function fetchTrackerData() {
         try {
-            const response = await fetch(SHEET_URL);
-            const text = await response.text();
+            // Fetch data from your secure Apps Script Web App
+            const response = await fetch(API_URL);
             
-            // Google wraps the JSON in a function call like /*O_o*/ google.visualization.Query.setResponse({ ... })
-            // We use Regex to extract just the JSON part
-            const jsonString = text.match(/(?<=.*\().*(?=\);)/s)[0];
-            const data = JSON.parse(jsonString);
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+
+            const rows = await response.json(); // Clean JSON returned from Apps Script
             
-            const rows = data.table.rows;
             const container = document.getElementById('tracker-rows');
             container.innerHTML = ''; // Clear loading text
 
+            // Build the rows based on the JSON objects
             rows.forEach(row => {
-                const cells = row.c;
+                // Ensure values aren't undefined
+                const assetId  = row['Asset ID'] || 'N/A';
                 
-                // Assuming sheet order: Asset(0), L2 Status(1), L2 CLs(2), L2 Iss(3), L3 Status(4), L3 CLs(5), L3 Iss(6), L4 Status(7), L4 CLs(8), L4 Iss(9)
-                const assetId = getVal(cells[0]);
-                const l2Status = getVal(cells[1]);
-                const l2Cls = getVal(cells[2]);
-                const l2Iss = getVal(cells[3]);
+                const l2Status = row['L2 Status'] || 'N/A';
+                const l2Cls    = row['L2 CLs'] || 0;
+                const l2Iss    = row['L2 Issues'] || 0;
                 
-                const l3Status = getVal(cells[4]);
-                const l3Cls = getVal(cells[5]);
-                const l3Iss = getVal(cells[6]);
+                const l3Status = row['L3 Status'] || 'N/A';
+                const l3Cls    = row['L3 CLs'] || 0;
+                const l3Iss    = row['L3 Issues'] || 0;
                 
-                const l4Status = getVal(cells[7]);
-                const l4Cls = getVal(cells[8]);
-                const l4Iss = getVal(cells[9]);
+                const l4Status = row['L4 Status'] || 'N/A';
+                const l4Cls    = row['L4 CLs'] || 0;
+                const l4Iss    = row['L4 Issues'] || 0;
 
                 const rowHTML = `
                 <div class="cell-row">
@@ -180,10 +168,10 @@
             document.getElementById('sync-status').innerText = 'Live Sync Active 🟢';
 
         } catch (error) {
-            console.error("Error loading Google Sheet data:", error);
+            console.error("Error loading secure data:", error);
             document.getElementById('tracker-rows').innerHTML = `
                 <div class="loading-text" style="color:#b71c1c;">
-                    Failed to load data. Ensure the Sheet ID is correct and the sheet is shared as "Anyone with the link can view".
+                    Failed to load data. Ensure the Web App URL is correct and deployed properly.
                 </div>`;
             document.getElementById('sync-status').innerText = 'Sync Failed 🔴';
         }
