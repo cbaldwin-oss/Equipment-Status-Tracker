@@ -22,21 +22,13 @@
         input.bg-filled  { background-color: #e1f5fe !important; color: #01579b !important; }
 
         /* --- EQUIPMENT TRACKER GRID --- */
-        /* Removed overflow: hidden so sticky headers work */
         .tracker-container { width: 95%; margin: 20px auto; border: 2px solid #2e7d32; border-radius: 8px; background: #ffffff; }
-        
-        /* Offset top to sit exactly below the 50px subheader */
         .tracker-header-wrapper { position: sticky; top: 50px; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        
         .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: center; padding: 0 10px; border-bottom: 1px solid #0d3b10; }
         .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: center; padding: 0 10px; }
-        
-        /* Flex row for headers to push the filter icon to the right */
         .header-cell { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: bold; text-transform: uppercase; padding: 0 4px; }
-        
         .cell-row { display: flex; align-items: stretch; padding: 4px 10px; border-bottom: 1px solid #ccc; gap: 0; }
         .cell-row:hover { background-color: rgba(0,0,0,0.02); }
-
         .cell-row input { padding: 8px 6px; font-size: 13px; border: none; border-right: 1px solid #f0f0f0; text-align: center; background-color: #f9f9f9; width: 100%; box-sizing: border-box;}
         
         /* Layout Flex Sizes */
@@ -47,20 +39,22 @@
         /* Borders */
         .divider-right { border-right: 3px solid #b0bec5 !important; }
         .frozen-group-bar .divider-right, .frozen-col-bar .divider-right { border-right: 2px solid #4caf50 !important; }
-
         .loading-text { text-align: center; padding: 30px; color: #555; font-weight: bold; font-size: 18px; }
 
         /* --- FILTER STYLES --- */
         .filter-icon { cursor: pointer; font-size: 10px; color: #a5d6a7; margin-left: 5px; padding: 2px; }
         .filter-icon:hover { color: #ffffff; }
-        .filter-icon.active { color: #ffeb3b; /* Yellow when filter is applied */ }
+        .filter-icon.active { color: #ffeb3b; }
         
-        .filter-dropdown { position: absolute; background: white; border: 1px solid #ccc; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 10px; z-index: 2000; border-radius: 4px; color: #333; font-size: 13px; min-width: 160px; max-height: 300px; display: flex; flex-direction: column; }
+        .filter-dropdown { position: absolute; background: white; border: 1px solid #ccc; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 10px; z-index: 2000; border-radius: 4px; color: #333; font-size: 13px; min-width: 180px; max-height: 350px; display: flex; flex-direction: column; }
+        .filter-search-input { width: 100%; box-sizing: border-box; padding: 6px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 3px; font-family: inherit; font-size: 13px; }
+        .filter-search-input:focus { outline: none; border-color: #2e7d32; }
+        
         .filter-dropdown label { display: block; margin-bottom: 6px; cursor: pointer; word-break: break-all; }
         .filter-dropdown input[type="checkbox"] { margin-right: 8px; cursor: pointer; }
         
         .filter-actions { margin-top: 10px; display: flex; justify-content: space-between; border-top: 1px solid #eee; padding-top: 10px; }
-        .filter-btn { background: #2e7d32; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; font-weight: bold; flex: 1; margin-left: 5px;}
+        .filter-btn { background: #2e7d32; color: white; border: none; padding: 6px 10px; cursor: pointer; border-radius: 4px; font-weight: bold; flex: 1; margin-left: 5px;}
         .filter-btn.clear { background: #f5f5f5; color: #333; border: 1px solid #ccc; margin-left: 0; margin-right: 5px;}
         .filter-btn:hover { opacity: 0.9; }
     </style>
@@ -198,22 +192,20 @@
 
 
     // ---------------------------------------------------------
-    // 2. COLUMN FILTERING LOGIC
+    // 2. COLUMN FILTERING WITH SEARCH LOGIC
     // ---------------------------------------------------------
-    let activeFilters = {}; // Stores checked values for each column index
+    let activeFilters = {}; 
     let currentDropdown = null;
 
     function toggleFilter(event, colIndex) {
         event.stopPropagation();
         
-        // Close if already open
         if (currentDropdown) {
             let wasSameColumn = (currentDropdown.dataset.col == colIndex);
             closeFilterMenu();
             if (wasSameColumn) return; 
         }
 
-        // Gather all unique values for this specific column from the DOM
         const rows = document.querySelectorAll('.cell-row');
         const uniqueValues = new Set();
         rows.forEach(row => {
@@ -223,19 +215,21 @@
             }
         });
 
-        // Create Dropdown Box
         const dropdown = document.createElement('div');
         dropdown.className = 'filter-dropdown';
         dropdown.dataset.col = colIndex;
         
-        // Position Dropdown relative to the clicked icon
         const rect = event.target.getBoundingClientRect();
         dropdown.style.top = (rect.bottom + window.scrollY + 5) + 'px';
-        dropdown.style.left = (rect.left + window.scrollX - 100) + 'px'; // Shift left so it doesn't run off screen
+        dropdown.style.left = (rect.left + window.scrollX - 120) + 'px';
 
-        // Build the contents
-        const selectAllHtml = `<label style="font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:8px;"><input type="checkbox" id="filter-select-all" checked> (Select All)</label>`;
-        dropdown.innerHTML = selectAllHtml;
+        // Add Search Bar and Select All button
+        dropdown.innerHTML = `
+            <input type="text" id="filter-search" class="filter-search-input" placeholder="Search values..." autocomplete="off">
+            <label style="font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:8px; margin-bottom:8px;">
+                <input type="checkbox" id="filter-select-all" checked> (Select All)
+            </label>
+        `;
 
         const valContainer = document.createElement('div');
         valContainer.style.overflowY = 'auto';
@@ -245,13 +239,16 @@
         const currentFilterSet = activeFilters[colIndex];
 
         sortedVals.forEach(val => {
-            // If there's an active filter, check if this value is in it. Otherwise, default to checked.
             const isChecked = currentFilterSet ? currentFilterSet.has(val) : true;
-            valContainer.innerHTML += `<label><input type="checkbox" class="filter-val-cb" value="${val}" ${isChecked ? 'checked' : ''}> ${val}</label>`;
+            // Class filter-val-label added to hide/show individual options via search
+            valContainer.innerHTML += `
+                <label class="filter-val-label">
+                    <input type="checkbox" class="filter-val-cb" value="${val}" ${isChecked ? 'checked' : ''}> 
+                    <span class="val-text">${val}</span>
+                </label>`;
         });
         dropdown.appendChild(valContainer);
 
-        // Action Buttons
         const actions = document.createElement('div');
         actions.className = 'filter-actions';
         actions.innerHTML = `
@@ -263,27 +260,68 @@
         document.body.appendChild(dropdown);
         currentDropdown = dropdown;
 
-        // "Select All" Toggle Logic
+        // Auto-focus the search bar
+        setTimeout(() => document.getElementById('filter-search').focus(), 10);
+
+        // -- Event Listeners for Search and Selection --
+        const searchInput = dropdown.querySelector('#filter-search');
         const selectAllCb = dropdown.querySelector('#filter-select-all');
+        const allLabels = dropdown.querySelectorAll('.filter-val-label');
         const valCbs = dropdown.querySelectorAll('.filter-val-cb');
-        
+
+        // Initial setup for Select All state
         if (currentFilterSet && currentFilterSet.size < sortedVals.length) {
-            selectAllCb.checked = false; // Uncheck "Select All" if some items were previously unchecked
+            selectAllCb.checked = false; 
         }
 
+        // Live Search Filtering
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            let visibleCount = 0;
+            let checkedVisibleCount = 0;
+
+            allLabels.forEach(label => {
+                const text = label.querySelector('.val-text').textContent.toLowerCase();
+                const cb = label.querySelector('.filter-val-cb');
+                
+                if (text.includes(term)) {
+                    label.style.display = 'block';
+                    visibleCount++;
+                    if (cb.checked) checkedVisibleCount++;
+                } else {
+                    label.style.display = 'none';
+                }
+            });
+
+            // If some items are visible, determine if "Select All" should be checked
+            selectAllCb.checked = (visibleCount > 0 && visibleCount === checkedVisibleCount);
+        });
+
+        // "Select All" only checks/unchecks the VISIBLE items
         selectAllCb.addEventListener('change', (e) => {
-            valCbs.forEach(cb => cb.checked = e.target.checked);
+            const isChecked = e.target.checked;
+            allLabels.forEach(label => {
+                // If it is NOT hidden by the search
+                if (label.style.display !== 'none') {
+                    label.querySelector('.filter-val-cb').checked = isChecked;
+                }
+            });
         });
         
+        // Update "Select All" status if an individual checkbox is toggled
         valCbs.forEach(cb => {
             cb.addEventListener('change', () => {
-                const allChecked = Array.from(valCbs).every(c => c.checked);
-                selectAllCb.checked = allChecked;
+                let allVisibleChecked = true;
+                allLabels.forEach(label => {
+                    if (label.style.display !== 'none' && !label.querySelector('.filter-val-cb').checked) {
+                        allVisibleChecked = false;
+                    }
+                });
+                selectAllCb.checked = allVisibleChecked;
             });
         });
     }
 
-    // Apply the selected values
     window.applyFilter = function(colIndex) {
         if (!currentDropdown) return;
         const valCbs = currentDropdown.querySelectorAll('.filter-val-cb');
@@ -295,20 +333,18 @@
 
         const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`);
 
-        // If everything is selected, remove the filter so it doesn't process unnecessarily
         if (selected.size === valCbs.length) {
             delete activeFilters[colIndex];
             icon.classList.remove('active');
         } else {
             activeFilters[colIndex] = selected;
-            icon.classList.add('active'); // Turn the icon yellow
+            icon.classList.add('active'); 
         }
 
         closeFilterMenu();
         executeFilters();
     };
 
-    // Remove filter entirely for this column
     window.clearFilter = function(colIndex) {
         delete activeFilters[colIndex];
         document.querySelector(`.filter-icon[data-col="${colIndex}"]`).classList.remove('active');
@@ -316,20 +352,18 @@
         executeFilters();
     };
 
-    // Main engine: hides/shows rows based on ALL active filters
     function executeFilters() {
         const rows = document.querySelectorAll('.cell-row');
         rows.forEach(row => {
             const inputs = row.querySelectorAll('input');
             let isVisible = true;
             
-            // Check the row against every column that has an active filter
             for (let col in activeFilters) {
                 if (inputs[col]) {
                     const val = inputs[col].value.trim();
                     if (!activeFilters[col].has(val)) {
                         isVisible = false;
-                        break; // Fails this filter, hide row immediately
+                        break; 
                     }
                 }
             }
@@ -344,7 +378,6 @@
         }
     }
 
-    // Close the dropdown if the user clicks anywhere outside of it
     document.addEventListener('click', (e) => {
         if (currentDropdown && !currentDropdown.contains(e.target) && !e.target.classList.contains('filter-icon')) {
             closeFilterMenu();
