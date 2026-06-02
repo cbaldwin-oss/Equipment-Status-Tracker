@@ -26,7 +26,7 @@
         .tracker-header-wrapper { position: sticky; top: 50px; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: center; padding: 0 10px; border-bottom: 1px solid #0d3b10; }
         .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: center; padding: 0 10px; }
-        .header-cell { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: bold; text-transform: uppercase; padding: 0 4px; }
+        .header-cell { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: bold; text-transform: uppercase; padding: 0 4px; transition: all 0.2s ease;}
         .cell-row { display: flex; align-items: stretch; padding: 4px 10px; border-bottom: 1px solid #ccc; gap: 0; }
         .cell-row:hover { background-color: rgba(0,0,0,0.02); }
         .cell-row input { padding: 8px 6px; font-size: 13px; border: none; border-right: 1px solid #f0f0f0; text-align: center; background-color: #f9f9f9; width: 100%; box-sizing: border-box;}
@@ -46,6 +46,11 @@
         .filter-icon:hover { color: #ffffff; }
         .filter-icon.active { color: #ffeb3b; }
         
+        /* Active Filter Header Styling */
+        .header-cell.is-filtered { background-color: #fff9c4 !important; color: #f57f17 !important; }
+        .header-cell.is-filtered .filter-icon { color: #f57f17 !important; }
+        .header-cell.is-filtered .filter-icon:hover { color: #e65100 !important; }
+
         .filter-dropdown { position: absolute; background: white; border: 1px solid #ccc; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 10px; z-index: 2000; border-radius: 4px; color: #333; font-size: 13px; min-width: 180px; max-height: 350px; display: flex; flex-direction: column; }
         .filter-search-input { width: 100%; box-sizing: border-box; padding: 6px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 3px; font-family: inherit; font-size: 13px; }
         .filter-search-input:focus { outline: none; border-color: #2e7d32; }
@@ -82,34 +87,34 @@
             
             <div class="frozen-col-bar">
                 <div class="header-cell group-asset divider-right">
-                    <span>Asset ID</span> <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span>
+                    <span class="col-title" data-original="Asset ID">Asset ID</span> <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span>
                 </div>
                 <div class="header-cell col-single">
-                    <span>L2 Status</span> <span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span>
+                    <span class="col-title" data-original="L2 Status">L2 Status</span> <span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span>
                 </div>
                 <div class="header-cell col-single">
-                    <span>Open CLs</span> <span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span>
+                    <span class="col-title" data-original="Open CLs">Open CLs</span> <span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span>
                 </div>
                 <div class="header-cell col-single divider-right">
-                    <span>Issues</span> <span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span>
+                    <span class="col-title" data-original="Issues">Issues</span> <span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span>
                 </div>
                 <div class="header-cell col-single">
-                    <span>L3 Status</span> <span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span>
+                    <span class="col-title" data-original="L3 Status">L3 Status</span> <span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span>
                 </div>
                 <div class="header-cell col-single">
-                    <span>Open CLs</span> <span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span>
+                    <span class="col-title" data-original="Open CLs">Open CLs</span> <span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span>
                 </div>
                 <div class="header-cell col-single divider-right">
-                    <span>Issues</span> <span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span>
+                    <span class="col-title" data-original="Issues">Issues</span> <span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span>
                 </div>
                 <div class="header-cell col-single">
-                    <span>L4 Status</span> <span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span>
+                    <span class="col-title" data-original="L4 Status">L4 Status</span> <span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span>
                 </div>
                 <div class="header-cell col-single">
-                    <span>Open CLs</span> <span class="filter-icon" data-col="8" onclick="toggleFilter(event, 8)">▼</span>
+                    <span class="col-title" data-original="Open CLs">Open CLs</span> <span class="filter-icon" data-col="8" onclick="toggleFilter(event, 8)">▼</span>
                 </div>
                 <div class="header-cell col-single">
-                    <span>Issues</span> <span class="filter-icon" data-col="9" onclick="toggleFilter(event, 9)">▼</span>
+                    <span class="col-title" data-original="Issues">Issues</span> <span class="filter-icon" data-col="9" onclick="toggleFilter(event, 9)">▼</span>
                 </div>
             </div>
         </div>
@@ -124,7 +129,7 @@
     // ---------------------------------------------------------
     // 1. DATA FETCHING (Apps Script Integration)
     // ---------------------------------------------------------
-    const API_URL = 'https://script.google.com/macros/s/AKfycbz-dXKX2ASq6J-lmkh9SU3FpGbb0s6tzWlPUeaIarshYo3pjko5kxs_gT9Eu6UAgbS4Vw/exec'; // Replace with your Apps Script Web App URL
+    const API_URL = 'https://script.google.com/macros/s/AKfycbz-dXKX2ASq6J-lmkh9SU3FpGbb0s6tzWlPUeaIarshYo3pjko5kxs_gT9Eu6UAgbS4Vw/exec'; 
 
     function getColorClass(value) {
         if (!value || value === "N/A" || value === "") return 'bg-grey';
@@ -223,7 +228,6 @@
         dropdown.style.top = (rect.bottom + window.scrollY + 5) + 'px';
         dropdown.style.left = (rect.left + window.scrollX - 120) + 'px';
 
-        // Add Search Bar and Select All button
         dropdown.innerHTML = `
             <input type="text" id="filter-search" class="filter-search-input" placeholder="Search values..." autocomplete="off">
             <label style="font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:8px; margin-bottom:8px;">
@@ -240,7 +244,6 @@
 
         sortedVals.forEach(val => {
             const isChecked = currentFilterSet ? currentFilterSet.has(val) : true;
-            // Class filter-val-label added to hide/show individual options via search
             valContainer.innerHTML += `
                 <label class="filter-val-label">
                     <input type="checkbox" class="filter-val-cb" value="${val}" ${isChecked ? 'checked' : ''}> 
@@ -260,21 +263,17 @@
         document.body.appendChild(dropdown);
         currentDropdown = dropdown;
 
-        // Auto-focus the search bar
         setTimeout(() => document.getElementById('filter-search').focus(), 10);
 
-        // -- Event Listeners for Search and Selection --
         const searchInput = dropdown.querySelector('#filter-search');
         const selectAllCb = dropdown.querySelector('#filter-select-all');
         const allLabels = dropdown.querySelectorAll('.filter-val-label');
         const valCbs = dropdown.querySelectorAll('.filter-val-cb');
 
-        // Initial setup for Select All state
         if (currentFilterSet && currentFilterSet.size < sortedVals.length) {
             selectAllCb.checked = false; 
         }
 
-        // Live Search Filtering
         searchInput.addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
             let visibleCount = 0;
@@ -293,22 +292,18 @@
                 }
             });
 
-            // If some items are visible, determine if "Select All" should be checked
             selectAllCb.checked = (visibleCount > 0 && visibleCount === checkedVisibleCount);
         });
 
-        // "Select All" only checks/unchecks the VISIBLE items
         selectAllCb.addEventListener('change', (e) => {
             const isChecked = e.target.checked;
             allLabels.forEach(label => {
-                // If it is NOT hidden by the search
                 if (label.style.display !== 'none') {
                     label.querySelector('.filter-val-cb').checked = isChecked;
                 }
             });
         });
         
-        // Update "Select All" status if an individual checkbox is toggled
         valCbs.forEach(cb => {
             cb.addEventListener('change', () => {
                 let allVisibleChecked = true;
@@ -322,6 +317,7 @@
         });
     }
 
+    // --- UPDATED APPLY FILTER ---
     window.applyFilter = function(colIndex) {
         if (!currentDropdown) return;
         const valCbs = currentDropdown.querySelectorAll('.filter-val-cb');
@@ -332,22 +328,39 @@
         });
 
         const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`);
+        const headerCell = icon.closest('.header-cell');
+        const titleSpan = headerCell.querySelector('.col-title');
 
         if (selected.size === valCbs.length) {
+            // Remove styling and "Filtered" text if all items selected
             delete activeFilters[colIndex];
             icon.classList.remove('active');
+            headerCell.classList.remove('is-filtered');
+            titleSpan.textContent = titleSpan.dataset.original;
         } else {
+            // Apply styling and "Filtered" text
             activeFilters[colIndex] = selected;
             icon.classList.add('active'); 
+            headerCell.classList.add('is-filtered');
+            titleSpan.textContent = titleSpan.dataset.original + ' - Filtered';
         }
 
         closeFilterMenu();
         executeFilters();
     };
 
+    // --- UPDATED CLEAR FILTER ---
     window.clearFilter = function(colIndex) {
         delete activeFilters[colIndex];
-        document.querySelector(`.filter-icon[data-col="${colIndex}"]`).classList.remove('active');
+        const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`);
+        const headerCell = icon.closest('.header-cell');
+        const titleSpan = headerCell.querySelector('.col-title');
+
+        // Reset Styles and Text
+        icon.classList.remove('active');
+        headerCell.classList.remove('is-filtered');
+        titleSpan.textContent = titleSpan.dataset.original;
+
         closeFilterMenu();
         executeFilters();
     };
