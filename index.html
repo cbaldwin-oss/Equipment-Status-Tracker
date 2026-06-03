@@ -29,7 +29,7 @@
         
         .header-cell { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: bold; text-transform: uppercase; padding: 0 6px; box-sizing: border-box; }
         .rows-container { min-width: 1200px; }
-        .cell-row { display: flex; align-items: stretch; padding: 4px 10px; border-bottom: 1px solid #ccc; gap: 0; }
+        .cell-row { display: flex; align-items: stretch; padding: 0 10px; border-bottom: 1px solid #ccc; gap: 0; }
         .cell-row:hover { background-color: rgba(0,0,0,0.02); }
         .cell-row input { padding: 8px 6px; font-size: 13px; border: none; border-right: 1px solid #f0f0f0; text-align: center; background-color: #f9f9f9; width: 100%; box-sizing: border-box;}
         
@@ -38,36 +38,51 @@
         .group-header { flex: 3; transition: flex 0.2s ease; } 
         .col-single { flex: 1; min-width: 75px; }
         
-        /* --- DYNAMIC DETAILED EXPANSIONS (UPDATED FOR MULTIPLE CELLS) --- */
+        /* --- DYNAMIC DETAILED EXPANSIONS (SPREADSHEET LOOK) --- */
         .col-details { display: none; }
         .col-details.expanded { display: flex; }
         
         /* Header specific expansion styling */
         .header-cell.col-details { flex: 2; min-width: 250px; font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; border-right: 1px solid #1b5e20; }
         
-        /* Row specific expansion styling (Holds the cards) */
-        .row-details.col-details { flex: 2; min-width: 250px; border-right: 1px solid #e0e0e0; background-color: #f4f5f7; }
-        .row-details.col-details.expanded { flex-direction: row; align-items: center; overflow-x: auto; padding: 4px; gap: 6px; }
+        /* Row specific expansion styling (Holds the spreadsheet-like grid) */
+        .row-details.col-details { flex: 2; min-width: 250px; border-right: 1px solid #e0e0e0; background-color: #ffffff; }
+        .row-details.col-details.expanded { flex-direction: row; align-items: stretch; overflow-x: auto; padding: 0; gap: 0; } /* Removed gaps to mimic Excel columns */
         
         /* Thin scrollbar for the detailed row */
         .row-details::-webkit-scrollbar { height: 5px; }
         .row-details::-webkit-scrollbar-thumb { background: #b0bec5; border-radius: 4px; }
 
-        /* The individual Checklist/Issue Cards */
-        .detail-card {
+        /* --- THE SPREADSHEET STACKED COLUMNS --- */
+        .checklist-column {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-width: 85px;
-            padding: 4px 6px;
-            border-radius: 4px;
-            border: 1px solid rgba(0,0,0,0.1);
-            flex-shrink: 0; /* Prevents cards from squishing together */
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            min-width: 90px;
+            border-right: 1px solid #e0e0e0; /* Inner grid lines */
         }
-        .detail-id { font-weight: 800; font-size: 12px; }
-        .detail-status { font-size: 9px; text-transform: uppercase; font-weight: bold; margin-top: 3px; text-align: center;}
+        .checklist-header {
+            flex: 1;
+            background-color: #f1f3f4; /* Grey header look */
+            color: #333;
+            font-weight: bold;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 4px;
+        }
+        .checklist-status {
+            flex: 1;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            text-align: center;
+        }
         
         /* Action Toggles */
         .expand-btn { cursor: pointer; color: white; background: #4caf50; border: 1px solid #1b5e20; border-radius: 3px; padding: 1px 4px; font-weight: bold; font-size: 11px; margin-left: 4px; user-select: none; display: inline-block;}
@@ -179,9 +194,9 @@
     function getColorClass(value) {
         if (!value || value === "N/A" || value === "") return 'bg-grey';
         let lowerVal = value.toString().toLowerCase();
-        if (lowerVal.includes('complete')) return 'bg-green';
-        if (lowerVal.includes('in progress')) return 'bg-yellow';
-        if (lowerVal.includes('no l4') || lowerVal.includes('no l3')) return 'bg-grey';
+        if (lowerVal.includes('complete') || lowerVal.includes('verified')) return 'bg-green';
+        if (lowerVal.includes('in progress') || lowerVal.includes('assigned')) return 'bg-yellow';
+        if (lowerVal.includes('no cl') || lowerVal.includes('no l4') || lowerVal.includes('no l3')) return 'bg-grey';
         if (!isNaN(lowerVal)) {
             let num = parseFloat(lowerVal);
             if (num === 0) return 'bg-filled';
@@ -190,40 +205,43 @@
         return 'bg-grey';
     }
 
-    // NEW: Smart Parser for turning text strings into Sub-Cells
+    // --- NEW: Spreadsheet Style Detail Parser ---
     function renderDetailCards(detailString) {
         if (!detailString || detailString === 'Clear' || detailString === 'N/A') {
-            return `<div style="margin: auto; color: #999; font-size: 11px; font-style: italic;">None</div>`;
+            return `<div style="margin: auto; color: #999; font-size: 11px; font-style: italic;">No Records</div>`;
         }
         
-        // Split by the comma delimiter
         const items = detailString.split(', ');
         
         return items.map(item => {
-            // Regex to separate the ID from the (Status)
             const match = item.match(/(.+?)\s*\((.+)\)/);
             
             if (match) {
                 const id = match[1];
                 const status = match[2];
                 
-                // Color code the individual card based on its specific status
+                // Set the status block color
                 let bgClass = 'bg-grey';
                 const s = status.toLowerCase();
                 
                 if (s.includes('closed') || s.includes('complete') || s.includes('verified')) bgClass = 'bg-green';
                 else if (s.includes('open') || s.includes('progress') || s.includes('assigned') || s.includes('pending')) bgClass = 'bg-yellow';
                 else if (s.includes('issue') || s.includes('gap') || s.includes('high')) bgClass = 'bg-red';
+                else if (s.includes('no cl')) bgClass = 'bg-grey';
                 
                 return `
-                <div class="detail-card ${bgClass}">
-                    <div class="detail-id">${id}</div>
-                    <div class="detail-status">${status}</div>
+                <div class="checklist-column">
+                    <div class="checklist-header">${id}</div>
+                    <div class="checklist-status ${bgClass}">${status}</div>
                 </div>`;
             }
             
-            // Fallback if parsing fails
-            return `<div class="detail-card bg-grey"><div class="detail-id">${item}</div></div>`;
+            // Fallback for badly formatted strings
+            return `
+            <div class="checklist-column">
+                <div class="checklist-header">${item}</div>
+                <div class="checklist-status bg-grey">Unknown</div>
+            </div>`;
             
         }).join('');
     }
