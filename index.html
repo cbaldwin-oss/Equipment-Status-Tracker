@@ -38,51 +38,27 @@
         .group-header { flex: 3; transition: flex 0.2s ease; } 
         .col-single { flex: 1; min-width: 75px; }
         
-        /* --- DYNAMIC DETAILED EXPANSIONS (SPREADSHEET LOOK) --- */
+        /* --- DYNAMIC DETAILED EXPANSIONS --- */
         .col-details { display: none; }
         .col-details.expanded { display: flex; }
         
-        /* Header specific expansion styling */
-        .header-cell.col-details { flex: 2; min-width: 250px; font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; border-right: 1px solid #1b5e20; }
+        /* ISSUES: Stays as a single wide scrollable block (flex: 2) */
+        .header-cell.iss-details { flex: 2; min-width: 250px; font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; border-right: 1px solid #1b5e20; }
+        .row-details.iss-details { flex: 2; min-width: 250px; border-right: 1px solid #e0e0e0; background-color: #ffffff; flex-direction: row; align-items: stretch; overflow-x: auto; }
         
-        /* Row specific expansion styling (Holds the spreadsheet-like grid) */
-        .row-details.col-details { flex: 2; min-width: 250px; border-right: 1px solid #e0e0e0; background-color: #ffffff; }
-        .row-details.col-details.expanded { flex-direction: row; align-items: stretch; overflow-x: auto; padding: 0; gap: 0; } /* Removed gaps to mimic Excel columns */
+        /* CHECKLISTS: 10 Discrete individual cells (flex: 1 each) */
+        .header-cell.cl-cell { flex: 1; min-width: 80px; font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; border-right: 1px solid #1b5e20; border-left: 1px solid #1b5e20;}
+        .cell-row-detail.cl-cell { display: none; flex: 1; min-width: 80px; flex-direction: column; border-right: 1px solid #e0e0e0; border-left: 1px solid #e0e0e0; background-color: #ffffff; }
+        .cell-row-detail.cl-cell.expanded { display: flex; }
         
-        /* Thin scrollbar for the detailed row */
+        /* Thin scrollbars */
         .row-details::-webkit-scrollbar { height: 5px; }
         .row-details::-webkit-scrollbar-thumb { background: #b0bec5; border-radius: 4px; }
 
         /* --- THE SPREADSHEET STACKED COLUMNS --- */
-        .checklist-column {
-            display: flex;
-            flex-direction: column;
-            min-width: 90px;
-            border-right: 1px solid #e0e0e0; /* Inner grid lines */
-        }
-        .checklist-header {
-            flex: 1;
-            background-color: #f1f3f4; /* Grey header look */
-            color: #333;
-            font-weight: bold;
-            font-size: 11px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 4px;
-        }
-        .checklist-status {
-            flex: 1;
-            font-size: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px;
-            text-align: center;
-        }
+        .checklist-column { display: flex; flex-direction: column; min-width: 90px; border-right: 1px solid #e0e0e0; }
+        .checklist-header { flex: 1; background-color: #f1f3f4; color: #333; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #e0e0e0; padding: 4px; }
+        .checklist-status { flex: 1; font-size: 10px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; padding: 4px; text-align: center; }
         
         /* Action Toggles */
         .expand-btn { cursor: pointer; color: white; background: #4caf50; border: 1px solid #1b5e20; border-radius: 3px; padding: 1px 4px; font-weight: bold; font-size: 11px; margin-left: 4px; user-select: none; display: inline-block;}
@@ -95,17 +71,13 @@
 
         /* --- SEARCH FILTER ARCHITECTURE --- */
         .filter-icon { cursor: pointer; font-size: 10px; color: #a5d6a7; margin-left: 4px; padding: 2px; }
-        .filter-icon:hover { color: #ffffff; }
         .filter-icon.active { color: #ffeb3b; }
-        
         .header-cell.is-filtered { background-color: #fff9c4 !important; color: #f57f17 !important; }
         .header-cell.is-filtered .filter-icon { color: #f57f17 !important; }
-
         .filter-dropdown { position: absolute; background: white; border: 1px solid #ccc; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 10px; z-index: 2000; border-radius: 4px; color: #333; font-size: 13px; min-width: 180px; max-height: 350px; display: flex; flex-direction: column; }
         .filter-search-input { width: 100%; box-sizing: border-box; padding: 6px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px; }
         .filter-dropdown label { display: block; margin-bottom: 6px; cursor: pointer; }
         .filter-dropdown input[type="checkbox"] { margin-right: 8px; cursor: pointer; }
-        
         .filter-actions { margin-top: 10px; display: flex; justify-content: space-between; border-top: 1px solid #eee; padding-top: 10px; }
         .filter-btn { background: #2e7d32; color: white; border: none; padding: 6px 10px; cursor: pointer; border-radius: 4px; font-weight: bold; flex: 1; margin-left: 5px;}
         .filter-btn.clear { background: #f5f5f5; color: #333; border: 1px solid #ccc; margin-left: 0; margin-right: 5px;}
@@ -132,52 +104,76 @@
                 <div class="header-cell group-header" id="group-l4" style="justify-content: center;">L4 Integrated</div>
             </div>
             
-            <div class="frozen-col-bar">
+            <div class="frozen-col-bar" id="main-column-headers">
                 <div class="header-cell group-asset divider-right">
                     <span class="col-title" data-original="Asset ID">Asset ID</span> <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span>
                 </div>
                 
+                <div class="header-cell col-single"><span class="col-title" data-original="L2 Status">L2 Status</span></div>
                 <div class="header-cell col-single">
-                    <span class="col-title" data-original="L2 Status">L2 Status</span> <span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span>
-                </div>
-                <div class="header-cell col-single">
-                    <div><span class="col-title" data-original="Open CLs">Open CLs</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div>
+                    <div><span class="col-title" data-original="Open CLs">Open CLs</span></div>
                     <div class="expand-btn" data-target="l2-cl" onclick="toggleExpansion('l2', 'cl')">+</div>
                 </div>
-                <div class="header-cell col-details l2-cl-details">L2 Checklists Registry</div>
+                <div class="header-cell col-details l2-cl-details cl-cell">CL 1</div>
+                <div class="header-cell col-details l2-cl-details cl-cell">CL 2</div>
+                <div class="header-cell col-details l2-cl-details cl-cell">CL 3</div>
+                <div class="header-cell col-details l2-cl-details cl-cell">CL 4</div>
+                <div class="header-cell col-details l2-cl-details cl-cell">CL 5</div>
+                <div class="header-cell col-details l2-cl-details cl-cell">CL 6</div>
+                <div class="header-cell col-details l2-cl-details cl-cell">CL 7</div>
+                <div class="header-cell col-details l2-cl-details cl-cell">CL 8</div>
+                <div class="header-cell col-details l2-cl-details cl-cell">CL 9</div>
+                <div class="header-cell col-details l2-cl-details cl-cell">CL 10</div>
+
                 <div class="header-cell col-single divider-right">
-                    <div><span class="col-title" data-original="Issues">Issues</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div>
+                    <div><span class="col-title" data-original="Issues">Issues</span></div>
                     <div class="expand-btn" data-target="l2-iss" onclick="toggleExpansion('l2', 'iss')">+</div>
                 </div>
-                <div class="header-cell col-details l2-iss-details divider-right">L2 Ticket Backlog</div>
+                <div class="header-cell col-details l2-iss-details iss-details divider-right">L2 Ticket Backlog</div>
                 
+                <div class="header-cell col-single"><span class="col-title" data-original="L3 Status">L3 Status</span></div>
                 <div class="header-cell col-single">
-                    <span class="col-title" data-original="L3 Status">L3 Status</span> <span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span>
-                </div>
-                <div class="header-cell col-single">
-                    <div><span class="col-title" data-original="Open CLs">Open CLs</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div>
+                    <div><span class="col-title" data-original="Open CLs">Open CLs</span></div>
                     <div class="expand-btn" data-target="l3-cl" onclick="toggleExpansion('l3', 'cl')">+</div>
                 </div>
-                <div class="header-cell col-details l3-cl-details">L3 Checklists Registry</div>
+                <div class="header-cell col-details l3-cl-details cl-cell">CL 1</div>
+                <div class="header-cell col-details l3-cl-details cl-cell">CL 2</div>
+                <div class="header-cell col-details l3-cl-details cl-cell">CL 3</div>
+                <div class="header-cell col-details l3-cl-details cl-cell">CL 4</div>
+                <div class="header-cell col-details l3-cl-details cl-cell">CL 5</div>
+                <div class="header-cell col-details l3-cl-details cl-cell">CL 6</div>
+                <div class="header-cell col-details l3-cl-details cl-cell">CL 7</div>
+                <div class="header-cell col-details l3-cl-details cl-cell">CL 8</div>
+                <div class="header-cell col-details l3-cl-details cl-cell">CL 9</div>
+                <div class="header-cell col-details l3-cl-details cl-cell">CL 10</div>
+
                 <div class="header-cell col-single divider-right">
-                    <div><span class="col-title" data-original="Issues">Issues</span><span class="filter-icon" data-col="9" onclick="toggleFilter(event, 9)">▼</span></div>
+                    <div><span class="col-title" data-original="Issues">Issues</span></div>
                     <div class="expand-btn" data-target="l3-iss" onclick="toggleExpansion('l3', 'iss')">+</div>
                 </div>
-                <div class="header-cell col-details l3-iss-details divider-right">L3 Ticket Backlog</div>
+                <div class="header-cell col-details l3-iss-details iss-details divider-right">L3 Ticket Backlog</div>
                 
+                <div class="header-cell col-single"><span class="col-title" data-original="L4 Status">L4 Status</span></div>
                 <div class="header-cell col-single">
-                    <span class="col-title" data-original="L4 Status">L4 Status</span> <span class="filter-icon" data-col="11" onclick="toggleFilter(event, 11)">▼</span>
-                </div>
-                <div class="header-cell col-single">
-                    <div><span class="col-title" data-original="Open CLs">Open CLs</span><span class="filter-icon" data-col="12" onclick="toggleFilter(event, 12)">▼</span></div>
+                    <div><span class="col-title" data-original="Open CLs">Open CLs</span></div>
                     <div class="expand-btn" data-target="l4-cl" onclick="toggleExpansion('l4', 'cl')">+</div>
                 </div>
-                <div class="header-cell col-details l4-details l4-cl-details">L4 Checklists Registry</div>
+                <div class="header-cell col-details l4-cl-details cl-cell">CL 1</div>
+                <div class="header-cell col-details l4-cl-details cl-cell">CL 2</div>
+                <div class="header-cell col-details l4-cl-details cl-cell">CL 3</div>
+                <div class="header-cell col-details l4-cl-details cl-cell">CL 4</div>
+                <div class="header-cell col-details l4-cl-details cl-cell">CL 5</div>
+                <div class="header-cell col-details l4-cl-details cl-cell">CL 6</div>
+                <div class="header-cell col-details l4-cl-details cl-cell">CL 7</div>
+                <div class="header-cell col-details l4-cl-details cl-cell">CL 8</div>
+                <div class="header-cell col-details l4-cl-details cl-cell">CL 9</div>
+                <div class="header-cell col-details l4-cl-details cl-cell">CL 10</div>
+
                 <div class="header-cell col-single">
-                    <div><span class="col-title" data-original="Issues">Issues</span><span class="filter-icon" data-col="14" onclick="toggleFilter(event, 14)">▼</span></div>
+                    <div><span class="col-title" data-original="Issues">Issues</span></div>
                     <div class="expand-btn" data-target="l4-iss" onclick="toggleExpansion('l4', 'iss')">+</div>
                 </div>
-                <div class="header-cell col-details l4-iss-details">L4 Ticket Backlog</div>
+                <div class="header-cell col-details l4-iss-details iss-details">L4 Ticket Backlog</div>
             </div>
         </div>
 
@@ -190,7 +186,6 @@
 <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbz-dXKX2ASq6J-lmkh9SU3FpGbb0s6tzWlPUeaIarshYo3pjko5kxs_gT9Eu6UAgbS4Vw/exec'; 
 
-    // General color logic for text inputs
     function getColorClass(value) {
         if (!value || value === "N/A" || value === "") return 'bg-grey';
         let lowerVal = value.toString().toLowerCase();
@@ -205,44 +200,62 @@
         return 'bg-grey';
     }
 
-    // --- NEW: Spreadsheet Style Detail Parser ---
-    function renderDetailCards(detailString) {
-        if (!detailString || detailString === 'Clear' || detailString === 'N/A') {
-            return `<div style="margin: auto; color: #999; font-size: 11px; font-style: italic;">No Records</div>`;
-        }
-        
-        const items = detailString.split(', ');
-        
-        return items.map(item => {
-            const match = item.match(/(.+?)\s*\((.+)\)/);
+    // NEW: Function to render exactly 10 discrete HTML cells for Checklists
+    function render10Cells(row, level) {
+        let html = '';
+        for (let i = 1; i <= 10; i++) {
+            // Looks for the exact column name in your Google sheet (e.g. "L2 CL 1")
+            const val = row[`${level} CL ${i}`];
+            let id = '', status = '', bgClass = 'bg-grey';
             
-            if (match) {
-                const id = match[1];
-                const status = match[2];
-                
-                // Set the status block color
-                let bgClass = 'bg-grey';
-                const s = status.toLowerCase();
-                
-                if (s.includes('closed') || s.includes('complete') || s.includes('verified')) bgClass = 'bg-green';
-                else if (s.includes('open') || s.includes('progress') || s.includes('assigned') || s.includes('pending')) bgClass = 'bg-yellow';
-                else if (s.includes('issue') || s.includes('gap') || s.includes('high')) bgClass = 'bg-red';
-                else if (s.includes('no cl')) bgClass = 'bg-grey';
-                
-                return `
-                <div class="checklist-column">
+            if (val && val !== 'N/A' && val !== 'Clear') {
+                const match = val.toString().match(/(.+?)\s*\((.+)\)/);
+                if (match) {
+                    id = match[1];
+                    status = match[2];
+                    const s = status.toLowerCase();
+                    if (s.includes('closed') || s.includes('complete') || s.includes('verified')) bgClass = 'bg-green';
+                    else if (s.includes('open') || s.includes('progress') || s.includes('assigned') || s.includes('pending')) bgClass = 'bg-yellow';
+                    else if (s.includes('issue') || s.includes('gap') || s.includes('high')) bgClass = 'bg-red';
+                    else if (s.includes('no cl')) bgClass = 'bg-grey';
+                } else {
+                    id = val;
+                    status = 'Unknown';
+                }
+            }
+
+            // If empty, generate a greyed-out blank placeholder cell to maintain grid shape
+            if(id === '') {
+                html += `
+                <div class="cell-row-detail col-details ${level.toLowerCase()}-cl-details cl-cell">
+                    <div class="checklist-header" style="color:#cfd8dc;">-</div>
+                    <div class="checklist-status bg-grey" style="color:transparent;">-</div>
+                </div>`;
+            } else {
+                html += `
+                <div class="cell-row-detail col-details ${level.toLowerCase()}-cl-details cl-cell">
                     <div class="checklist-header">${id}</div>
                     <div class="checklist-status ${bgClass}">${status}</div>
                 </div>`;
             }
-            
-            // Fallback for badly formatted strings
-            return `
-            <div class="checklist-column">
-                <div class="checklist-header">${item}</div>
-                <div class="checklist-status bg-grey">Unknown</div>
-            </div>`;
-            
+        }
+        return html;
+    }
+
+    // Old function retained specifically for the "Issues" single scrollable box
+    function renderScrollableCards(detailString) {
+        if (!detailString || detailString === 'Clear' || detailString === 'N/A') return `<div style="margin: auto; color: #999; font-size: 11px; font-style: italic;">No Records</div>`;
+        const items = detailString.split(', ');
+        return items.map(item => {
+            const match = item.match(/(.+?)\s*\((.+)\)/);
+            if (match) {
+                const id = match[1]; const status = match[2]; let bgClass = 'bg-grey'; const s = status.toLowerCase();
+                if (s.includes('closed') || s.includes('complete')) bgClass = 'bg-green';
+                else if (s.includes('open') || s.includes('progress')) bgClass = 'bg-yellow';
+                else if (s.includes('issue') || s.includes('gap')) bgClass = 'bg-red';
+                return `<div class="checklist-column"><div class="checklist-header">${id}</div><div class="checklist-status ${bgClass}">${status}</div></div>`;
+            }
+            return `<div class="checklist-column"><div class="checklist-header">${item}</div><div class="checklist-status bg-grey">Unknown</div></div>`;
         }).join('');
     }
 
@@ -262,35 +275,32 @@
                     
                     <input type="text" class="col-single ${getColorClass(row['L2 Status'])}" value="${row['L2 Status'] || 'N/A'}" readonly>
                     <input type="text" class="col-single ${getColorClass(row['L2 CLs'])}" value="${row['L2 CLs'] || 0}" readonly>
-                    <div class="row-details col-details l2-cl-details">
-                        ${renderDetailCards(row['L2 CL Details'])}
-                    </div>
+                    
+                    ${render10Cells(row, 'L2')}
                     
                     <input type="text" class="col-single divider-right ${getColorClass(row['L2 Issues'])}" value="${row['L2 Issues'] || 0}" readonly>
-                    <div class="row-details col-details l2-iss-details divider-right">
-                        ${renderDetailCards(row['L2 Issue Details'])}
+                    <div class="row-details col-details l2-iss-details iss-details divider-right">
+                        ${renderScrollableCards(row['L2 Issue Details'])}
                     </div>
                     
                     <input type="text" class="col-single ${getColorClass(row['L3 Status'])}" value="${row['L3 Status'] || 'N/A'}" readonly>
                     <input type="text" class="col-single ${getColorClass(row['L3 CLs'])}" value="${row['L3 CLs'] || 0}" readonly>
-                    <div class="row-details col-details l3-cl-details">
-                        ${renderDetailCards(row['L3 CL Details'])}
-                    </div>
+                    
+                    ${render10Cells(row, 'L3')}
                     
                     <input type="text" class="col-single divider-right ${getColorClass(row['L3 Issues'])}" value="${row['L3 Issues'] || 0}" readonly>
-                    <div class="row-details col-details l3-iss-details divider-right">
-                        ${renderDetailCards(row['L3 Issue Details'])}
+                    <div class="row-details col-details l3-iss-details iss-details divider-right">
+                        ${renderScrollableCards(row['L3 Issue Details'])}
                     </div>
                     
                     <input type="text" class="col-single ${getColorClass(row['L4 Status'])}" value="${row['L4 Status'] || 'N/A'}" readonly>
                     <input type="text" class="col-single ${getColorClass(row['L4 CLs'])}" value="${row['L4 CLs'] || 0}" readonly>
-                    <div class="row-details col-details l4-cl-details">
-                        ${renderDetailCards(row['L4 CL Details'])}
-                    </div>
+                    
+                    ${render10Cells(row, 'L4')}
                     
                     <input type="text" class="col-single ${getColorClass(row['L4 Issues'])}" value="${row['L4 Issues'] || 0}" readonly>
-                    <div class="row-details col-details l4-iss-details">
-                        ${renderDetailCards(row['L4 Issue Details'])}
+                    <div class="row-details col-details l4-iss-details iss-details">
+                        ${renderScrollableCards(row['L4 Issue Details'])}
                     </div>
                 </div>`;
                 container.insertAdjacentHTML('beforeend', rowHTML);
@@ -318,52 +328,12 @@
         btn.style.background = state ? "#b71c1c" : "#4caf50";
 
         // Dynamically adjust master tier header block flex spans
-        let activeFlexSpans = 3;
-        if (expandedStates[level].cl) activeFlexSpans += 2;
-        if (expandedStates[level].iss) activeFlexSpans += 2;
+        let activeFlexSpans = 3; 
+        if (expandedStates[level].cl) activeFlexSpans += 10; // Adds exactly 10 units for the 10 new columns
+        if (expandedStates[level].iss) activeFlexSpans += 2; // Adds 2 flex units for the scrollable issue block
+        
         document.getElementById(`group-${level}`).style.flex = activeFlexSpans;
     }
-
-    // --- SEARCH FILTER SELECTION MATRIX ENGINE ---
-    let activeFilters = {}; let currentDropdown = null;
-    function toggleFilter(event, colIndex) {
-        event.stopPropagation();
-        if (currentDropdown) { let wasSame = (currentDropdown.dataset.col == colIndex); closeFilterMenu(); if (wasSame) return; }
-        const rows = document.querySelectorAll('.cell-row'); const uniqueValues = new Set();
-        rows.forEach(row => { const inputs = row.querySelectorAll('input'); if(inputs[colIndex]) uniqueValues.add(inputs[colIndex].value.trim()); });
-        const dropdown = document.createElement('div'); dropdown.className = 'filter-dropdown'; dropdown.dataset.col = colIndex;
-        const rect = event.target.getBoundingClientRect(); dropdown.style.top = (rect.bottom + window.scrollY + 5) + 'px'; dropdown.style.left = (rect.left + window.scrollX - 120) + 'px';
-        dropdown.innerHTML = `<input type="text" id="filter-search" class="filter-search-input" placeholder="Search values..." autocomplete="off"><label style="font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:8px; margin-bottom:8px;"><input type="checkbox" id="filter-select-all" checked> (Select All)</label>`;
-        const valContainer = document.createElement('div'); valContainer.style.overflowY = 'auto'; valContainer.style.flex = '1';
-        const sortedVals = Array.from(uniqueValues).sort(); const currentFilterSet = activeFilters[colIndex];
-        sortedVals.forEach(val => { const isChecked = currentFilterSet ? currentFilterSet.has(val) : true; valContainer.innerHTML += `<label class="filter-val-label"><input type="checkbox" class="filter-val-cb" value="${val}" ${isChecked ? 'checked' : ''}> <span class="val-text">${val}</span></label>`; });
-        dropdown.appendChild(valContainer);
-        const actions = document.createElement('div'); actions.className = 'filter-actions'; actions.innerHTML = `<button class="filter-btn clear" onclick="clearFilter(${colIndex})">Clear</button><button class="filter-btn" onclick="applyFilter(${colIndex})">OK</button>`;
-        dropdown.appendChild(actions); document.body.appendChild(dropdown); currentDropdown = dropdown;
-        setTimeout(() => document.getElementById('filter-search').focus(), 10);
-        const searchInput = dropdown.querySelector('#filter-search'); const selectAllCb = dropdown.querySelector('#filter-select-all'); const allLabels = dropdown.querySelectorAll('.filter-val-label'); const valCbs = dropdown.querySelectorAll('.filter-val-cb');
-        if (currentFilterSet && currentFilterSet.size < sortedVals.length) selectAllCb.checked = false;
-        searchInput.addEventListener('input', (e) => { const term = e.target.value.toLowerCase(); let visibleCount = 0; let checkedVisibleCount = 0; allLabels.forEach(label => { const text = label.querySelector('.val-text').textContent.toLowerCase(); const cb = label.querySelector('.filter-val-cb'); if (text.includes(term)) { label.style.display = 'block'; visibleCount++; if (cb.checked) checkedVisibleCount++; } else { label.style.display = 'none'; } }); selectAllCb.checked = (visibleCount > 0 && visibleCount === checkedVisibleCount); });
-        selectAllCb.addEventListener('change', (e) => { const isChecked = e.target.checked; allLabels.forEach(label => { if (label.style.display !== 'none') label.querySelector('.filter-val-cb').checked = isChecked; }); });
-        valCbs.forEach(cb => { cb.addEventListener('change', () => { let allVisibleChecked = true; allLabels.forEach(label => { if (label.style.display !== 'none' && !label.querySelector('.filter-val-cb').checked) allVisibleChecked = false; }); selectAllCb.checked = allVisibleChecked; }); });
-    }
-    window.applyFilter = function(colIndex) {
-        if (!currentDropdown) return; const valCbs = currentDropdown.querySelectorAll('.filter-val-cb'); const selected = new Set(); valCbs.forEach(cb => { if (cb.checked) selected.add(cb.value); });
-        const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); const headerCell = icon.closest('.header-cell'); const titleSpan = headerCell.querySelector('.col-title');
-        if (selected.size === valCbs.length) { delete activeFilters[colIndex]; icon.classList.remove('active'); headerCell.classList.remove('is-filtered'); titleSpan.textContent = titleSpan.dataset.original; } 
-        else { activeFilters[colIndex] = selected; icon.classList.add('active'); headerCell.classList.add('is-filtered'); titleSpan.textContent = titleSpan.dataset.original + ' - Filtered'; }
-        closeFilterMenu(); executeFilters();
-    };
-    window.clearFilter = function(colIndex) {
-        delete activeFilters[colIndex]; const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); const headerCell = icon.closest('.header-cell'); const titleSpan = headerCell.querySelector('.col-title');
-        icon.classList.remove('active'); headerCell.classList.remove('is-filtered'); titleSpan.textContent = titleSpan.dataset.original; closeFilterMenu(); executeFilters();
-    };
-    function executeFilters() {
-        const rows = document.querySelectorAll('.cell-row');
-        rows.forEach(row => { const inputs = row.querySelectorAll('input'); let isVisible = true; for (let col in activeFilters) { if (inputs[col]) { const val = inputs[col].value.trim(); if (!activeFilters[col].has(val)) { isVisible = false; break; } } } row.style.display = isVisible ? 'flex' : 'none'; });
-    }
-    function closeFilterMenu() { if (currentDropdown) { document.body.removeChild(currentDropdown); currentDropdown = null; } }
-    document.addEventListener('click', (e) => { if (currentDropdown && !currentDropdown.contains(e.target) && !e.target.classList.contains('filter-icon')) closeFilterMenu(); });
 </script>
 </body>
 </html>
