@@ -18,13 +18,6 @@
         .subheader { position: sticky; top: 0; z-index: 1000; background-color: #f1f3f4; height: 50px; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; }
         #app-body { height: calc(100vh - 80px); width: 100%; overflow-y: auto; background: #fff;}
         
-        /* --- STATUS CELL COLORS --- */
-        .bg-green   { background-color: #c8e6c9 !important; color: #1b5e20 !important; }
-        .bg-yellow  { background-color: #fff9c4 !important; color: #f57f17 !important; }
-        .bg-red     { background-color: #ffcdd2 !important; color: #b71c1c !important; }
-        .bg-grey    { background-color: #f5f5f5 !important; color: #616161 !important; }
-        .bg-filled  { background-color: #e1f5fe !important; color: #01579b !important; }
-
         /* --- EQUIPMENT TRACKER GRID --- */
         .tracker-container { width: 95%; margin: 20px auto; border: 2px solid #2e7d32; border-radius: 8px; background: #ffffff; overflow-x: auto; }
         .tracker-header-wrapper { position: sticky; top: 51px; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 1300px; background: #ffffff;}
@@ -51,8 +44,9 @@
         .summary-cell { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 11px; line-height: 1.3; padding: 4px 6px; border-right: 1px solid #f0f0f0; white-space: normal; word-break: break-word; }
         
         /* SPREADSHEET STACKED CARDS */
-        .stacked-cell { display: flex; flex-direction: column; min-width: 80px; border-right: 1px solid #e0e0e0; flex: 1; background: #fff;}
-        .checklist-header { flex: 1; background-color: #f1f3f4; color: #333; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #e0e0e0; padding: 4px; }
+        /* REMOVED background defaults so inline styles govern the entire block */
+        .stacked-cell { display: flex; flex-direction: column; min-width: 80px; border-right: 1px solid #e0e0e0; flex: 1;}
+        .checklist-header { flex: 1; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgba(0,0,0,0.15); padding: 4px; }
         .checklist-status { flex: 1; font-size: 9px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; padding: 4px; text-align: center; white-space: normal; word-break: break-word; line-height: 1.1; }
         
         /* ISSUES BLOCK */
@@ -145,6 +139,7 @@
             <div class="frozen-col-bar" id="main-column-headers">
                 <div class="header-cell group-asset divider-right"><div class="title-wrap"><span class="col-title" data-original="Asset">Asset</span> <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span></div></div>
                 
+                <!-- L2 -->
                 <div class="header-cell col-single"><div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span></div></div>
                 <div class="header-cell col-single l2-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l2-supp-header">
@@ -153,6 +148,7 @@
                 </div>
                 <div class="header-cell col-details l2-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l2-supp-details cl-cell divider-right">Supp 10</div>
                 
+                <!-- L3 -->
                 <div class="header-cell col-single"><div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div></div>
                 <div class="header-cell col-single l3-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l3-supp-header">
@@ -161,6 +157,7 @@
                 </div>
                 <div class="header-cell col-details l3-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l3-supp-details cl-cell divider-right">Supp 10</div>
                 
+                <!-- L4 -->
                 <div class="header-cell col-single"><div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div></div>
                 <div class="header-cell col-single l4-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="8" onclick="toggleFilter(event, 8)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l4-supp-header">
@@ -169,6 +166,7 @@
                 </div>
                 <div class="header-cell col-details l4-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l4-supp-details cl-cell divider-right">Supp 10</div>
 
+                <!-- ISSUES -->
                 <div class="header-cell col-single" id="global-iss-header">
                     <div class="title-wrap"><span class="col-title" data-original="Open Issues">Open Issues</span><span class="filter-icon" data-col="10" onclick="toggleFilter(event, 10)">▼</span></div>
                     <div class="expand-btn" data-target="global-iss" onclick="toggleGlobalIssues()">+</div>
@@ -180,6 +178,7 @@
     </div>
 </div>
 
+<!-- SETTINGS MODAL -->
 <div class="modal-overlay" id="settings-modal">
     <div class="modal-box">
         <div class="modal-header">
@@ -187,6 +186,7 @@
             <button class="close-btn" onclick="closeSettingsModal()">×</button>
         </div>
         <div class="modal-body">
+            <!-- CHECKLISTS -->
             <div class="settings-col">
                 <h3>Checklists (L2 & L3)</h3>
                 <div class="status-group">
@@ -201,6 +201,7 @@
                 </div>
             </div>
             
+            <!-- TESTS -->
             <div class="settings-col">
                 <h3>Tests (L4)</h3>
                 <div class="status-group">
@@ -215,6 +216,7 @@
                 </div>
             </div>
 
+            <!-- ISSUES -->
             <div class="settings-col">
                 <h3>Global Issues</h3>
                 <div class="status-group">
@@ -287,6 +289,7 @@
         return statusArray.some(item => s.includes(item.name.toLowerCase()));
     }
 
+    // UPDATED: Now sets the entire stacked block wrapper to the correct color
     function renderStackedCell(val, extraClasses = '', type = 'checklist') {
         let id = '', status = '', styleStr = 'background-color:#f5f5f5; color:transparent;', rawVal = '';
         if (val && val !== 'N/A' && val !== 'Clear') {
@@ -297,10 +300,17 @@
                 styleStr = getDynamicStyle(status, type);
             } else { id = rawVal; status = 'Unknown'; }
         }
+        
         if (id === '') {
-            return `<div class="filter-target stacked-cell ${extraClasses}" data-val=""><div class="checklist-header" style="color:#cfd8dc;">-</div><div class="checklist-status" style="${styleStr}">-</div></div>`;
+            return `<div class="filter-target stacked-cell ${extraClasses}" data-val="" style="background-color:#f5f5f5; color:transparent;">
+                        <div class="checklist-header" style="border-bottom:none;">-</div>
+                        <div class="checklist-status">-</div>
+                    </div>`;
         } else {
-            return `<div class="filter-target stacked-cell ${extraClasses}" data-val="${rawVal}"><div class="checklist-header">${id}</div><div class="checklist-status" style="${styleStr}">${status}</div></div>`;
+            return `<div class="filter-target stacked-cell ${extraClasses}" data-val="${rawVal}" style="${styleStr}">
+                        <div class="checklist-header">${id}</div>
+                        <div class="checklist-status">${status}</div>
+                    </div>`;
         }
     }
 
