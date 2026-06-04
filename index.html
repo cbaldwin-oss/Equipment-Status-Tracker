@@ -30,7 +30,7 @@
         .cell-row:hover { background-color: rgba(0,0,0,0.02); }
 
         /* --- FLAWLESS COLUMN ALIGNMENT SYSTEM --- */
-        /* Gate CL and Checklists are 100px */
+        /* Gate CL, Checklists, Issues = 100px */
         .gate-cell, .cl-cell, .iss-cell, .stacked-cell { 
             flex: 0 0 100px !important; 
             width: 100px !important; 
@@ -41,12 +41,12 @@
             padding: 0;
         }
 
-        /* Overall Status is Wider (180px) */
+        /* Overall Status is Wider (140px) */
         .summary-cell { 
-            flex: 0 0 180px !important; 
-            width: 180px !important; 
-            min-width: 180px !important; 
-            max-width: 180px !important;
+            flex: 0 0 140px !important; 
+            width: 140px !important; 
+            min-width: 140px !important; 
+            max-width: 140px !important;
             border-right: 2px solid #78909c !important; 
             overflow: hidden; 
             padding: 0;
@@ -109,6 +109,7 @@
         .checklist-header { flex: 1; background-color: #f1f3f4; color: #333; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; padding: 4px; border-bottom: none !important; text-align: center;}
         .checklist-status { flex: 1; font-size: 10px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; padding: 4px; text-align: center; white-space: normal; word-break: break-word; line-height: 1.1; }
         
+        /* OVERRIDE FOR ISSUE HEADERS (Thinner to fit ID text properly) */
         .header-cell.iss-cell { font-size: 10px !important; justify-content: center; }
 
         .expand-btn { 
@@ -336,6 +337,7 @@
 </div>
 
 <script>
+    // THE RESTORED, CORRECT URL
     const API_URL = 'https://script.google.com/macros/s/AKfycbwcZdFdg90pf2LfQzbEsLf2WRIzMuC1gsB6hsaBMAx05PJmzkXESTGWPfPUa_8CiHcfiw/exec'; 
 
     let globalConfig = { 
@@ -428,7 +430,7 @@
     function renderStackedCell(val, extraClasses = '', type = 'checklist') {
         let id = '', status = '', styleStr = '', rawVal = '';
         
-        if (val && val !== 'N/A' && val !== 'Clear') {
+        if (val && val !== 'N/A' && val !== 'Clear' && val !== '-') {
             rawVal = String(val).trim();
             const match = rawVal.match(/(.+?)\s*\((.+)\)/);
             if (match) {
@@ -453,7 +455,6 @@
         }
     }
 
-    // Dynamic generation based on backend max limits
     function renderSupportCells(row, level, maxCount) {
         let html = '';
         let type = (level === 'L4') ? 'test' : 'checklist';
@@ -544,7 +545,34 @@
 
             const rows = payload.data || [];
             if (payload.config) globalConfig = { ...globalConfig, ...payload.config };
-            if (payload.maxCols) globalConfig.maxCols = payload.maxCols;
+
+            // Dynamically calculate the highest populated column counts from the actual fetched data array
+            let actualMaxCols = { l2: 0, l3: 0, l4: 0, iss: 0 };
+            rows.forEach(row => {
+                ['L2', 'L3', 'L4'].forEach(level => {
+                    let key = level.toLowerCase();
+                    for(let i=1; i<=100; i++) {
+                        let val = row[`${level} Support CL ${i}`];
+                        if(val !== undefined && val !== null) {
+                            let clean = String(val).replace(/\(Unknown\)/ig, '').trim();
+                            if(clean !== '' && clean !== 'N/A' && clean !== 'Clear' && clean !== '-') {
+                                actualMaxCols[key] = Math.max(actualMaxCols[key], i);
+                            }
+                        }
+                    }
+                });
+                
+                for(let i=1; i<=200; i++) { // Scans up to 200 issues dynamically
+                    let val = row[`Issue ${i}`];
+                    if(val !== undefined && val !== null) {
+                        let clean = String(val).replace(/\(Unknown\)/ig, '').trim();
+                        if(clean !== '' && clean !== 'N/A' && clean !== 'Clear' && clean !== '-') {
+                            actualMaxCols.iss = Math.max(actualMaxCols.iss, i);
+                        }
+                    }
+                }
+            });
+            globalConfig.maxCols = actualMaxCols;
 
             if (!globalConfig.showL2Gate) document.body.classList.add('hide-l2-gate');
             else document.body.classList.remove('hide-l2-gate');
@@ -553,19 +581,26 @@
             if (!globalConfig.showL4Gate) document.body.classList.add('hide-l4-gate');
             else document.body.classList.remove('hide-l4-gate');
 
-            // --- INJECT DYNAMIC HEADERS based on Backend Math ---
-            document.querySelectorAll('.dynamic-header').forEach(el => el.remove()); // Clear previous
-            
+            // Remove hardcoded placeholders and inject perfect dynamic headers
+            document.querySelectorAll('.dynamic-header').forEach(el => el.remove()); 
             if(globalConfig.maxCols.l2 > 0) document.getElementById('l2-supp-header').insertAdjacentHTML('afterend', generateHeaderHTML('L2', globalConfig.maxCols.l2));
             if(globalConfig.maxCols.l3 > 0) document.getElementById('l3-supp-header').insertAdjacentHTML('afterend', generateHeaderHTML('L3', globalConfig.maxCols.l3));
             if(globalConfig.maxCols.l4 > 0) document.getElementById('l4-supp-header').insertAdjacentHTML('afterend', generateHeaderHTML('L4', globalConfig.maxCols.l4));
             if(globalConfig.maxCols.iss > 0) document.getElementById('global-iss-header').insertAdjacentHTML('afterend', generateIssHeaderHTML(globalConfig.maxCols.iss));
 
-            // --- STRICT MATH INITIALIZATION ---
+            // Hide [+] expand button if there are zero populated columns for that phase
+            ['l2', 'l3', 'l4'].forEach(lvl => {
+                let btn = document.querySelector(`.expand-btn[data-target="${lvl}-supp"]`);
+                if(btn) btn.style.display = globalConfig.maxCols[lvl] > 0 ? 'flex' : 'none';
+            });
+            let issBtn = document.querySelector(`.expand-btn[data-target="global-iss"]`);
+            if(issBtn) issBtn.style.display = globalConfig.maxCols.iss > 0 ? 'flex' : 'none';
+
+            // --- STRICT MATH WIDTH INITIALIZATION ---
             let gateL2 = globalConfig.showL2Gate !== false ? 100 : 0;
             let gateL3 = globalConfig.showL3Gate !== false ? 100 : 0;
             let gateL4 = globalConfig.showL4Gate !== false ? 100 : 0;
-            let summaryW = 180;
+            let summaryW = 140; // The Overall Status width
             
             document.getElementById('group-l2').style.flex = `0 0 ${gateL2 + summaryW}px`;
             document.getElementById('group-l3').style.flex = `0 0 ${gateL3 + summaryW}px`;
@@ -718,7 +753,7 @@
         btn.innerText = 'Save & Sync to Sheet'; btn.disabled = false;
     }
 
-    // --- BULLETPROOF EXPANSION LOGIC ---
+    // --- MATH-BASED DYNAMIC EXPANSION LOGIC ---
     window.toggleExpansion = function(level) {
         try {
             let lvl = level.toLowerCase();
@@ -736,11 +771,13 @@
                 btn.style.background = state ? "#b71c1c" : "#4caf50";
             }
             
-            // Dynamic Math based on how many columns are actively populated in backend
+            // Dynamic Math based on backend scanned totals
             let maxCols = globalConfig.maxCols[lvl] || 0;
             let gateWidth = globalConfig[`show${level.toUpperCase()}Gate`] !== false ? 100 : 0;
-            let summaryWidth = 180;
+            let summaryWidth = 140;
             let baseWidth = gateWidth + summaryWidth;
+            
+            // Math: Base + (Number of Real Supp columns * 100px)
             let exactWidth = state ? (baseWidth + (maxCols * 100)) : baseWidth;
             
             let headerGroup = document.getElementById(`group-${lvl}`);
@@ -769,9 +806,11 @@
                 btn.style.background = state ? "#b71c1c" : "#4caf50";
             }
 
-            // Summary (180px) + (Dynamic Max Issues * 100px)
+            let summaryWidth = 140;
             let maxIss = globalConfig.maxCols.iss || 0;
-            let exactIssWidth = state ? (180 + (maxIss * 100)) : 180;
+            
+            // Math: Summary Cell (140px) + (Number of Real Issues * 100px)
+            let exactIssWidth = state ? (summaryWidth + (maxIss * 100)) : summaryWidth;
             
             let issGroup = document.getElementById(`group-iss`);
             if(issGroup) {
