@@ -7,7 +7,7 @@
     <style>
         /* --- BASE STYLES --- */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; }
-        * { box-sizing: border-box; } /* Ensures padding doesn't affect fixed layout heights */
+        * { box-sizing: border-box; } 
         .header { height: 80px; background-color: #ffffff; border-bottom: 1px solid #dcdcdc; display: flex; align-items: center; padding: 0 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
         .header-center { flex: 0; white-space: nowrap; margin-right: auto;}
         .header-center span { color: #2e7d32; font-weight: 800; font-size: 36px; letter-spacing: -1px; }
@@ -23,8 +23,6 @@
 
         /* --- EQUIPMENT TRACKER GRID --- */
         .tracker-container { width: 95%; margin: 20px auto; border: 2px solid #2e7d32; border-radius: 8px; background: #ffffff; overflow-x: auto; }
-        
-        /* Adjusted Top offset to precisely 51px to prevent overlap with the 50px subheader and its 1px border */
         .tracker-header-wrapper { position: sticky; top: 51px; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 1300px; background: #ffffff;}
         .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: center; padding: 0 10px; border-bottom: 1px solid #0d3b10; }
         .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: center; padding: 0 10px; }
@@ -32,7 +30,7 @@
         .header-cell { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: bold; text-transform: uppercase; padding: 0 6px; }
         .title-wrap { display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; }
         
-        .rows-container { min-width: 1300px; padding-top: 5px; } /* Buffer for first row */
+        .rows-container { min-width: 1300px; padding-top: 5px; } 
         .cell-row { display: flex; align-items: stretch; padding: 0 10px; border-bottom: 1px solid #ccc; gap: 0; }
         .cell-row:hover { background-color: rgba(0,0,0,0.02); }
         .cell-row input { padding: 8px 6px; font-size: 13px; border: none; border-right: 1px solid #f0f0f0; text-align: center; background-color: #f9f9f9; width: 100%; outline: none; text-overflow: ellipsis; }
@@ -71,6 +69,12 @@
         .divider-right { border-right: 3px solid #b0bec5 !important; }
         .frozen-group-bar .divider-right, .frozen-col-bar .divider-right { border-right: 2px solid #4caf50 !important; }
         .loading-text { text-align: center; padding: 30px; color: #555; font-weight: bold; font-size: 18px; }
+
+        /* --- GLOBAL GATE CONFIG TOGGLES --- */
+        /* These force the entire column mapping out of existence perfectly when toggled by JS */
+        body.hide-l2-gate .l2-gate-col { display: none !important; }
+        body.hide-l3-gate .l3-gate-col { display: none !important; }
+        body.hide-l4-gate .l4-gate-col { display: none !important; }
 
         /* --- SEARCH FILTER ARCHITECTURE --- */
         .filter-icon { cursor: pointer; font-size: 10px; color: #a5d6a7; padding: 2px; }
@@ -268,14 +272,19 @@
             const payload = await response.json(); 
             
             const rows = payload.data || [];
-            globalConfig = payload.config || globalConfig; // Save settings
+            globalConfig = payload.config || globalConfig; 
 
-            // Conditionally Hide Gate Columns based on Google Sheet Settings
-            if (!globalConfig.showL2Gate) document.querySelectorAll('.l2-gate-col').forEach(el => el.style.display = 'none');
-            if (!globalConfig.showL3Gate) document.querySelectorAll('.l3-gate-col').forEach(el => el.style.display = 'none');
-            if (!globalConfig.showL4Gate) document.querySelectorAll('.l4-gate-col').forEach(el => el.style.display = 'none');
+            // Applies a hidden CSS class to the body to completely erase the requested columns
+            if (!globalConfig.showL2Gate) document.body.classList.add('hide-l2-gate');
+            else document.body.classList.remove('hide-l2-gate');
 
-            // Apply base flex ratios directly to group headers based on settings
+            if (!globalConfig.showL3Gate) document.body.classList.add('hide-l3-gate');
+            else document.body.classList.remove('hide-l3-gate');
+
+            if (!globalConfig.showL4Gate) document.body.classList.add('hide-l4-gate');
+            else document.body.classList.remove('hide-l4-gate');
+
+            // Apply base flex ratios directly to master headers based on settings
             document.getElementById('group-l2').style.flex = globalConfig.showL2Gate ? 3 : 2;
             document.getElementById('group-l3').style.flex = globalConfig.showL3Gate ? 3 : 2;
             document.getElementById('group-l4').style.flex = globalConfig.showL4Gate ? 3 : 2;
@@ -290,6 +299,7 @@
                 const l4Open = combineOpenSupportCLs(row, 'L4');
                 const issuesOpen = combineOpenIssues(row);
                 
+                // Generates the DOM data unconditionally, trusting the global CSS to collapse the UI accurately
                 const rowHTML = `
                 <div class="cell-row">
                     <input type="text" class="filter-target group-asset divider-right bg-grey" value="${assetId}" readonly style="font-weight: bold;">
