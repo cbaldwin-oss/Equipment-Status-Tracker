@@ -18,13 +18,6 @@
         .subheader { position: sticky; top: 0; z-index: 1000; background-color: #f1f3f4; height: 50px; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; }
         #app-body { height: calc(100vh - 80px); width: 100%; overflow-y: auto; background: #fff;}
         
-        /* --- STATUS CELL COLORS --- */
-        .bg-green   { background-color: #c8e6c9 !important; color: #1b5e20 !important; }
-        .bg-yellow  { background-color: #fff9c4 !important; color: #f57f17 !important; }
-        .bg-red     { background-color: #ffcdd2 !important; color: #b71c1c !important; }
-        .bg-grey    { background-color: #f5f5f5 !important; color: #616161 !important; }
-        .bg-filled  { background-color: #e1f5fe !important; color: #01579b !important; }
-
         /* --- EQUIPMENT TRACKER GRID --- */
         .tracker-container { width: 95%; margin: 20px auto; border: 2px solid #2e7d32; border-radius: 8px; background: #ffffff; overflow-x: auto; }
         .tracker-header-wrapper { position: sticky; top: 51px; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 1300px; background: #ffffff;}
@@ -107,7 +100,6 @@
         #phase-rules-table th { background: #f1f3f4; padding: 8px; text-align: left; font-size: 12px; color: #555; }
         #phase-rules-table td { padding: 6px; border-bottom: 1px solid #eee; }
         
-        /* Allow TEXT input everywhere so >= and <= symbols can be used */
         #phase-rules-table input[type="text"], #phase-rules-table select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
         #phase-rules-table input[type="color"] { width: 35px; height: 28px; padding: 0; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; }
         #phase-rules-table input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
@@ -288,6 +280,7 @@
     };
 
     function getContrastYIQ(hexcolor){
+        if(!hexcolor) return '#000000';
         hexcolor = hexcolor.replace("#", "");
         if(hexcolor.length === 3) hexcolor = hexcolor.split('').map(c => c+c).join('');
         var r = parseInt(hexcolor.substr(0,2),16);
@@ -297,10 +290,15 @@
         return (yiq >= 128) ? '#000000' : '#ffffff';
     }
 
+    // --- UPDATED DYNAMIC STYLE MATCHER ---
+    // Now intercepts counts for the Open Issues block and dynamically colors them!
     function getDynamicStyle(value, type = 'checklist') {
-        if (!value || value === "N/A" || value === "") return 'background-color:#f5f5f5; color:#616161;';
-        let lowerVal = value.toString().toLowerCase();
+        if (value === undefined || value === null || value === "N/A" || value === "Clear" || value === "") {
+            return 'background-color:#f5f5f5; color:#616161;';
+        }
+        let lowerVal = value.toString().toLowerCase().trim();
         
+        // 1. Check Phase Rules FIRST
         if (globalConfig.phaseRules && globalConfig.phaseRules.length > 0) {
             let ruleMatch = globalConfig.phaseRules.find(r => r.resultingStatus && lowerVal.includes(r.resultingStatus.toLowerCase()));
             if (ruleMatch && ruleMatch.color) {
@@ -314,13 +312,32 @@
         if (type === 'test') { openArr = globalConfig.testOpenStatuses; closedArr = globalConfig.testClosedStatuses; }
         if (type === 'issue') { openArr = globalConfig.issueOpenStatuses; closedArr = globalConfig.issueClosedStatuses; }
         
+        // 2. Direct Status Strings (e.g. "In Progress", "Closed")
         let match = closedArr.find(s => lowerVal.includes(s.name.toLowerCase()));
         if (match) return `background-color:${match.color}; color:${getContrastYIQ(match.color)};`;
         
         match = openArr.find(s => lowerVal.includes(s.name.toLowerCase()));
         if (match) return `background-color:${match.color}; color:${getContrastYIQ(match.color)};`;
         
-        if (lowerVal.includes('no cl') || lowerVal.includes('no l4') || lowerVal.includes('no l3')) return 'background-color:#f5f5f5; color:#616161;';
+        if (lowerVal.includes('no cl') || lowerVal.includes('no l4') || lowerVal.includes('no l3')) {
+            return 'background-color:#f5f5f5; color:#616161;';
+        }
+
+        // 3. Smart Counts Fallback (For the Open Items lists rendering counts)
+        if (!isNaN(lowerVal) && lowerVal !== '') {
+            let num = parseFloat(lowerVal);
+            if (num === 0) {
+                return 'background-color:#e1f5fe; color:#01579b;'; // Clean blue for Zero
+            }
+            if (num > 0) {
+                // Link it dynamically to the very first "Open" color configured for this category
+                if (openArr.length > 0) {
+                    return `background-color:${openArr[0].color}; color:${getContrastYIQ(openArr[0].color)};`;
+                }
+                return 'background-color:#ffcdd2; color:#b71c1c;'; // Fallback Red
+            }
+        }
+
         return 'background-color:#f5f5f5; color:#616161;';
     }
 
@@ -511,12 +528,10 @@
             <td><input type="checkbox" class="r-active" ${r.active !== false && r.active !== 'false' && r.active !== 'FALSE' ? 'checked' : ''}></td>
             <td><select class="r-phase"><option value="L2" ${r.phase=='L2'?'selected':''}>L2</option><option value="L3" ${r.phase=='L3'?'selected':''}>L3</option><option value="L4" ${r.phase=='L4'?'selected':''}>L4</option></select></td>
             <td><input type="text" class="r-prev" value="${r.prevStatus || ''}" placeholder="e.g. Complete"></td>
-            
             <td><input type="text" class="r-mg" value="${r.maxGate !== undefined ? r.maxGate : ''}" placeholder="e.g. <=0"></td>
             <td><input type="text" class="r-ms" value="${r.maxSupport !== undefined ? r.maxSupport : ''}" placeholder="e.g. >0"></td>
             <td><input type="text" class="r-mgi" value="${r.maxGatingIssues !== undefined ? r.maxGatingIssues : ''}" placeholder="=0"></td>
             <td><input type="text" class="r-mngi" value="${r.maxNonGatingIssues !== undefined ? r.maxNonGatingIssues : ''}" placeholder="<=5"></td>
-            
             <td><input type="text" class="r-res" value="${r.resultingStatus || ''}" placeholder="Result"></td>
             <td><input type="color" class="r-color" value="${r.color || '#e0e0e0'}"></td>
             <td><button class="btn btn-del" style="padding:4px 8px;" onclick="this.closest('tr').remove()">🗑</button></td>
