@@ -18,7 +18,7 @@
         #app-body { display: flex; flex-direction: column; height: calc(100vh - 80px); width: 100%; background: #f8f9fa;}
         .subheader { flex: 0 0 50px; background-color: #f1f3f4; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; z-index: 1000;}
         
-        /* --- EQUIPMENT TRACKER GRID (STRICT ALIGNMENT SCROLLING) --- */
+        /* --- EQUIPMENT TRACKER GRID (STRICT ALIGNMENT) --- */
         .tracker-container { flex: 1; margin: 0; width: 100%; border: none; border-top: 1px solid #dcdcdc; background: #ffffff; overflow: auto; min-height: 0; }
         
         .tracker-header-wrapper { position: sticky; top: 0; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 100%; width: max-content; background: #ffffff;}
@@ -51,16 +51,22 @@
             transition: all 0.2s ease;
         } 
 
-        /* --- ASSET CELL FILL --- */
+        /* --- ASSET CELL FULL FILL --- */
         .group-asset { flex: 0 0 140px !important; width: 140px !important; min-width: 140px !important; max-width: 140px !important; position: sticky; left: 0; z-index: 10; }
         .frozen-group-bar .group-asset { background-color: #1b5e20; z-index: 12; border-right: 1px solid #0d3b10 !important; }
         .frozen-col-bar .group-asset { background-color: #2e7d32; z-index: 12; border-right: 1px solid #1b5e20 !important; }
+        
         .cell-row .group-asset { 
-            background-color: #e8eaed !important; 
+            background-color: #f1f3f4 !important; 
             z-index: 10; 
             border-right: 2px solid #78909c !important; 
-            display: flex; align-items: center; justify-content: center; 
-            text-align: center; font-weight: bold; font-size: 13px; color: #333;
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: center !important; 
+            text-align: center !important; 
+            font-weight: bold !important; 
+            font-size: 13px !important; 
+            color: #333 !important;
         }
 
         .title-wrap { display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; }
@@ -79,10 +85,10 @@
         }
         
         /* --- DYNAMIC DETAILED EXPANSIONS --- */
-        .col-details { display: none !important; }
-        .col-details.expanded { display: flex !important; }
-        .stacked-cell.col-details.expanded { flex-direction: column !important; }
-        .header-cell.col-details.expanded { flex-direction: row !important; }
+        div.col-details { display: none !important; }
+        div.col-details.expanded { display: flex !important; }
+        div.stacked-cell.col-details.expanded { flex-direction: column !important; }
+        div.header-cell.col-details.expanded { flex-direction: row !important; }
         
         .summary-cell { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 13px; font-weight: 600; line-height: 1.3; padding: 4px 6px; white-space: normal; word-break: break-word; }
         
@@ -97,13 +103,14 @@
         .row-details::-webkit-scrollbar { height: 5px; }
         .row-details::-webkit-scrollbar-thumb { background: #b0bec5; border-radius: 4px; }
         
+        /* --- BULLETPROOF EXPAND BUTTONS --- */
         .expand-btn { 
             cursor: pointer; color: white; background: #4caf50; 
             border: 1px solid #1b5e20; border-radius: 3px; 
-            padding: 1px 4px; font-weight: bold; font-size: 11px; 
-            margin-left: 4px; user-select: none; 
-            display: flex; align-items: center; 
-            position: relative; z-index: 20; pointer-events: auto;
+            font-weight: bold; font-size: 12px; 
+            display: flex; align-items: center; justify-content: center;
+            position: relative; z-index: 999 !important; pointer-events: auto !important;
+            height: 20px; width: 20px; margin-left: auto;
         }
         .expand-btn:hover { background: #1b5e20; }
         .loading-text { text-align: center; padding: 30px; color: #555; font-weight: bold; font-size: 18px; width: 100vw;}
@@ -196,30 +203,34 @@
                 <div class="header-cell group-asset"><div class="title-wrap"><span class="col-title" data-original="Asset">Asset</span> <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span></div></div>
                 <div class="phase-gap"></div>
                 
+                <!-- L2 -->
                 <div class="header-cell col-single l2-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span></div></div>
                 <div class="header-cell col-single" id="l2-supp-header">
                     <div class="title-wrap"><span class="col-title" data-original="Status">Status</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div>
-                    <div class="expand-btn" data-target="l2-supp" onclick="toggleExpansion('L2')">+</div>
+                    <div class="expand-btn" data-target="l2-supp" onclick="toggleExpansion('l2')">+</div>
                 </div>
                 <div class="header-cell col-details l2-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 10</div>
                 <div class="phase-gap"></div>
                 
+                <!-- L3 -->
                 <div class="header-cell col-single l3-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span></div></div>
                 <div class="header-cell col-single" id="l3-supp-header">
                     <div class="title-wrap"><span class="col-title" data-original="Status">Status</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div>
-                    <div class="expand-btn" data-target="l3-supp" onclick="toggleExpansion('L3')">+</div>
+                    <div class="expand-btn" data-target="l3-supp" onclick="toggleExpansion('l3')">+</div>
                 </div>
                 <div class="header-cell col-details l3-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 10</div>
                 <div class="phase-gap"></div>
                 
+                <!-- L4 -->
                 <div class="header-cell col-single l4-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div></div>
                 <div class="header-cell col-single" id="l4-supp-header">
                     <div class="title-wrap"><span class="col-title" data-original="Status">Status</span><span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span></div>
-                    <div class="expand-btn" data-target="l4-supp" onclick="toggleExpansion('L4')">+</div>
+                    <div class="expand-btn" data-target="l4-supp" onclick="toggleExpansion('l4')">+</div>
                 </div>
                 <div class="header-cell col-details l4-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 10</div>
                 <div class="phase-gap"></div>
 
+                <!-- ISSUES -->
                 <div class="header-cell col-single" id="global-iss-header">
                     <div class="title-wrap"><span class="col-title" data-original="Open Issues">Open Issues</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div>
                     <div class="expand-btn" data-target="global-iss" onclick="toggleGlobalIssues()">+</div>
@@ -231,6 +242,7 @@
     </div>
 </div>
 
+<!-- SETTINGS MODAL -->
 <div class="modal-overlay" id="settings-modal">
     <div class="modal-box">
         <div class="modal-header">
@@ -332,6 +344,8 @@
         phaseRules: [],
         fallbackColor: '#f5f5f5'
     };
+
+    let expandedStates = { l2: false, l3: false, l4: false, iss: false };
 
     function getContrastYIQ(hexcolor){
         if(!hexcolor) return '#000000';
@@ -518,12 +532,11 @@
             if (!globalConfig.showL4Gate) document.body.classList.add('hide-l4-gate');
             else document.body.classList.remove('hide-l4-gate');
 
-            // --- STRICT WIDTH MATH INITIALIZATION ---
-            let baseL2 = globalConfig.showL2Gate ? 2 : 1;
-            let baseL3 = globalConfig.showL3Gate ? 2 : 1;
-            let baseL4 = globalConfig.showL4Gate ? 2 : 1;
+            // --- STRICT PIXEL MATH INITIALIZATION ---
+            let baseL2 = globalConfig.showL2Gate !== false ? 2 : 1;
+            let baseL3 = globalConfig.showL3Gate !== false ? 2 : 1;
+            let baseL4 = globalConfig.showL4Gate !== false ? 2 : 1;
             
-            // Set fixed widths dynamically based on the active columns on load (150px per column)
             document.getElementById('group-l2').style.flex = `0 0 ${baseL2 * 150}px`;
             document.getElementById('group-l3').style.flex = `0 0 ${baseL3 * 150}px`;
             document.getElementById('group-l4').style.flex = `0 0 ${baseL4 * 150}px`;
@@ -549,21 +562,25 @@
                     <div class="filter-target group-asset" data-val="${assetId}" title="${assetId}">${assetId}</div>
                     <div class="phase-gap"></div>
                     
+                    <!-- L2 SECTION -->
                     ${renderStackedCell(row['L2 Gate CL 1'], 'col-single l2-gate-col', 'checklist')}
                     <div class="filter-target col-single summary-cell l2-supp-summary" style="${getDynamicStyle(row['L2 Overall Status'], 'checklist', true)}" data-val="${row['L2 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l2Open.display}">${row['L2 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L2')}
                     <div class="phase-gap"></div>
                     
+                    <!-- L3 SECTION -->
                     ${renderStackedCell(row['L3 Gate CL 1'], 'col-single l3-gate-col', 'checklist')}
                     <div class="filter-target col-single summary-cell l3-supp-summary" style="${getDynamicStyle(row['L3 Overall Status'], 'checklist', true)}" data-val="${row['L3 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l3Open.display}">${row['L3 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L3')}
                     <div class="phase-gap"></div>
                     
+                    <!-- L4 SECTION -->
                     ${renderStackedCell(row['L4 Gate CL 1'], 'col-single l4-gate-col', 'test')}
                     <div class="filter-target col-single summary-cell l4-supp-summary" style="${getDynamicStyle(row['L4 Overall Status'], 'test', true)}" data-val="${row['L4 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l4Open.display}">${row['L4 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L4')}
                     <div class="phase-gap"></div>
                     
+                    <!-- GLOBAL ISSUES -->
                     <div class="filter-target col-single summary-cell global-iss-summary" style="${getDynamicStyle(issuesOpen.count, 'issue', false)}" data-val="${issuesOpen.display}">${issuesOpen.display}</div>
                     <div class="row-details col-details global-iss-details iss-details">
                         ${renderIssuesBlock(row)}
@@ -582,7 +599,6 @@
     // --- SETTINGS UI LOGIC ---
     function openSettingsModal() {
         document.getElementById('settings-modal').classList.add('active');
-        
         document.getElementById('fallback-color-picker').value = globalConfig.fallbackColor || '#f5f5f5';
 
         const map = {
@@ -678,67 +694,78 @@
         btn.innerText = 'Save & Sync to Sheet'; btn.disabled = false;
     }
 
-    // --- MATHEMATICAL EXPANSION LOGIC ---
-    window.toggleExpansion = function(level) {
+    // --- BULLETPROOF EXPANSION LOGIC ---
+    function toggleExpansion(level) {
         try {
-            let lvl = level.toLowerCase();
-            const state = !expandedStates[lvl]; 
-            expandedStates[lvl] = state;
+            level = level.toLowerCase();
+            const state = !expandedStates[level]; 
+            expandedStates[level] = state;
             
-            // Toggle the visibility of the support columns securely
-            document.querySelectorAll(`.${lvl}-supp-details`).forEach(el => {
-                if(state) el.classList.add('expanded');
-                else el.classList.remove('expanded');
+            // Un-hide all matching columns in headers and generated rows
+            document.querySelectorAll('.' + level + '-supp-details').forEach(el => {
+                if (state) {
+                    el.classList.add('expanded');
+                } else {
+                    el.classList.remove('expanded');
+                }
             });
             
-            const btn = document.querySelector(`.expand-btn[data-target="${lvl}-supp"]`); 
+            // Switch button icon
+            const btn = document.querySelector('.expand-btn[data-target="' + level + '-supp"]'); 
             if (btn) {
                 btn.textContent = state ? "-" : "+"; 
                 btn.style.background = state ? "#b71c1c" : "#4caf50";
             }
             
-            // Calculate the exact pixel width so the master header flawlessly lines up with the children
-            let baseCols = globalConfig[`show${level.toUpperCase()}Gate`] !== false ? 2 : 1;
+            // Lock exact header width for flawless alignment
+            let baseCols = globalConfig['show' + level.toUpperCase() + 'Gate'] !== false ? 2 : 1;
             let totalCols = state ? (baseCols + 10) : baseCols;
-            let exactWidth = totalCols * 150; // 150px per column
+            let exactWidth = totalCols * 150; 
             
-            let headerGroup = document.getElementById(`group-${lvl}`);
+            let headerGroup = document.getElementById('group-' + level);
             if(headerGroup) {
-                headerGroup.style.flex = `0 0 ${exactWidth}px`;
-                headerGroup.style.width = `${exactWidth}px`;
-                headerGroup.style.minWidth = `${exactWidth}px`;
-                headerGroup.style.maxWidth = `${exactWidth}px`;
+                headerGroup.style.flex = '0 0 ' + exactWidth + 'px';
+                headerGroup.style.width = exactWidth + 'px';
+                headerGroup.style.minWidth = exactWidth + 'px';
+                headerGroup.style.maxWidth = exactWidth + 'px';
             }
-        } catch(e) { console.error("Expansion Error: ", e); }
-    };
+        } catch(e) {
+            console.error("Expansion script error:", e);
+        }
+    }
     
-    window.toggleGlobalIssues = function() {
+    function toggleGlobalIssues() {
         try {
             const state = !expandedStates.iss; 
             expandedStates.iss = state;
             
-            document.querySelectorAll(`.global-iss-details`).forEach(el => {
-                if(state) el.classList.add('expanded');
-                else el.classList.remove('expanded');
+            document.querySelectorAll('.global-iss-details').forEach(el => {
+                if (state) {
+                    el.classList.add('expanded');
+                } else {
+                    el.classList.remove('expanded');
+                }
             });
             
-            const btn = document.querySelector(`.expand-btn[data-target="global-iss"]`); 
+            const btn = document.querySelector('.expand-btn[data-target="global-iss"]'); 
             if(btn) {
                 btn.textContent = state ? "-" : "+"; 
                 btn.style.background = state ? "#b71c1c" : "#4caf50";
             }
 
-            // 150px for Summary Cell + 600px for Details Container = 750px exactly
+            // 150px for Summary Cell + 600px for Expanded Details = 750px exactly
             let exactIssWidth = state ? 750 : 150;
-            let issGroup = document.getElementById(`group-iss`);
+            let issGroup = document.getElementById('group-iss');
             if(issGroup) {
-                issGroup.style.flex = `0 0 ${exactIssWidth}px`;
-                issGroup.style.width = `${exactIssWidth}px`;
-                issGroup.style.minWidth = `${exactIssWidth}px`;
-                issGroup.style.maxWidth = `${exactIssWidth}px`;
+                issGroup.style.flex = '0 0 ' + exactIssWidth + 'px';
+                issGroup.style.width = exactIssWidth + 'px';
+                issGroup.style.minWidth = exactIssWidth + 'px';
+                issGroup.style.maxWidth = exactIssWidth + 'px';
             }
-        } catch(e) { console.error("Issue Expansion Error: ", e); }
-    };
+        } catch (e) {
+            console.error("Issue Expansion Error:", e);
+        }
+    }
 
     // --- FILTER ENGINE ---
     let activeFilters = {}; let currentDropdown = null;
