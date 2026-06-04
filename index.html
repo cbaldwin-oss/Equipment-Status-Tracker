@@ -44,25 +44,27 @@
         .col-details { display: none; }
         .col-details.expanded { display: flex; }
         
-        /* NEW: Summary Wrap Cells for Open CLs and Issues */
-        .summary-cell {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            font-size: 11px; /* Smaller font to fit more string */
-            line-height: 1.3;
-            padding: 4px 6px;
-            background-color: #f9f9f9;
-            border-right: 1px solid #f0f0f0;
-            white-space: normal; /* Enables wrapping */
-            word-break: break-word; /* Allows safe breaking of long commas */
-        }
+        .summary-cell { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 11px; line-height: 1.3; padding: 4px 6px; background-color: #f9f9f9; border-right: 1px solid #f0f0f0; white-space: normal; word-break: break-word; }
         
         /* SPREADSHEET STACKED CARDS */
         .stacked-cell { display: flex; flex-direction: column; min-width: 80px; border-right: 1px solid #e0e0e0; flex: 1; background: #fff;}
         .checklist-header { flex: 1; background-color: #f1f3f4; color: #333; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #e0e0e0; padding: 4px; }
-        .checklist-status { flex: 1; font-size: 10px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; padding: 4px; text-align: center; }
+        
+        /* WRAPPING AND TEXT SIZE LOGIC FOR STATUSES */
+        .checklist-status { 
+            flex: 1; 
+            font-size: 9px; /* Shrunk from 10px to accommodate longer names */
+            font-weight: bold; 
+            text-transform: uppercase; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 4px; 
+            text-align: center;
+            white-space: normal;      /* Enables wrapping */
+            word-break: break-word;   /* Safely wraps very long unbreakable strings */
+            line-height: 1.1;         /* Tighter line spacing for stacked words */
+        }
         
         /* ISSUES BLOCK */
         .header-cell.iss-details { flex: 2; min-width: 300px; font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; border-right: 1px solid #1b5e20; }
@@ -76,16 +78,14 @@
         .row-details::-webkit-scrollbar { height: 5px; }
         .row-details::-webkit-scrollbar-thumb { background: #b0bec5; border-radius: 4px; }
         
-        /* Action Toggles */
         .expand-btn { cursor: pointer; color: white; background: #4caf50; border: 1px solid #1b5e20; border-radius: 3px; padding: 1px 4px; font-weight: bold; font-size: 11px; margin-left: 4px; user-select: none; display: flex; align-items: center;}
         .expand-btn:hover { background: #1b5e20; }
 
-        /* Boundaries */
         .divider-right { border-right: 3px solid #b0bec5 !important; }
         .frozen-group-bar .divider-right, .frozen-col-bar .divider-right { border-right: 2px solid #4caf50 !important; }
         .loading-text { text-align: center; padding: 30px; color: #555; font-weight: bold; font-size: 18px; }
 
-        /* GLOBAL GATE CONFIG TOGGLES */
+        /* GLOBAL CONFIG TOGGLES */
         body.hide-l2-gate .l2-gate-col { display: none !important; }
         body.hide-l3-gate .l3-gate-col { display: none !important; }
         body.hide-l4-gate .l4-gate-col { display: none !important; }
@@ -131,36 +131,24 @@
                     <div class="title-wrap"><span class="col-title" data-original="Asset">Asset</span> <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span></div>
                 </div>
                 
-                <div class="header-cell col-single">
-                    <div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span></div>
-                </div>
-                <div class="header-cell col-single l2-gate-col">
-                    <div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div>
-                </div>
+                <div class="header-cell col-single"><div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span></div></div>
+                <div class="header-cell col-single l2-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l2-supp-header">
                     <div class="title-wrap"><span class="col-title" data-original="Support CLs">Support CLs</span><span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span></div>
                     <div class="expand-btn" data-target="l2-supp" onclick="toggleExpansion('l2')">+</div>
                 </div>
                 <div class="header-cell col-details l2-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l2-supp-details cl-cell divider-right">Supp 10</div>
                 
-                <div class="header-cell col-single">
-                    <div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div>
-                </div>
-                <div class="header-cell col-single l3-gate-col">
-                    <div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div>
-                </div>
+                <div class="header-cell col-single"><div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div></div>
+                <div class="header-cell col-single l3-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l3-supp-header">
                     <div class="title-wrap"><span class="col-title" data-original="Support CLs">Support CLs</span><span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span></div>
                     <div class="expand-btn" data-target="l3-supp" onclick="toggleExpansion('l3')">+</div>
                 </div>
                 <div class="header-cell col-details l3-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l3-supp-details cl-cell divider-right">Supp 10</div>
                 
-                <div class="header-cell col-single">
-                    <div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div>
-                </div>
-                <div class="header-cell col-single l4-gate-col">
-                    <div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="8" onclick="toggleFilter(event, 8)">▼</span></div>
-                </div>
+                <div class="header-cell col-single"><div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div></div>
+                <div class="header-cell col-single l4-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="8" onclick="toggleFilter(event, 8)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l4-supp-header">
                     <div class="title-wrap"><span class="col-title" data-original="Support CLs">Support CLs</span><span class="filter-icon" data-col="9" onclick="toggleFilter(event, 9)">▼</span></div>
                     <div class="expand-btn" data-target="l4-supp" onclick="toggleExpansion('l4')">+</div>
@@ -184,19 +172,33 @@
 <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbwcZdFdg90pf2LfQzbEsLf2WRIzMuC1gsB6hsaBMAx05PJmzkXESTGWPfPUa_8CiHcfiw/exec'; 
 
-    let globalConfig = { showL2Gate: true, showL3Gate: true, showL4Gate: true };
+    let globalConfig = { 
+        showL2Gate: true, showL3Gate: true, showL4Gate: true,
+        openStatuses: ['open', 'in progress', 'assigned', 'pending'],
+        closedStatuses: ['closed', 'complete', 'verified', 'cxa verified']
+    };
+
+    // Helper to see if a status matches our custom arrays
+    function isStatusMatch(statusString, matchArray) {
+        const s = statusString.toLowerCase();
+        return matchArray.some(matchItem => s.includes(matchItem));
+    }
 
     function getColorClass(value) {
         if (!value || value === "N/A" || value === "") return 'bg-grey';
         let lowerVal = value.toString().toLowerCase();
-        if (lowerVal.includes('complete') || lowerVal.includes('verified')) return 'bg-green';
-        if (lowerVal.includes('in progress') || lowerVal.includes('assigned')) return 'bg-yellow';
+        
+        // Dynamically references the lists provided from Google Sheets
+        if (isStatusMatch(lowerVal, globalConfig.closedStatuses)) return 'bg-green';
+        if (isStatusMatch(lowerVal, globalConfig.openStatuses)) return 'bg-yellow';
+        
         if (lowerVal.includes('no cl') || lowerVal.includes('no l4') || lowerVal.includes('no l3')) return 'bg-grey';
         if (!isNaN(lowerVal)) {
             let num = parseFloat(lowerVal);
             if (num === 0) return 'bg-filled';
             if (num > 0) return 'bg-red';
         }
+        if (lowerVal.includes('issue') || lowerVal.includes('gap')) return 'bg-red';
         return 'bg-grey';
     }
 
@@ -207,11 +209,11 @@
             const match = rawVal.match(/(.+?)\s*\((.+)\)/);
             if (match) {
                 id = match[1]; status = match[2];
-                const s = status.toLowerCase();
-                if (s.includes('closed') || s.includes('complete') || s.includes('verified')) bgClass = 'bg-green';
-                else if (s.includes('open') || s.includes('progress') || s.includes('assigned') || s.includes('pending')) bgClass = 'bg-yellow';
-                else if (s.includes('issue') || s.includes('gap') || s.includes('high')) bgClass = 'bg-red';
-                else if (s.includes('no cl')) bgClass = 'bg-grey';
+                // Apply dynamic settings colorization
+                if (isStatusMatch(status, globalConfig.closedStatuses)) bgClass = 'bg-green';
+                else if (isStatusMatch(status, globalConfig.openStatuses)) bgClass = 'bg-yellow';
+                else if (status.toLowerCase().includes('issue') || status.toLowerCase().includes('gap') || status.toLowerCase().includes('high')) bgClass = 'bg-red';
+                else if (status.toLowerCase().includes('no cl')) bgClass = 'bg-grey';
             } else { id = rawVal; status = 'Unknown'; }
         }
         if (id === '') {
@@ -249,7 +251,8 @@
             if (val && val !== 'N/A' && val !== 'Clear' && val.toString().trim() !== '') {
                 const match = val.toString().match(/(.+?)\s*\((.+)\)/);
                 if (match) {
-                    if (!match[2].toLowerCase().includes('closed') && !match[2].toLowerCase().includes('complete') && !match[2].toLowerCase().includes('verified') && !match[2].toLowerCase().includes('no cl')) {
+                    // Logic: If it is not expressly in the "Closed" list, it is considered open/active
+                    if (!isStatusMatch(match[2], globalConfig.closedStatuses) && !match[2].toLowerCase().includes('no cl')) {
                         openIds.push(match[1].trim());
                     }
                 } else if (val.toString().toLowerCase() !== 'no cl' && val.toString().toLowerCase() !== 'unknown') {
@@ -268,7 +271,7 @@
             if (val && val !== 'N/A' && val !== 'Clear' && val.toString().trim() !== '') {
                 const match = val.toString().match(/(.+?)\s*\((.+)\)/);
                 if (match) {
-                    if (!match[2].toLowerCase().includes('closed') && !match[2].toLowerCase().includes('complete') && !match[2].toLowerCase().includes('verified')) {
+                    if (!isStatusMatch(match[2], globalConfig.closedStatuses)) {
                         openIds.push(match[1].trim());
                     }
                 } else if (val.toString().toLowerCase() !== 'unknown') {
@@ -286,7 +289,10 @@
             const payload = await response.json(); 
             
             const rows = payload.data || [];
-            globalConfig = payload.config || globalConfig; 
+            // Merge custom config arrays directly from Google Sheets
+            if (payload.config) {
+                globalConfig = { ...globalConfig, ...payload.config };
+            }
 
             if (!globalConfig.showL2Gate) document.body.classList.add('hide-l2-gate');
             else document.body.classList.remove('hide-l2-gate');
@@ -311,27 +317,26 @@
                 const l4Open = combineOpenSupportCLs(row, 'L4');
                 const issuesOpen = combineOpenIssues(row);
                 
-                // Using div.summary-cell allows CSS wrapping, keeping filter system fully functional via data-val
                 const rowHTML = `
                 <div class="cell-row">
                     <input type="text" class="filter-target group-asset divider-right bg-grey" value="${assetId}" readonly style="font-weight: bold;">
                     
                     <input type="text" class="filter-target col-single ${getColorClass(row['L2 Overall Status'])}" value="${row['L2 Overall Status'] || 'N/A'}" readonly>
                     ${renderStackedCell(row['L2 Gate CL 1'], 'col-single l2-gate-col')}
-                    <div class="filter-target col-single summary-cell l2-supp-summary divider-right ${getColorClass(l2Open.count)}" data-val="${l2Open.display}" title="${l2Open.display}">${l2Open.display}</div>
+                    <div class="filter-target col-single summary-cell l2-supp-summary divider-right ${getColorClass(l2Open.count)}" data-val="${l2Open.display}">${l2Open.display}</div>
                     ${render10SupportCells(row, 'L2')}
                     
                     <input type="text" class="filter-target col-single ${getColorClass(row['L3 Overall Status'])}" value="${row['L3 Overall Status'] || 'N/A'}" readonly>
                     ${renderStackedCell(row['L3 Gate CL 1'], 'col-single l3-gate-col')}
-                    <div class="filter-target col-single summary-cell l3-supp-summary divider-right ${getColorClass(l3Open.count)}" data-val="${l3Open.display}" title="${l3Open.display}">${l3Open.display}</div>
+                    <div class="filter-target col-single summary-cell l3-supp-summary divider-right ${getColorClass(l3Open.count)}" data-val="${l3Open.display}">${l3Open.display}</div>
                     ${render10SupportCells(row, 'L3')}
                     
                     <input type="text" class="filter-target col-single ${getColorClass(row['L4 Overall Status'])}" value="${row['L4 Overall Status'] || 'N/A'}" readonly>
                     ${renderStackedCell(row['L4 Gate CL 1'], 'col-single l4-gate-col')}
-                    <div class="filter-target col-single summary-cell l4-supp-summary divider-right ${getColorClass(l4Open.count)}" data-val="${l4Open.display}" title="${l4Open.display}">${l4Open.display}</div>
+                    <div class="filter-target col-single summary-cell l4-supp-summary divider-right ${getColorClass(l4Open.count)}" data-val="${l4Open.display}">${l4Open.display}</div>
                     ${render10SupportCells(row, 'L4')}
                     
-                    <div class="filter-target col-single summary-cell global-iss-summary ${getColorClass(issuesOpen.count)}" data-val="${issuesOpen.display}" title="${issuesOpen.display}">${issuesOpen.display}</div>
+                    <div class="filter-target col-single summary-cell global-iss-summary ${getColorClass(issuesOpen.count)}" data-val="${issuesOpen.display}">${issuesOpen.display}</div>
                     <div class="row-details col-details global-iss-details iss-details">
                         ${renderIssuesBlock(row)}
                     </div>
@@ -370,7 +375,6 @@
             summaryCells.forEach(el => el.classList.add('divider-right'));
         }
 
-        // Dynamically compute math taking gate config into account
         let baseFlex = globalConfig[`show${level.toUpperCase()}Gate`] ? 3 : 2;
         document.getElementById(`group-${level.toLowerCase()}`).style.flex = state ? (baseFlex + 10) : baseFlex;
     }
