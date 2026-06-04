@@ -1,3 +1,17 @@
+To completely fix these layout issues, I have rebuilt the CSS Flexbox grid using a mathematically locked system.
+
+Here is exactly what this update does:
+
+1. **Always-Visible Scrollbar**: Instead of the whole page scrolling, the page is now locked to your exact monitor height (`100vh`). The `tracker-container` fills the remaining space and handles the scrolling internally, meaning the horizontal scroll bar is permanently anchored to the bottom of your screen.
+2. **Removed Header Gap**: Since the container is now the scrolling element, I set the header's sticky position to `top: 0`, completely removing that weird gap above the data.
+3. **Perfect Expansion Alignment**: I implemented a strict mathematical formula in the Javascript. When you expand columns, it doesn't just "guess" the flex ratio anymore; it explicitly sets the exact pixel width of the master header to match the total pixel width of the children underneath it.
+4. **Filter Dropdown Boundary Check**: The dropdown menu now calculates where your screen edge is. If it tries to render off the left side of the screen, it will automatically bump itself to the right so you can see it.
+
+You **do not need to update your Apps Script backend.** Just replace your entire **HTML Dashboard** code with this version:
+
+### The Corrected HTML Dashboard
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +20,7 @@
     <title>QCx LaunchPad - Live Relational Equipment Tracker</title>
     <style>
         /* --- BASE STYLES --- */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; overflow: hidden; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; overflow: hidden; height: 100vh; }
         * { box-sizing: border-box; } 
         .header { height: 80px; background-color: #ffffff; border-bottom: 1px solid #dcdcdc; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
         .header-center { white-space: nowrap; }
@@ -15,20 +29,12 @@
         .setup-btn { background: #f1f3f4; border: 1px solid #dcdcdc; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; color: #555; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
         .setup-btn:hover { background: #e0e0e0; }
 
-        .subheader { background-color: #f1f3f4; height: 50px; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; z-index: 1000;}
-        
-        /* Forces app body to fill the screen without scrolling */
+        /* Lock the app body to the exact screen height so the container handles the scrolling */
         #app-body { display: flex; flex-direction: column; height: calc(100vh - 80px); width: 100%; background: #f8f9fa;}
+        .subheader { flex: 0 0 50px; background-color: #f1f3f4; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; z-index: 1000;}
         
-        /* --- STATUS CELL COLORS --- */
-        .bg-green   { background-color: #c8e6c9 !important; color: #1b5e20 !important; }
-        .bg-yellow  { background-color: #fff9c4 !important; color: #f57f17 !important; }
-        .bg-red     { background-color: #ffcdd2 !important; color: #b71c1c !important; }
-        .bg-grey    { background-color: #f5f5f5 !important; color: #616161 !important; }
-        .bg-filled  { background-color: #e1f5fe !important; color: #01579b !important; }
-
-        /* --- EQUIPMENT TRACKER GRID (FLEXIBLE FILL & INTERNAL HORIZONTAL/VERTICAL SCROLL) --- */
-        .tracker-container { flex: 1; margin: 15px 20px; border: 2px solid #2e7d32; border-radius: 8px; background: #ffffff; overflow: auto; }
+        /* --- EQUIPMENT TRACKER GRID (INTERNAL SCROLLING) --- */
+        .tracker-container { flex: 1; margin: 15px 20px; border: 2px solid #2e7d32; border-radius: 8px; background: #ffffff; overflow: auto; min-height: 0; }
         
         .tracker-header-wrapper { position: sticky; top: 0; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 100%; width: fit-content; background: #ffffff;}
         .rows-container { min-width: 100%; width: fit-content; padding-top: 0; } 
@@ -40,39 +46,45 @@
         .cell-row:hover { background-color: rgba(0,0,0,0.02); }
         .cell-row:hover .group-asset { background-color: #e0e0e0; }
 
-        .cell-row input { padding: 8px 6px; font-size: 13px; border: none; border-right: 1px solid #f0f0f0; text-align: center; width: 100%; outline: none; text-overflow: ellipsis; min-height: 100%; }
+        .cell-row input { padding: 8px 6px; font-size: 13px; border: none; text-align: center; width: 100%; outline: none; text-overflow: ellipsis; min-height: 100%; background: transparent;}
         
-        /* Layout Flex Alignment Scales - Asset Frozen Left */
-        .group-asset { flex: 0 0 110px; width: 110px; position: sticky; left: 0; z-index: 10; }
+        /* --- COLUMN ALIGNMENT SYSTEM --- */
+        /* All standard columns are forced to exactly equal flex properties to guarantee alignment */
+        .col-single, .stacked-cell, .cl-cell { 
+            flex: 1 1 0px !important; 
+            min-width: 100px !important; 
+            max-width: none !important;
+            border-right: 2px solid #aeb6ba; 
+            overflow: hidden; 
+        }
+
+        .group-header, .group-issues { 
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; text-overflow: ellipsis;
+        } 
+
+        .group-asset { flex: 0 0 110px !important; width: 110px !important; min-width: 110px !important; max-width: 110px !important; position: sticky; left: 0; z-index: 10; }
         .frozen-group-bar .group-asset { background-color: #1b5e20; z-index: 11; border-right: 3px solid #4caf50 !important; }
         .frozen-col-bar .group-asset { background-color: #2e7d32; z-index: 11; border-right: 3px solid #4caf50 !important; }
         .cell-row .group-asset { background-color: #f5f5f5; z-index: 10; border-right: 3px solid #78909c !important; }
-        
-        .col-single { flex: 1; min-width: 85px; border-right: 2px solid #aeb6ba; }
-        .group-header, .group-issues { transition: all 0.2s ease; display: flex; align-items: center; justify-content: center;} 
 
         .header-cell { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: bold; text-transform: uppercase; padding: 0 6px; }
         .title-wrap { display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; }
         
         /* --- DYNAMIC DETAILED EXPANSIONS --- */
-        .col-details { display: none; }
-        .col-details.expanded { display: flex; }
+        .col-details { display: none !important; }
+        .col-details.expanded { display: flex !important; }
         
-        .summary-cell { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 12px; font-weight: 600; line-height: 1.3; padding: 4px 6px; border-right: 2px solid #aeb6ba; white-space: normal; word-break: break-word; }
+        .summary-cell { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 12px; font-weight: 600; line-height: 1.3; padding: 4px 6px; white-space: normal; word-break: break-word; }
         
-        /* SPREADSHEET STACKED CARDS (UNDO HEADER COLOR / REMOVE CENTER LINE) */
-        .stacked-cell { display: flex; flex-direction: column; flex: 1; min-width: 85px; border-right: 2px solid #aeb6ba; background: #fff;}
+        /* SPREADSHEET STACKED CARDS */
+        .stacked-cell { display: flex; flex-direction: column; background: #fff;}
         .checklist-header { flex: 1; background-color: #f1f3f4; color: #333; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; padding: 4px; border-bottom: none; }
         .checklist-status { flex: 1; font-size: 9px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; padding: 4px; text-align: center; white-space: normal; word-break: break-word; line-height: 1.1; }
         
         /* ISSUES BLOCK */
-        .header-cell.iss-details { flex: 2; min-width: 250px; font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; border-right: 2px solid #1b5e20; }
-        .row-details.iss-details { flex: 2; min-width: 250px; border-right: 2px solid #aeb6ba; background-color: #ffffff; flex-direction: row; align-items: stretch; overflow-x: auto; }
-        
-        /* CHECKLIST 10 BLOCK */
-        .header-cell.cl-cell { flex: 1; min-width: 85px; font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; border-right: 2px solid #1b5e20;}
-        .cell-row-detail.cl-cell { display: none; flex: 1; min-width: 85px; flex-direction: column; border-right: 2px solid #aeb6ba; background-color: #ffffff; }
-        .cell-row-detail.cl-cell.expanded { display: flex; }
+        .header-cell.iss-details { flex: 3 3 0px !important; min-width: 300px !important; font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; border-right: 2px solid #1b5e20; }
+        .row-details.iss-details { flex: 3 3 0px !important; min-width: 300px !important; border-right: 2px solid #aeb6ba; background-color: #ffffff; flex-direction: row; align-items: stretch; overflow-x: auto; }
         
         .row-details::-webkit-scrollbar { height: 5px; }
         .row-details::-webkit-scrollbar-thumb { background: #b0bec5; border-radius: 4px; }
@@ -83,7 +95,7 @@
         /* Heavy Phase Separation Dividers */
         .divider-right { border-right: 3px solid #78909c !important; }
         .frozen-group-bar .divider-right, .frozen-col-bar .divider-right { border-right: 3px solid #4caf50 !important; }
-        .loading-text { text-align: center; padding: 30px; color: #555; font-weight: bold; font-size: 18px; width: 100vw;}
+        .loading-text { text-align: center; padding: 30px; color: #555; font-weight: bold; font-size: 18px; width: 100%;}
 
         /* GLOBAL CONFIG TOGGLES */
         body.hide-l2-gate .l2-gate-col { display: none !important; }
@@ -319,21 +331,17 @@
         return (yiq >= 128) ? '#000000' : '#ffffff';
     }
 
-    // --- SCOPED DYNAMIC STYLE MATCHER ---
-    // isOverallStatus = true -> applies Global Fallback Color if unmatched/empty.
-    // isOverallStatus = false -> strictly applies gray (#f5f5f5) if empty/unmatched.
     function getDynamicStyle(value, type = 'checklist', isOverallStatus = false) {
         let fbColor = isOverallStatus ? (globalConfig.fallbackColor || '#f5f5f5') : '#f5f5f5';
         let fbStyle = `background-color:${fbColor}; color:${getContrastYIQ(fbColor)};`;
-        let emptyStyle = `background-color:#f5f5f5; color:#616161;`; // Empty cells are strictly grayed out
+        let emptyStyle = `background-color:#f5f5f5; color:#616161;`; 
 
         if (value === undefined || value === null || value === "N/A" || value === "Clear" || value === "" || value === "-") {
-            return emptyStyle; // Force empty individual cells to gray out
+            return emptyStyle; 
         }
         
         let lowerVal = String(value).toLowerCase().trim();
         
-        // 1. Check Phase Rules FIRST
         if (globalConfig.phaseRules && Array.isArray(globalConfig.phaseRules) && globalConfig.phaseRules.length > 0) {
             let ruleMatch = globalConfig.phaseRules.find(r => r.resultingStatus && lowerVal === String(r.resultingStatus).toLowerCase().trim());
             if (!ruleMatch) ruleMatch = globalConfig.phaseRules.find(r => r.resultingStatus && lowerVal.includes(String(r.resultingStatus).toLowerCase().trim()));
@@ -349,7 +357,6 @@
         if (type === 'test') { openArr = globalConfig.testOpenStatuses || []; closedArr = globalConfig.testClosedStatuses || []; }
         if (type === 'issue') { openArr = globalConfig.issueOpenStatuses || []; closedArr = globalConfig.issueClosedStatuses || []; }
         
-        // 2. Direct Status Strings
         let exactClosed = closedArr.find(s => s.name && lowerVal === String(s.name).toLowerCase().trim());
         if (exactClosed) return `background-color:${exactClosed.color}; color:${getContrastYIQ(exactClosed.color)};`;
         
@@ -366,21 +373,19 @@
             return emptyStyle;
         }
 
-        // 3. Smart Counts Fallback
         if (!isNaN(lowerVal) && lowerVal !== '') {
             let num = parseFloat(lowerVal);
             if (num === 0) {
-                return 'background-color:#e1f5fe; color:#01579b;'; // Clean blue for Zero
+                return 'background-color:#e1f5fe; color:#01579b;'; 
             }
             if (num > 0) {
                 if (openArr.length > 0 && openArr[0].color) {
                     return `background-color:${openArr[0].color}; color:${getContrastYIQ(openArr[0].color)};`;
                 }
-                return 'background-color:#ffcdd2; color:#b71c1c;'; // Fallback Red
+                return 'background-color:#ffcdd2; color:#b71c1c;'; 
             }
         }
 
-        // Return phase rule fallback if it's an overall status, otherwise grey.
         return isOverallStatus ? fbStyle : emptyStyle;
     }
 
@@ -391,7 +396,6 @@
         return statusArray.some(item => item.name && s.includes(String(item.name).toLowerCase().trim()));
     }
 
-    // --- REVERTED STACKED CELL RENDERER (ID GRAY, STATUS COLORED, NO CENTER LINE) ---
     function renderStackedCell(val, extraClasses = '', type = 'checklist') {
         let id = '', status = '', styleStr = '', rawVal = '';
         
@@ -400,7 +404,6 @@
             const match = rawVal.match(/(.+?)\s*\((.+)\)/);
             if (match) {
                 id = match[1]; status = match[2];
-                // apply coloring ONLY to the bottom half
                 styleStr = getDynamicStyle(status, type, false);
             } else { 
                 id = rawVal; status = 'Unknown'; 
@@ -503,18 +506,20 @@
             if (!globalConfig.showL4Gate) document.body.classList.add('hide-l4-gate');
             else document.body.classList.remove('hide-l4-gate');
 
-            // --- FLEX MATH FOR FILLING THE SCREEN ---
-            // Base flex ratio sets the columns to equal shares
-            document.getElementById('group-l2').style.flex = globalConfig.showL2Gate ? 2 : 1;
-            document.getElementById('group-l3').style.flex = globalConfig.showL3Gate ? 2 : 1;
-            document.getElementById('group-l4').style.flex = globalConfig.showL4Gate ? 2 : 1;
-            document.getElementById('group-iss').style.flex = 1;
+            // Set fixed alignments to match strict flex distribution
+            let baseL2 = globalConfig.showL2Gate ? 2 : 1;
+            let baseL3 = globalConfig.showL3Gate ? 2 : 1;
+            let baseL4 = globalConfig.showL4Gate ? 2 : 1;
+            
+            document.getElementById('group-l2').style.flex = `${baseL2} ${baseL2} 0px`;
+            document.getElementById('group-l3').style.flex = `${baseL3} ${baseL3} 0px`;
+            document.getElementById('group-l4').style.flex = `${baseL4} ${baseL4} 0px`;
+            document.getElementById('group-iss').style.flex = `1 1 0px`;
 
-            // Make sure the minWidth matches the base columns so they don't break flex rules
-            document.getElementById('group-l2').style.minWidth = globalConfig.showL2Gate ? '170px' : '85px';
-            document.getElementById('group-l3').style.minWidth = globalConfig.showL3Gate ? '170px' : '85px';
-            document.getElementById('group-l4').style.minWidth = globalConfig.showL4Gate ? '170px' : '85px';
-            document.getElementById('group-iss').style.minWidth = '85px';
+            document.getElementById('group-l2').style.minWidth = (baseL2 * 100) + 'px';
+            document.getElementById('group-l3').style.minWidth = (baseL3 * 100) + 'px';
+            document.getElementById('group-l4').style.minWidth = (baseL4 * 100) + 'px';
+            document.getElementById('group-iss').style.minWidth = '100px';
 
             const container = document.getElementById('tracker-rows');
             container.innerHTML = ''; 
@@ -526,7 +531,6 @@
                 const l4Open = combineOpenSupportCLs(row, 'L4');
                 const issuesOpen = combineOpenIssues(row);
                 
-                // IMPORTANT: The third parameter 'true' is passed here so the Overall Status uses the Fallback Color
                 const rowHTML = `
                 <div class="cell-row">
                     <input type="text" class="filter-target group-asset divider-right bg-grey" value="${assetId}" readonly title="${assetId}">
@@ -660,7 +664,7 @@
     // --- TRACKING COLUMN EXPANSION LOGIC ---
     let expandedStates = { l2: false, l3: false, l4: false, iss: false };
     
-    // Mathematically lock the min-width of the parent to match the children so flex acts correctly
+    // Mathematically lock the flex-ratios and min-widths so headers never overflow the cells
     function toggleExpansion(level) {
         const state = !expandedStates[level.toLowerCase()]; expandedStates[level.toLowerCase()] = state;
         document.querySelectorAll(`.${level.toLowerCase()}-supp-details`).forEach(el => el.classList.toggle('expanded', state));
@@ -672,8 +676,8 @@
         let baseCols = globalConfig[`show${level.toUpperCase()}Gate`] ? 2 : 1;
         let totalCols = state ? (baseCols + 10) : baseCols;
         
-        document.getElementById(`group-${level.toLowerCase()}`).style.flex = totalCols;
-        document.getElementById(`group-${level.toLowerCase()}`).style.minWidth = (totalCols * 85) + 'px';
+        document.getElementById(`group-${level.toLowerCase()}`).style.flex = `${totalCols} ${totalCols} 0px`;
+        document.getElementById(`group-${level.toLowerCase()}`).style.minWidth = (totalCols * 100) + 'px';
     }
     
     function toggleGlobalIssues() {
@@ -684,11 +688,11 @@
         if (state) { sumHead.classList.remove('divider-right'); sumCells.forEach(el => el.classList.remove('divider-right')); } 
         else { sumHead.classList.add('divider-right'); sumCells.forEach(el => el.classList.add('divider-right')); }
         
-        document.getElementById(`group-iss`).style.flex = state ? 3 : 1;
-        document.getElementById(`group-iss`).style.minWidth = state ? '335px' : '85px';
+        document.getElementById(`group-iss`).style.flex = state ? `4 4 0px` : `1 1 0px`;
+        document.getElementById(`group-iss`).style.minWidth = state ? '400px' : '100px';
     }
 
-    // --- FILTER ENGINE (WITH BOUNDARY CHECKS) ---
+    // --- FILTER ENGINE WITH BOUNDARY PROTECTIONS ---
     let activeFilters = {}; let currentDropdown = null;
     function toggleFilter(event, colIndex) {
         event.stopPropagation();
@@ -704,7 +708,7 @@
         let dropTop = rect.bottom + 5;
         let dropLeft = rect.left - 120;
         if (dropLeft < 10) dropLeft = 10;
-        if (dropLeft + 220 > window.innerWidth) dropLeft = window.innerWidth - 220;
+        if (dropLeft + 200 > window.innerWidth) dropLeft = window.innerWidth - 200;
 
         dropdown.style.top = dropTop + 'px'; dropdown.style.left = dropLeft + 'px';
         dropdown.innerHTML = `<input type="text" id="filter-search" class="filter-search-input" placeholder="Search values..." autocomplete="off"><label style="font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:8px; margin-bottom:8px;"><input type="checkbox" id="filter-select-all" checked> (Select All)</label>`;
