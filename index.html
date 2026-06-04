@@ -1,17 +1,3 @@
-To completely fix these layout issues, I have rebuilt the CSS Flexbox grid using a mathematically locked system.
-
-Here is exactly what this update does:
-
-1. **Always-Visible Scrollbar**: Instead of the whole page scrolling, the page is now locked to your exact monitor height (`100vh`). The `tracker-container` fills the remaining space and handles the scrolling internally, meaning the horizontal scroll bar is permanently anchored to the bottom of your screen.
-2. **Removed Header Gap**: Since the container is now the scrolling element, I set the header's sticky position to `top: 0`, completely removing that weird gap above the data.
-3. **Perfect Expansion Alignment**: I implemented a strict mathematical formula in the Javascript. When you expand columns, it doesn't just "guess" the flex ratio anymore; it explicitly sets the exact pixel width of the master header to match the total pixel width of the children underneath it.
-4. **Filter Dropdown Boundary Check**: The dropdown menu now calculates where your screen edge is. If it tries to render off the left side of the screen, it will automatically bump itself to the right so you can see it.
-
-You **do not need to update your Apps Script backend.** Just replace your entire **HTML Dashboard** code with this version:
-
-### The Corrected HTML Dashboard
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
