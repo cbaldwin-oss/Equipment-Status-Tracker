@@ -41,12 +41,11 @@
         .col-details { display: none; }
         .col-details.expanded { display: flex; }
         
-        .summary-cell { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 11px; line-height: 1.3; padding: 4px 6px; border-right: 1px solid #f0f0f0; white-space: normal; word-break: break-word; }
+        .summary-cell { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 12px; font-weight: 600; line-height: 1.3; padding: 4px 6px; border-right: 1px solid #f0f0f0; white-space: normal; word-break: break-word; }
         
         /* SPREADSHEET STACKED CARDS */
-        /* REMOVED background defaults so inline styles govern the entire block */
-        .stacked-cell { display: flex; flex-direction: column; min-width: 80px; border-right: 1px solid #e0e0e0; flex: 1;}
-        .checklist-header { flex: 1; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgba(0,0,0,0.15); padding: 4px; }
+        .stacked-cell { display: flex; flex-direction: column; min-width: 80px; border-right: 1px solid #e0e0e0; flex: 1; }
+        .checklist-header { flex: 1; background-color: #f1f3f4; color: #333; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgba(0,0,0,0.15); padding: 4px; }
         .checklist-status { flex: 1; font-size: 9px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; padding: 4px; text-align: center; white-space: normal; word-break: break-word; line-height: 1.1; }
         
         /* ISSUES BLOCK */
@@ -139,36 +138,29 @@
             <div class="frozen-col-bar" id="main-column-headers">
                 <div class="header-cell group-asset divider-right"><div class="title-wrap"><span class="col-title" data-original="Asset">Asset</span> <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span></div></div>
                 
-                <!-- L2 -->
-                <div class="header-cell col-single"><div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span></div></div>
-                <div class="header-cell col-single l2-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div></div>
+                <div class="header-cell col-single l2-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l2-supp-header">
-                    <div class="title-wrap"><span class="col-title" data-original="Support CLs">Support CLs</span><span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span></div>
+                    <div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div>
                     <div class="expand-btn" data-target="l2-supp" onclick="toggleExpansion('l2')">+</div>
                 </div>
                 <div class="header-cell col-details l2-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l2-supp-details cl-cell divider-right">Supp 10</div>
                 
-                <!-- L3 -->
-                <div class="header-cell col-single"><div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div></div>
-                <div class="header-cell col-single l3-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div></div>
+                <div class="header-cell col-single l3-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l3-supp-header">
-                    <div class="title-wrap"><span class="col-title" data-original="Support CLs">Support CLs</span><span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span></div>
+                    <div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div>
                     <div class="expand-btn" data-target="l3-supp" onclick="toggleExpansion('l3')">+</div>
                 </div>
                 <div class="header-cell col-details l3-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l3-supp-details cl-cell divider-right">Supp 10</div>
                 
-                <!-- L4 -->
-                <div class="header-cell col-single"><div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div></div>
-                <div class="header-cell col-single l4-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="8" onclick="toggleFilter(event, 8)">▼</span></div></div>
+                <div class="header-cell col-single l4-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l4-supp-header">
-                    <div class="title-wrap"><span class="col-title" data-original="Support CLs">Support CLs</span><span class="filter-icon" data-col="9" onclick="toggleFilter(event, 9)">▼</span></div>
+                    <div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span></div>
                     <div class="expand-btn" data-target="l4-supp" onclick="toggleExpansion('l4')">+</div>
                 </div>
                 <div class="header-cell col-details l4-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l4-supp-details cl-cell divider-right">Supp 10</div>
 
-                <!-- ISSUES -->
                 <div class="header-cell col-single" id="global-iss-header">
-                    <div class="title-wrap"><span class="col-title" data-original="Open Issues">Open Issues</span><span class="filter-icon" data-col="10" onclick="toggleFilter(event, 10)">▼</span></div>
+                    <div class="title-wrap"><span class="col-title" data-original="Open Issues">Open Issues</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div>
                     <div class="expand-btn" data-target="global-iss" onclick="toggleGlobalIssues()">+</div>
                 </div>
                 <div class="header-cell col-details global-iss-details iss-details">Asset Ticket Backlog (1-32)</div>
@@ -178,7 +170,6 @@
     </div>
 </div>
 
-<!-- SETTINGS MODAL -->
 <div class="modal-overlay" id="settings-modal">
     <div class="modal-box">
         <div class="modal-header">
@@ -186,7 +177,6 @@
             <button class="close-btn" onclick="closeSettingsModal()">×</button>
         </div>
         <div class="modal-body">
-            <!-- CHECKLISTS -->
             <div class="settings-col">
                 <h3>Checklists (L2 & L3)</h3>
                 <div class="status-group">
@@ -201,7 +191,6 @@
                 </div>
             </div>
             
-            <!-- TESTS -->
             <div class="settings-col">
                 <h3>Tests (L4)</h3>
                 <div class="status-group">
@@ -216,7 +205,6 @@
                 </div>
             </div>
 
-            <!-- ISSUES -->
             <div class="settings-col">
                 <h3>Global Issues</h3>
                 <div class="status-group">
@@ -274,13 +262,7 @@
         match = openArr.find(s => lowerVal.includes(s.name.toLowerCase()));
         if (match) return `background-color:${match.color}; color:${getContrastYIQ(match.color)};`;
         
-        // Fallbacks
         if (lowerVal.includes('no cl') || lowerVal.includes('no l4') || lowerVal.includes('no l3')) return 'background-color:#f5f5f5; color:#616161;';
-        if (!isNaN(lowerVal)) {
-            let num = parseFloat(lowerVal);
-            if (num === 0) return 'background-color:#e1f5fe; color:#01579b;'; 
-            if (num > 0) return 'background-color:#ffcdd2; color:#b71c1c;';   
-        }
         return 'background-color:#f5f5f5; color:#616161;';
     }
 
@@ -289,7 +271,6 @@
         return statusArray.some(item => s.includes(item.name.toLowerCase()));
     }
 
-    // UPDATED: Now sets the entire stacked block wrapper to the correct color
     function renderStackedCell(val, extraClasses = '', type = 'checklist') {
         let id = '', status = '', styleStr = 'background-color:#f5f5f5; color:transparent;', rawVal = '';
         if (val && val !== 'N/A' && val !== 'Clear') {
@@ -389,9 +370,9 @@
             if (!globalConfig.showL4Gate) document.body.classList.add('hide-l4-gate');
             else document.body.classList.remove('hide-l4-gate');
 
-            document.getElementById('group-l2').style.flex = globalConfig.showL2Gate ? 3 : 2;
-            document.getElementById('group-l3').style.flex = globalConfig.showL3Gate ? 3 : 2;
-            document.getElementById('group-l4').style.flex = globalConfig.showL4Gate ? 3 : 2;
+            document.getElementById('group-l2').style.flex = globalConfig.showL2Gate ? 2 : 1;
+            document.getElementById('group-l3').style.flex = globalConfig.showL3Gate ? 2 : 1;
+            document.getElementById('group-l4').style.flex = globalConfig.showL4Gate ? 2 : 1;
 
             const container = document.getElementById('tracker-rows');
             container.innerHTML = ''; 
@@ -407,22 +388,19 @@
                 <div class="cell-row">
                     <input type="text" class="filter-target group-asset divider-right bg-grey" value="${assetId}" readonly style="font-weight: bold;">
                     
-                    <input type="text" class="filter-target col-single" style="${getDynamicStyle(row['L2 Overall Status'], 'checklist')}" value="${row['L2 Overall Status'] || 'N/A'}" readonly>
                     ${renderStackedCell(row['L2 Gate CL 1'], 'col-single l2-gate-col', 'checklist')}
-                    <div class="filter-target col-single summary-cell l2-supp-summary divider-right" style="${getDynamicStyle(l2Open.count)}" data-val="${l2Open.display}">${l2Open.display}</div>
+                    <div class="filter-target col-single summary-cell l2-supp-summary divider-right" style="${getDynamicStyle(row['L2 Overall Status'], 'checklist')}" data-val="${row['L2 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l2Open.display}">${row['L2 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L2')}
                     
-                    <input type="text" class="filter-target col-single" style="${getDynamicStyle(row['L3 Overall Status'], 'checklist')}" value="${row['L3 Overall Status'] || 'N/A'}" readonly>
                     ${renderStackedCell(row['L3 Gate CL 1'], 'col-single l3-gate-col', 'checklist')}
-                    <div class="filter-target col-single summary-cell l3-supp-summary divider-right" style="${getDynamicStyle(l3Open.count)}" data-val="${l3Open.display}">${l3Open.display}</div>
+                    <div class="filter-target col-single summary-cell l3-supp-summary divider-right" style="${getDynamicStyle(row['L3 Overall Status'], 'checklist')}" data-val="${row['L3 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l3Open.display}">${row['L3 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L3')}
                     
-                    <input type="text" class="filter-target col-single" style="${getDynamicStyle(row['L4 Overall Status'], 'test')}" value="${row['L4 Overall Status'] || 'N/A'}" readonly>
                     ${renderStackedCell(row['L4 Gate CL 1'], 'col-single l4-gate-col', 'test')}
-                    <div class="filter-target col-single summary-cell l4-supp-summary divider-right" style="${getDynamicStyle(l4Open.count)}" data-val="${l4Open.display}">${l4Open.display}</div>
+                    <div class="filter-target col-single summary-cell l4-supp-summary divider-right" style="${getDynamicStyle(row['L4 Overall Status'], 'test')}" data-val="${row['L4 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l4Open.display}">${row['L4 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L4')}
                     
-                    <div class="filter-target col-single summary-cell global-iss-summary" style="${getDynamicStyle(issuesOpen.count)}" data-val="${issuesOpen.display}">${issuesOpen.display}</div>
+                    <div class="filter-target col-single summary-cell global-iss-summary" style="${getDynamicStyle(issuesOpen.count, 'issue')}" data-val="${issuesOpen.display}">${issuesOpen.display}</div>
                     <div class="row-details col-details global-iss-details iss-details">
                         ${renderIssuesBlock(row)}
                     </div>
@@ -499,9 +477,11 @@
         const sumHead = document.getElementById(`${level.toLowerCase()}-supp-header`), sumCells = document.querySelectorAll(`.${level.toLowerCase()}-supp-summary`);
         if (state) { sumHead.classList.remove('divider-right'); sumCells.forEach(el => el.classList.remove('divider-right')); } 
         else { sumHead.classList.add('divider-right'); sumCells.forEach(el => el.classList.add('divider-right')); }
-        let baseFlex = globalConfig[`show${level.toUpperCase()}Gate`] ? 3 : 2;
+        
+        let baseFlex = globalConfig[`show${level.toUpperCase()}Gate`] ? 2 : 1;
         document.getElementById(`group-${level.toLowerCase()}`).style.flex = state ? (baseFlex + 10) : baseFlex;
     }
+    
     function toggleGlobalIssues() {
         const state = !expandedStates.iss; expandedStates.iss = state;
         document.querySelectorAll(`.global-iss-details`).forEach(el => el.classList.toggle('expanded', state));
