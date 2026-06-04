@@ -18,6 +18,13 @@
         .subheader { position: sticky; top: 0; z-index: 1000; background-color: #f1f3f4; height: 50px; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; }
         #app-body { height: calc(100vh - 80px); width: 100%; overflow-y: auto; background: #fff;}
         
+        /* --- STATUS CELL COLORS --- */
+        .bg-green   { background-color: #c8e6c9 !important; color: #1b5e20 !important; }
+        .bg-yellow  { background-color: #fff9c4 !important; color: #f57f17 !important; }
+        .bg-red     { background-color: #ffcdd2 !important; color: #b71c1c !important; }
+        .bg-grey    { background-color: #f5f5f5 !important; color: #616161 !important; }
+        .bg-filled  { background-color: #e1f5fe !important; color: #01579b !important; }
+
         /* --- EQUIPMENT TRACKER GRID --- */
         .tracker-container { width: 95%; margin: 20px auto; border: 2px solid #2e7d32; border-radius: 8px; background: #ffffff; overflow-x: auto; }
         .tracker-header-wrapper { position: sticky; top: 51px; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 1300px; background: #ffffff;}
@@ -43,9 +50,9 @@
         
         .summary-cell { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 11px; line-height: 1.3; padding: 4px 6px; border-right: 1px solid #f0f0f0; white-space: normal; word-break: break-word; }
         
-        /* SPREADSHEET STACKED CARDS */
-        .stacked-cell { display: flex; flex-direction: column; min-width: 80px; border-right: 1px solid #e0e0e0; flex: 1;}
-        .checklist-header { flex: 1; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgba(0,0,0,0.15); padding: 4px; }
+        /* SPREADSHEET STACKED CARDS (UPDATED BORDERS AND HEADERS) */
+        .stacked-cell { display: flex; flex-direction: column; min-width: 80px; border-right: 2px solid #aeb6ba; flex: 1; background: #fff;}
+        .checklist-header { flex: 1; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; padding: 4px; border-bottom: none; background-color: #f1f3f4; color: #333; }
         .checklist-status { flex: 1; font-size: 9px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; padding: 4px; text-align: center; white-space: normal; word-break: break-word; line-height: 1.1; }
         
         /* ISSUES BLOCK */
@@ -81,7 +88,6 @@
         
         .modal-body { padding: 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; }
         
-        /* NEW: Global Config Wrapper */
         .global-config-wrap { padding: 15px; background: #e8f5e9; border-radius: 6px; border: 1px solid #c8e6c9; display: flex; align-items: center; gap: 15px; }
         .global-config-wrap h3 { margin: 0; color: #1b5e20; font-size: 16px; }
 
@@ -197,7 +203,7 @@
         <div class="modal-body">
             
             <div class="global-config-wrap">
-                <h3>Global Fallback Color <span style="font-size:12px; font-weight:normal; color:#555;">(For Unknown / Blank Data)</span></h3>
+                <h3>Global Phase Fallback Color <span style="font-size:12px; font-weight:normal; color:#555;">(For empty Overall Statuses)</span></h3>
                 <input type="color" id="fallback-color-picker" value="#f5f5f5" style="width: 40px; height: 30px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px;">
             </div>
 
@@ -301,13 +307,17 @@
         return (yiq >= 128) ? '#000000' : '#ffffff';
     }
 
-    // --- BULLETPROOFED DYNAMIC STYLE MATCHER ---
-    function getDynamicStyle(value, type = 'checklist') {
-        let fbColor = globalConfig.fallbackColor || '#f5f5f5';
+    // --- SCOPED DYNAMIC STYLE MATCHER ---
+    // If isOverallStatus = true, blanks will fall back to the Custom User Settings Color
+    // If isOverallStatus = false (Checklists/Tests/Issues), blanks fall back strictly to gray
+    function getDynamicStyle(value, type = 'checklist', isOverallStatus = false) {
+        let fbColor = isOverallStatus ? (globalConfig.fallbackColor || '#f5f5f5') : '#f5f5f5';
         let fbStyle = `background-color:${fbColor}; color:${getContrastYIQ(fbColor)};`;
+        let emptyStyle = `background-color:#f5f5f5; color:#616161;`;
+        let fallbackToUse = isOverallStatus ? fbStyle : emptyStyle;
 
         if (value === undefined || value === null || value === "N/A" || value === "Clear" || value === "") {
-            return fbStyle;
+            return fallbackToUse;
         }
         let lowerVal = String(value).toLowerCase().trim();
         
@@ -327,7 +337,7 @@
         if (type === 'test') { openArr = globalConfig.testOpenStatuses || []; closedArr = globalConfig.testClosedStatuses || []; }
         if (type === 'issue') { openArr = globalConfig.issueOpenStatuses || []; closedArr = globalConfig.issueClosedStatuses || []; }
         
-        // 2. Direct Status Strings
+        // 2. Direct Status Strings (Exact match first, partial match second)
         let exactClosed = closedArr.find(s => s.name && lowerVal === String(s.name).toLowerCase().trim());
         if (exactClosed) return `background-color:${exactClosed.color}; color:${getContrastYIQ(exactClosed.color)};`;
         
@@ -341,10 +351,10 @@
         if (matchOpen) return `background-color:${matchOpen.color}; color:${getContrastYIQ(matchOpen.color)};`;
         
         if (lowerVal.includes('no cl') || lowerVal.includes('no l4') || lowerVal.includes('no l3')) {
-            return fbStyle;
+            return emptyStyle;
         }
 
-        // 3. Smart Counts Fallback (For the Open Items lists rendering counts)
+        // 3. Smart Counts Fallback (For the Open Items lists rendering numeric counts)
         if (!isNaN(lowerVal) && lowerVal !== '') {
             let num = parseFloat(lowerVal);
             if (num === 0) {
@@ -358,7 +368,7 @@
             }
         }
 
-        return fbStyle;
+        return fallbackToUse;
     }
 
     function isStatusMatch(statusString, statusArray) {
@@ -371,26 +381,25 @@
     function renderStackedCell(val, extraClasses = '', type = 'checklist') {
         let id = '', status = '', styleStr = '', rawVal = '';
         
-        let fbColor = globalConfig.fallbackColor || '#f5f5f5';
-        let fbStyle = `background-color:${fbColor}; color:transparent;`;
-
         if (val && val !== 'N/A' && val !== 'Clear') {
             rawVal = String(val).trim();
             const match = rawVal.match(/(.+?)\s*\((.+)\)/);
             if (match) {
                 id = match[1]; status = match[2];
-                styleStr = getDynamicStyle(status, type);
-            } else { id = rawVal; status = 'Unknown'; }
+                // Pass false here because individual checklists shouldn't get the phase fallback color
+                styleStr = getDynamicStyle(status, type, false);
+            } else { id = rawVal; status = 'Unknown'; styleStr = getDynamicStyle('Unknown', type, false); }
         }
+        
         if (id === '') {
-            return `<div class="filter-target stacked-cell ${extraClasses}" data-val="" style="${fbStyle}">
-                        <div class="checklist-header" style="border-bottom:none;">-</div>
-                        <div class="checklist-status">-</div>
+            return `<div class="filter-target stacked-cell ${extraClasses}" data-val="" style="background-color:#f5f5f5;">
+                        <div class="checklist-header" style="color:#cfd8dc; background-color:#f5f5f5;">-</div>
+                        <div class="checklist-status" style="color:transparent; background-color:#f5f5f5;">-</div>
                     </div>`;
         } else {
-            return `<div class="filter-target stacked-cell ${extraClasses}" data-val="${rawVal}" style="${styleStr}">
+            return `<div class="filter-target stacked-cell ${extraClasses}" data-val="${rawVal}">
                         <div class="checklist-header">${id}</div>
-                        <div class="checklist-status">${status}</div>
+                        <div class="checklist-status" style="${styleStr}">${status}</div>
                     </div>`;
         }
     }
@@ -491,23 +500,24 @@
                 const l4Open = combineOpenSupportCLs(row, 'L4');
                 const issuesOpen = combineOpenIssues(row);
                 
+                // IMPORTANT: The third parameter 'true' is passed here so the Overall Status uses the Fallback Color
                 const rowHTML = `
                 <div class="cell-row">
                     <input type="text" class="filter-target group-asset divider-right bg-grey" value="${assetId}" readonly style="font-weight: bold;">
                     
                     ${renderStackedCell(row['L2 Gate CL 1'], 'col-single l2-gate-col', 'checklist')}
-                    <div class="filter-target col-single summary-cell l2-supp-summary divider-right" style="${getDynamicStyle(row['L2 Overall Status'], 'checklist')}" data-val="${row['L2 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l2Open.display}">${row['L2 Overall Status'] || 'N/A'}</div>
+                    <div class="filter-target col-single summary-cell l2-supp-summary divider-right" style="${getDynamicStyle(row['L2 Overall Status'], 'checklist', true)}" data-val="${row['L2 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l2Open.display}">${row['L2 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L2')}
                     
                     ${renderStackedCell(row['L3 Gate CL 1'], 'col-single l3-gate-col', 'checklist')}
-                    <div class="filter-target col-single summary-cell l3-supp-summary divider-right" style="${getDynamicStyle(row['L3 Overall Status'], 'checklist')}" data-val="${row['L3 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l3Open.display}">${row['L3 Overall Status'] || 'N/A'}</div>
+                    <div class="filter-target col-single summary-cell l3-supp-summary divider-right" style="${getDynamicStyle(row['L3 Overall Status'], 'checklist', true)}" data-val="${row['L3 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l3Open.display}">${row['L3 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L3')}
                     
                     ${renderStackedCell(row['L4 Gate CL 1'], 'col-single l4-gate-col', 'test')}
-                    <div class="filter-target col-single summary-cell l4-supp-summary divider-right" style="${getDynamicStyle(row['L4 Overall Status'], 'test')}" data-val="${row['L4 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l4Open.display}">${row['L4 Overall Status'] || 'N/A'}</div>
+                    <div class="filter-target col-single summary-cell l4-supp-summary divider-right" style="${getDynamicStyle(row['L4 Overall Status'], 'test', true)}" data-val="${row['L4 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l4Open.display}">${row['L4 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L4')}
                     
-                    <div class="filter-target col-single summary-cell global-iss-summary" style="${getDynamicStyle(issuesOpen.count, 'issue')}" data-val="${issuesOpen.display}">${issuesOpen.display}</div>
+                    <div class="filter-target col-single summary-cell global-iss-summary" style="${getDynamicStyle(issuesOpen.count, 'issue', false)}" data-val="${issuesOpen.display}">${issuesOpen.display}</div>
                     <div class="row-details col-details global-iss-details iss-details">
                         ${renderIssuesBlock(row)}
                     </div>
@@ -526,7 +536,6 @@
     function openSettingsModal() {
         document.getElementById('settings-modal').classList.add('active');
         
-        // Populate Fallback Color
         document.getElementById('fallback-color-picker').value = globalConfig.fallbackColor || '#f5f5f5';
 
         const map = {
