@@ -19,7 +19,7 @@
         #app-body { display: flex; flex-direction: column; height: calc(100vh - 80px); width: 100%; background: #f8f9fa;}
         .subheader { flex: 0 0 50px; background-color: #f1f3f4; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; z-index: 1000;}
         
-        /* --- EQUIPMENT TRACKER GRID (STRICT FIXED WIDTHS & MAX-CONTENT ROWS) --- */
+        /* --- EQUIPMENT TRACKER GRID (ADJUSTING FLEX SCROLLING) --- */
         .tracker-container { flex: 1; margin: 0; width: 100%; border: none; border-top: 1px solid #dcdcdc; background: #ffffff; overflow: auto; min-height: 0; }
         
         .tracker-header-wrapper { position: sticky; top: 0; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 100%; width: max-content; background: #ffffff;}
@@ -34,13 +34,13 @@
 
         .cell-row input { padding: 8px 6px; font-size: 13px; border: none; text-align: center; width: 100%; height: 100%; outline: none; text-overflow: ellipsis; background: transparent;}
         
-        /* --- FLAWLESS COLUMN ALIGNMENT SYSTEM --- */
-        /* Forces standard cells to be strictly 100px. They will never shrink or grow. */
+        /* --- PROPORTIONAL FLEX ALIGNMENT SYSTEM --- */
+        /* All child columns get exactly 1 flex share and a strict proportional minimum */
         .col-single, .stacked-cell, .cl-cell, .summary-cell { 
-            flex: 0 0 100px !important; 
-            width: 100px !important; 
-            min-width: 100px !important; 
-            max-width: 100px !important;
+            flex: 1 1 0px !important; 
+            min-width: 85px !important; 
+            width: auto !important; 
+            max-width: none !important;
             border-right: 2px solid #aeb6ba; 
             overflow: hidden; 
             padding: 0;
@@ -49,7 +49,7 @@
         .group-header, .group-issues { 
             display: flex; align-items: center; justify-content: center;
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-            /* Flex and width managed precisely by Javascript math */
+            /* Flex and width managed precisely by proportional Javascript math */
         } 
 
         .group-asset { flex: 0 0 120px !important; width: 120px !important; min-width: 120px !important; max-width: 120px !important; position: sticky; left: 0; z-index: 10; }
@@ -64,7 +64,7 @@
         .col-details { display: none !important; }
         .col-details.expanded { display: flex !important; }
         
-        .summary-cell { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 12px; font-weight: 600; line-height: 1.3; white-space: normal; word-break: break-word; }
+        .summary-cell { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 12px; font-weight: 600; line-height: 1.3; padding: 4px 6px; white-space: normal; word-break: break-word; }
         
         /* SPREADSHEET STACKED CARDS */
         .stacked-cell { display: flex; flex-direction: column; background: #fff;}
@@ -72,9 +72,9 @@
         .checklist-status { flex: 1; font-size: 9px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; padding: 4px; text-align: center; white-space: normal; word-break: break-word; line-height: 1.1; }
         
         /* ISSUES BLOCK */
-        /* Details container mathematically locked to 400px when expanded */
-        .header-cell.iss-details { flex: 0 0 400px !important; width: 400px !important; min-width: 400px !important; max-width: 400px !important; font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; border-right: 2px solid #1b5e20; }
-        .row-details.iss-details { flex: 0 0 400px !important; width: 400px !important; min-width: 400px !important; max-width: 400px !important; border-right: 2px solid #aeb6ba; background-color: #ffffff; flex-direction: row; align-items: stretch; overflow-x: auto; }
+        /* Takes up 4 flex shares proportionally */
+        .header-cell.iss-details { flex: 4 4 0px !important; min-width: 340px !important; width: auto !important; max-width: none !important; font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; border-right: 2px solid #1b5e20; }
+        .row-details.iss-details { flex: 4 4 0px !important; min-width: 340px !important; width: auto !important; max-width: none !important; border-right: 2px solid #aeb6ba; background-color: #ffffff; flex-direction: row; align-items: stretch; overflow-x: auto; }
         
         .row-details::-webkit-scrollbar { height: 5px; }
         .row-details::-webkit-scrollbar-thumb { background: #b0bec5; border-radius: 4px; }
@@ -496,20 +496,20 @@
             if (!globalConfig.showL4Gate) document.body.classList.add('hide-l4-gate');
             else document.body.classList.remove('hide-l4-gate');
 
-            // --- STRICT WIDTH MATH FOR PERFECT ALIGNMENT ---
+            // --- PROPORTIONAL FLEX ALIGNMENT ON LOAD ---
             let baseL2 = globalConfig.showL2Gate ? 2 : 1;
             let baseL3 = globalConfig.showL3Gate ? 2 : 1;
             let baseL4 = globalConfig.showL4Gate ? 2 : 1;
             
-            document.getElementById('group-l2').style.flex = `0 0 ${baseL2 * 100}px`;
-            document.getElementById('group-l3').style.flex = `0 0 ${baseL3 * 100}px`;
-            document.getElementById('group-l4').style.flex = `0 0 ${baseL4 * 100}px`;
-            document.getElementById('group-iss').style.flex = `0 0 100px`;
+            document.getElementById('group-l2').style.flex = `${baseL2} ${baseL2} 0px`;
+            document.getElementById('group-l3').style.flex = `${baseL3} ${baseL3} 0px`;
+            document.getElementById('group-l4').style.flex = `${baseL4} ${baseL4} 0px`;
+            document.getElementById('group-iss').style.flex = `1 1 0px`;
 
-            document.getElementById('group-l2').style.width = (baseL2 * 100) + 'px';
-            document.getElementById('group-l3').style.width = (baseL3 * 100) + 'px';
-            document.getElementById('group-l4').style.width = (baseL4 * 100) + 'px';
-            document.getElementById('group-iss').style.width = '100px';
+            document.getElementById('group-l2').style.minWidth = (baseL2 * 85) + 'px';
+            document.getElementById('group-l3').style.minWidth = (baseL3 * 85) + 'px';
+            document.getElementById('group-l4').style.minWidth = (baseL4 * 85) + 'px';
+            document.getElementById('group-iss').style.minWidth = '85px';
 
             const container = document.getElementById('tracker-rows');
             container.innerHTML = ''; 
@@ -651,7 +651,7 @@
         btn.innerText = 'Save & Sync to Sheet'; btn.disabled = false;
     }
 
-    // --- MATHEMATICAL EXPANSION LOGIC ---
+    // --- PROPORTIONAL EXPANSION MATH ---
     function toggleExpansion(level) {
         const state = !expandedStates[level.toLowerCase()]; expandedStates[level.toLowerCase()] = state;
         document.querySelectorAll(`.${level.toLowerCase()}-supp-details`).forEach(el => el.classList.toggle('expanded', state));
@@ -662,10 +662,9 @@
         
         let baseCols = globalConfig[`show${level.toUpperCase()}Gate`] ? 2 : 1;
         let totalCols = state ? (baseCols + 10) : baseCols;
-        let exactWidth = totalCols * 100;
         
-        document.getElementById(`group-${level.toLowerCase()}`).style.flex = `0 0 ${exactWidth}px`;
-        document.getElementById(`group-${level.toLowerCase()}`).style.width = `${exactWidth}px`;
+        document.getElementById(`group-${level.toLowerCase()}`).style.flex = `${totalCols} ${totalCols} 0px`;
+        document.getElementById(`group-${level.toLowerCase()}`).style.minWidth = (totalCols * 85) + 'px';
     }
     
     function toggleGlobalIssues() {
@@ -676,10 +675,9 @@
         if (state) { sumHead.classList.remove('divider-right'); sumCells.forEach(el => el.classList.remove('divider-right')); } 
         else { sumHead.classList.add('divider-right'); sumCells.forEach(el => el.classList.add('divider-right')); }
         
-        // 100px for Summary Cell + 400px for Details Container = 500px mathematically
-        let exactIssWidth = state ? 500 : 100;
-        document.getElementById(`group-iss`).style.flex = `0 0 ${exactIssWidth}px`;
-        document.getElementById(`group-iss`).style.width = `${exactIssWidth}px`;
+        // Expanded Issues acts as 4 extra proportional columns for width calculation
+        document.getElementById(`group-iss`).style.flex = state ? `5 5 0px` : `1 1 0px`;
+        document.getElementById(`group-iss`).style.minWidth = state ? '425px' : '85px';
     }
 
     // --- FILTER ENGINE WITH SCREEN BOUNDARY PROTECTIONS ---
