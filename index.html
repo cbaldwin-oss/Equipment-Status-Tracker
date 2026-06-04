@@ -18,6 +18,13 @@
         .subheader { position: sticky; top: 0; z-index: 1000; background-color: #f1f3f4; height: 50px; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; }
         #app-body { height: calc(100vh - 80px); width: 100%; overflow-y: auto; background: #fff;}
         
+        /* --- STATUS CELL COLORS --- */
+        .bg-green   { background-color: #c8e6c9 !important; color: #1b5e20 !important; }
+        .bg-yellow  { background-color: #fff9c4 !important; color: #f57f17 !important; }
+        .bg-red     { background-color: #ffcdd2 !important; color: #b71c1c !important; }
+        .bg-grey    { background-color: #f5f5f5 !important; color: #616161 !important; }
+        .bg-filled  { background-color: #e1f5fe !important; color: #01579b !important; }
+
         /* --- EQUIPMENT TRACKER GRID --- */
         .tracker-container { width: 95%; margin: 20px auto; border: 2px solid #2e7d32; border-radius: 8px; background: #ffffff; overflow-x: auto; }
         .tracker-header-wrapper { position: sticky; top: 51px; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 1300px; background: #ffffff;}
@@ -46,7 +53,6 @@
         /* SPREADSHEET STACKED CARDS */
         .stacked-cell { display: flex; flex-direction: column; min-width: 80px; border-right: 1px solid #e0e0e0; flex: 1; background: #fff;}
         .checklist-header { flex: 1; background-color: #f1f3f4; color: #333; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #e0e0e0; padding: 4px; }
-        
         .checklist-status { flex: 1; font-size: 9px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; padding: 4px; text-align: center; white-space: normal; word-break: break-word; line-height: 1.1; }
         
         /* ISSUES BLOCK */
@@ -72,26 +78,30 @@
         body.hide-l3-gate .l3-gate-col { display: none !important; }
         body.hide-l4-gate .l4-gate-col { display: none !important; }
 
-        /* --- SETTINGS MODAL --- */
+        /* --- SETTINGS MODAL (3 Column Grid) --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; display: none; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
-        .modal-box { background: white; border-radius: 8px; width: 600px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .modal-box { background: white; border-radius: 8px; width: 900px; max-width: 95%; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
         .modal-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
         .modal-header h2 { margin: 0; color: #2e7d32; }
         .close-btn { cursor: pointer; font-size: 20px; color: #999; border: none; background: none; }
-        .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
-        .modal-footer { padding: 15px 20px; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px; background: #f9f9f9; border-radius: 0 0 8px 8px;}
+        
+        .modal-body { padding: 20px; overflow-y: auto; flex: 1; display: flex; gap: 20px; }
+        .settings-col { flex: 1; background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px solid #eee;}
+        .settings-col h3 { margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #2e7d32; padding-bottom: 5px; color: #333; text-align: center; }
+        
+        .status-group { margin-bottom: 25px; }
+        .status-group h4 { margin: 0 0 10px 0; font-size: 14px; color: #555; }
+        .status-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+        .status-row input[type="text"] { flex: 1; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
+        .status-row input[type="color"] { width: 35px; height: 28px; padding: 0; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; }
+        .btn-del { background: #ffcdd2; color: #b71c1c; padding: 6px 10px; border-radius: 4px; font-weight: bold; border: none; cursor: pointer;}
+        .btn-add { background: #e3f2fd; color: #0277bd; margin-top: 5px; width: 100%; border: none; padding: 6px; border-radius: 4px; cursor: pointer; font-weight: bold;}
+        
+        .modal-footer { padding: 15px 20px; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px; background: #f1f3f4; border-radius: 0 0 8px 8px;}
         .btn { padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; border: none; }
         .btn-save { background: #2e7d32; color: white; }
         .btn-cancel { background: #ccc; color: #333; }
-        
-        .status-group { margin-bottom: 25px; }
-        .status-group h3 { margin-top: 0; font-size: 16px; border-bottom: 2px solid #2e7d32; padding-bottom: 5px; color: #444;}
-        .status-row { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
-        .status-row input[type="text"] { flex: 1; padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
-        .status-row input[type="color"] { width: 40px; height: 30px; padding: 0; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; }
-        .btn-del { background: #ffcdd2; color: #b71c1c; padding: 6px 10px; border-radius: 4px; font-weight: bold; }
-        .btn-add { background: #e3f2fd; color: #0277bd; margin-top: 5px; }
 
         /* --- SEARCH FILTER ARCHITECTURE --- */
         .filter-icon { cursor: pointer; font-size: 10px; color: #a5d6a7; padding: 2px; }
@@ -166,30 +176,57 @@
                 <div class="header-cell col-details global-iss-details iss-details">Asset Ticket Backlog (1-32)</div>
             </div>
         </div>
-
-        <div class="rows-container" id="tracker-rows">
-            <div class="loading-text">Stitching and Parsing Private Relational Data Arrays... 🚀</div>
-        </div>
+        <div class="rows-container" id="tracker-rows"><div class="loading-text">Stitching and Parsing Private Relational Data Arrays... 🚀</div></div>
     </div>
 </div>
 
 <div class="modal-overlay" id="settings-modal">
     <div class="modal-box">
         <div class="modal-header">
-            <h2>Status Configuration</h2>
+            <h2>System Color Configurations</h2>
             <button class="close-btn" onclick="closeSettingsModal()">×</button>
         </div>
         <div class="modal-body">
-            <div class="status-group">
-                <h3>Open Statuses (Pending/Active)</h3>
-                <div id="open-status-list"></div>
-                <button class="btn btn-add" onclick="addStatusRow('open-status-list')">+ Add Open Status</button>
+            <div class="settings-col">
+                <h3>Checklists (L2 & L3)</h3>
+                <div class="status-group">
+                    <h4>Active / Open</h4>
+                    <div id="cl-open-list"></div>
+                    <button class="btn btn-add" onclick="addStatusRow('cl-open-list', '#fff9c4')">+ Add Status</button>
+                </div>
+                <div class="status-group">
+                    <h4>Completed / Closed</h4>
+                    <div id="cl-closed-list"></div>
+                    <button class="btn btn-add" onclick="addStatusRow('cl-closed-list', '#c8e6c9')">+ Add Status</button>
+                </div>
             </div>
             
-            <div class="status-group">
-                <h3>Closed Statuses (Complete/Verified)</h3>
-                <div id="closed-status-list"></div>
-                <button class="btn btn-add" onclick="addStatusRow('closed-status-list')">+ Add Closed Status</button>
+            <div class="settings-col">
+                <h3>Tests (L4)</h3>
+                <div class="status-group">
+                    <h4>Active / Open</h4>
+                    <div id="test-open-list"></div>
+                    <button class="btn btn-add" onclick="addStatusRow('test-open-list', '#fff9c4')">+ Add Status</button>
+                </div>
+                <div class="status-group">
+                    <h4>Completed / Closed</h4>
+                    <div id="test-closed-list"></div>
+                    <button class="btn btn-add" onclick="addStatusRow('test-closed-list', '#c8e6c9')">+ Add Status</button>
+                </div>
+            </div>
+
+            <div class="settings-col">
+                <h3>Global Issues</h3>
+                <div class="status-group">
+                    <h4>Active / Open</h4>
+                    <div id="iss-open-list"></div>
+                    <button class="btn btn-add" onclick="addStatusRow('iss-open-list', '#ffcdd2')">+ Add Status</button>
+                </div>
+                <div class="status-group">
+                    <h4>Completed / Closed</h4>
+                    <div id="iss-closed-list"></div>
+                    <button class="btn btn-add" onclick="addStatusRow('iss-closed-list', '#c8e6c9')">+ Add Status</button>
+                </div>
             </div>
         </div>
         <div class="modal-footer">
@@ -204,10 +241,11 @@
 
     let globalConfig = { 
         showL2Gate: true, showL3Gate: true, showL4Gate: true,
-        openStatuses: [], closedStatuses: []
+        openStatuses: [], closedStatuses: [],
+        testOpenStatuses: [], testClosedStatuses: [],
+        issueOpenStatuses: [], issueClosedStatuses: []
     };
 
-    // --- COLOR MATH: Auto-calculate black/white text depending on background darkness ---
     function getContrastYIQ(hexcolor){
         hexcolor = hexcolor.replace("#", "");
         if(hexcolor.length === 3) hexcolor = hexcolor.split('').map(c => c+c).join('');
@@ -218,27 +256,29 @@
         return (yiq >= 128) ? '#000000' : '#ffffff';
     }
 
-    // Dynamic Style Builder
-    function getDynamicStyle(value) {
+    function getDynamicStyle(value, type = 'checklist') {
         if (!value || value === "N/A" || value === "") return 'background-color:#f5f5f5; color:#616161;';
         let lowerVal = value.toString().toLowerCase();
         
-        // Search Config
-        let match = globalConfig.closedStatuses.find(s => lowerVal.includes(s.name.toLowerCase()));
+        let openArr = globalConfig.openStatuses;
+        let closedArr = globalConfig.closedStatuses;
+        
+        if (type === 'test') { openArr = globalConfig.testOpenStatuses; closedArr = globalConfig.testClosedStatuses; }
+        if (type === 'issue') { openArr = globalConfig.issueOpenStatuses; closedArr = globalConfig.issueClosedStatuses; }
+        
+        let match = closedArr.find(s => lowerVal.includes(s.name.toLowerCase()));
         if (match) return `background-color:${match.color}; color:${getContrastYIQ(match.color)};`;
         
-        match = globalConfig.openStatuses.find(s => lowerVal.includes(s.name.toLowerCase()));
+        match = openArr.find(s => lowerVal.includes(s.name.toLowerCase()));
         if (match) return `background-color:${match.color}; color:${getContrastYIQ(match.color)};`;
         
         // Fallbacks
         if (lowerVal.includes('no cl') || lowerVal.includes('no l4') || lowerVal.includes('no l3')) return 'background-color:#f5f5f5; color:#616161;';
         if (!isNaN(lowerVal)) {
             let num = parseFloat(lowerVal);
-            if (num === 0) return 'background-color:#e1f5fe; color:#01579b;'; // filled blue
-            if (num > 0) return 'background-color:#ffcdd2; color:#b71c1c;';   // error red
+            if (num === 0) return 'background-color:#e1f5fe; color:#01579b;'; 
+            if (num > 0) return 'background-color:#ffcdd2; color:#b71c1c;';   
         }
-        if (lowerVal.includes('issue') || lowerVal.includes('gap') || lowerVal.includes('high')) return 'background-color:#ffcdd2; color:#b71c1c;';
-        
         return 'background-color:#f5f5f5; color:#616161;';
     }
 
@@ -247,17 +287,16 @@
         return statusArray.some(item => s.includes(item.name.toLowerCase()));
     }
 
-    function renderStackedCell(val, extraClasses = '') {
+    function renderStackedCell(val, extraClasses = '', type = 'checklist') {
         let id = '', status = '', styleStr = 'background-color:#f5f5f5; color:transparent;', rawVal = '';
         if (val && val !== 'N/A' && val !== 'Clear') {
             rawVal = val.toString().trim();
             const match = rawVal.match(/(.+?)\s*\((.+)\)/);
             if (match) {
                 id = match[1]; status = match[2];
-                styleStr = getDynamicStyle(status);
+                styleStr = getDynamicStyle(status, type);
             } else { id = rawVal; status = 'Unknown'; }
         }
-        
         if (id === '') {
             return `<div class="filter-target stacked-cell ${extraClasses}" data-val=""><div class="checklist-header" style="color:#cfd8dc;">-</div><div class="checklist-status" style="${styleStr}">-</div></div>`;
         } else {
@@ -267,9 +306,10 @@
 
     function render10SupportCells(row, level) {
         let html = '';
+        let type = (level === 'L4') ? 'test' : 'checklist';
         for (let i = 1; i <= 10; i++) {
             const isTenth = (i === 10) ? 'divider-right' : '';
-            html += renderStackedCell(row[`${level} Support CL ${i}`], `cell-row-detail col-details ${level.toLowerCase()}-supp-details cl-cell ${isTenth}`).replace('filter-target', ''); 
+            html += renderStackedCell(row[`${level} Support CL ${i}`], `cell-row-detail col-details ${level.toLowerCase()}-supp-details cl-cell ${isTenth}`, type).replace('filter-target', ''); 
         }
         return html;
     }
@@ -279,7 +319,7 @@
         for (let i = 1; i <= 32; i++) {
             let val = row[`Issue ${i}`];
             if (val && val !== 'N/A' && val !== 'Clear' && val.toString().trim() !== '') {
-                html += renderStackedCell(val).replace('filter-target', ''); 
+                html += renderStackedCell(val, '', 'issue').replace('filter-target', ''); 
             }
         }
         if (html === '') return `<div style="margin: auto; color: #999; font-size: 11px; font-style: italic;">No Logged Issues</div>`;
@@ -288,12 +328,13 @@
 
     function combineOpenSupportCLs(row, level) {
         let openIds = [];
+        let closedArr = (level === 'L4') ? globalConfig.testClosedStatuses : globalConfig.closedStatuses;
         for (let i = 1; i <= 10; i++) {
             const val = row[`${level} Support CL ${i}`];
             if (val && val !== 'N/A' && val !== 'Clear' && val.toString().trim() !== '') {
                 const match = val.toString().match(/(.+?)\s*\((.+)\)/);
                 if (match) {
-                    if (!isStatusMatch(match[2], globalConfig.closedStatuses) && !match[2].toLowerCase().includes('no cl')) {
+                    if (!isStatusMatch(match[2], closedArr) && !match[2].toLowerCase().includes('no cl')) {
                         openIds.push(match[1].trim());
                     }
                 } else if (val.toString().toLowerCase() !== 'no cl' && val.toString().toLowerCase() !== 'unknown') {
@@ -312,9 +353,7 @@
             if (val && val !== 'N/A' && val !== 'Clear' && val.toString().trim() !== '') {
                 const match = val.toString().match(/(.+?)\s*\((.+)\)/);
                 if (match) {
-                    if (!isStatusMatch(match[2], globalConfig.closedStatuses)) {
-                        openIds.push(match[1].trim());
-                    }
+                    if (!isStatusMatch(match[2], globalConfig.issueClosedStatuses)) openIds.push(match[1].trim());
                 } else if (val.toString().toLowerCase() !== 'unknown') {
                     openIds.push(val.toString().trim());
                 }
@@ -358,18 +397,18 @@
                 <div class="cell-row">
                     <input type="text" class="filter-target group-asset divider-right bg-grey" value="${assetId}" readonly style="font-weight: bold;">
                     
-                    <input type="text" class="filter-target col-single" style="${getDynamicStyle(row['L2 Overall Status'])}" value="${row['L2 Overall Status'] || 'N/A'}" readonly>
-                    ${renderStackedCell(row['L2 Gate CL 1'], 'col-single l2-gate-col')}
+                    <input type="text" class="filter-target col-single" style="${getDynamicStyle(row['L2 Overall Status'], 'checklist')}" value="${row['L2 Overall Status'] || 'N/A'}" readonly>
+                    ${renderStackedCell(row['L2 Gate CL 1'], 'col-single l2-gate-col', 'checklist')}
                     <div class="filter-target col-single summary-cell l2-supp-summary divider-right" style="${getDynamicStyle(l2Open.count)}" data-val="${l2Open.display}">${l2Open.display}</div>
                     ${render10SupportCells(row, 'L2')}
                     
-                    <input type="text" class="filter-target col-single" style="${getDynamicStyle(row['L3 Overall Status'])}" value="${row['L3 Overall Status'] || 'N/A'}" readonly>
-                    ${renderStackedCell(row['L3 Gate CL 1'], 'col-single l3-gate-col')}
+                    <input type="text" class="filter-target col-single" style="${getDynamicStyle(row['L3 Overall Status'], 'checklist')}" value="${row['L3 Overall Status'] || 'N/A'}" readonly>
+                    ${renderStackedCell(row['L3 Gate CL 1'], 'col-single l3-gate-col', 'checklist')}
                     <div class="filter-target col-single summary-cell l3-supp-summary divider-right" style="${getDynamicStyle(l3Open.count)}" data-val="${l3Open.display}">${l3Open.display}</div>
                     ${render10SupportCells(row, 'L3')}
                     
-                    <input type="text" class="filter-target col-single" style="${getDynamicStyle(row['L4 Overall Status'])}" value="${row['L4 Overall Status'] || 'N/A'}" readonly>
-                    ${renderStackedCell(row['L4 Gate CL 1'], 'col-single l4-gate-col')}
+                    <input type="text" class="filter-target col-single" style="${getDynamicStyle(row['L4 Overall Status'], 'test')}" value="${row['L4 Overall Status'] || 'N/A'}" readonly>
+                    ${renderStackedCell(row['L4 Gate CL 1'], 'col-single l4-gate-col', 'test')}
                     <div class="filter-target col-single summary-cell l4-supp-summary divider-right" style="${getDynamicStyle(l4Open.count)}" data-val="${l4Open.display}">${l4Open.display}</div>
                     ${render10SupportCells(row, 'L4')}
                     
@@ -391,120 +430,79 @@
     // --- SETTINGS UI LOGIC ---
     function openSettingsModal() {
         document.getElementById('settings-modal').classList.add('active');
-        const openList = document.getElementById('open-status-list');
-        const closedList = document.getElementById('closed-status-list');
-        openList.innerHTML = ''; closedList.innerHTML = '';
-
-        globalConfig.openStatuses.forEach(s => openList.appendChild(createRowHTML(s.name, s.color)));
-        globalConfig.closedStatuses.forEach(s => closedList.appendChild(createRowHTML(s.name, s.color)));
+        const map = {
+            'cl-open-list': globalConfig.openStatuses, 'cl-closed-list': globalConfig.closedStatuses,
+            'test-open-list': globalConfig.testOpenStatuses, 'test-closed-list': globalConfig.testClosedStatuses,
+            'iss-open-list': globalConfig.issueOpenStatuses, 'iss-closed-list': globalConfig.issueClosedStatuses
+        };
+        for(let id in map) {
+            let container = document.getElementById(id);
+            container.innerHTML = '';
+            map[id].forEach(s => container.appendChild(createRowHTML(s.name, s.color)));
+        }
     }
 
-    function closeSettingsModal() {
-        document.getElementById('settings-modal').classList.remove('active');
-    }
+    function closeSettingsModal() { document.getElementById('settings-modal').classList.remove('active'); }
 
     function createRowHTML(name, color) {
-        const div = document.createElement('div');
-        div.className = 'status-row';
-        div.innerHTML = `
-            <input type="text" class="s-name" value="${name}" placeholder="e.g. In Progress">
-            <input type="color" class="s-color" value="${color}">
-            <button class="btn btn-del" onclick="this.parentElement.remove()">🗑</button>
-        `;
+        const div = document.createElement('div'); div.className = 'status-row';
+        div.innerHTML = `<input type="text" class="s-name" value="${name}" placeholder="Status text..."><input type="color" class="s-color" value="${color}"><button class="btn btn-del" onclick="this.parentElement.remove()">🗑</button>`;
         return div;
     }
 
-    function addStatusRow(listId) {
-        const list = document.getElementById(listId);
-        let defaultColor = listId.includes('open') ? '#fff9c4' : '#c8e6c9';
-        list.appendChild(createRowHTML('', defaultColor));
+    function addStatusRow(listId, defaultColor) { document.getElementById(listId).appendChild(createRowHTML('', defaultColor)); }
+
+    function getListValues(listId) {
+        return Array.from(document.querySelectorAll(`#${listId} .status-row`)).map(row => ({
+            name: row.querySelector('.s-name').value.trim(), color: row.querySelector('.s-color').value
+        })).filter(s => s.name !== '');
     }
 
     async function saveSettings() {
         const btn = document.querySelector('.btn-save');
-        btn.innerText = 'Saving to Sheet...';
-        btn.disabled = true;
+        btn.innerText = 'Saving...'; btn.disabled = true;
 
-        const openRows = document.querySelectorAll('#open-status-list .status-row');
-        const closedRows = document.querySelectorAll('#closed-status-list .status-row');
-
-        const newOpen = Array.from(openRows).map(row => ({
-            name: row.querySelector('.s-name').value.trim(),
-            color: row.querySelector('.s-color').value
-        })).filter(s => s.name !== '');
-
-        const newClosed = Array.from(closedRows).map(row => ({
-            name: row.querySelector('.s-name').value.trim(),
-            color: row.querySelector('.s-color').value
-        })).filter(s => s.name !== '');
-
-        const payload = { openStatuses: newOpen, closedStatuses: newClosed };
+        const payload = { 
+            openStatuses: getListValues('cl-open-list'), closedStatuses: getListValues('cl-closed-list'),
+            testOpenStatuses: getListValues('test-open-list'), testClosedStatuses: getListValues('test-closed-list'),
+            issueOpenStatuses: getListValues('iss-open-list'), issueClosedStatuses: getListValues('iss-closed-list')
+        };
 
         try {
-            await fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify(payload) // Bypasses CORS by defaulting to text/plain
-            });
-            // Update local config immediately
-            globalConfig.openStatuses = newOpen;
-            globalConfig.closedStatuses = newClosed;
-            
-            closeSettingsModal();
-            fetchTrackerData(); // Re-render everything with new colors
+            await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+            globalConfig.openStatuses = payload.openStatuses; globalConfig.closedStatuses = payload.closedStatuses;
+            globalConfig.testOpenStatuses = payload.testOpenStatuses; globalConfig.testClosedStatuses = payload.testClosedStatuses;
+            globalConfig.issueOpenStatuses = payload.issueOpenStatuses; globalConfig.issueClosedStatuses = payload.issueClosedStatuses;
+            closeSettingsModal(); fetchTrackerData(); 
         } catch(e) {
-            console.error("Save failed", e);
-            alert("Failed to save. Ensure your Apps Script URL is correct and deployed as a Web App.");
+            console.error("Save failed", e); alert("Failed to save to Google Sheets.");
         }
-        
-        btn.innerText = 'Save & Sync to Sheet';
-        btn.disabled = false;
+        btn.innerText = 'Save & Sync to Sheet'; btn.disabled = false;
     }
 
     // --- TRACKING COLUMN EXPANSION LOGIC ---
     let expandedStates = { l2: false, l3: false, l4: false, iss: false };
-
     function toggleExpansion(level) {
-        const state = !expandedStates[level.toLowerCase()];
-        expandedStates[level.toLowerCase()] = state;
-        const targets = document.querySelectorAll(`.${level.toLowerCase()}-supp-details`);
-        targets.forEach(el => el.classList.toggle('expanded', state));
-        const btn = document.querySelector(`.expand-btn[data-target="${level.toLowerCase()}-supp"]`);
-        btn.textContent = state ? "-" : "+";
-        btn.style.background = state ? "#b71c1c" : "#4caf50";
-        const summaryHeader = document.getElementById(`${level.toLowerCase()}-supp-header`);
-        const summaryCells = document.querySelectorAll(`.${level.toLowerCase()}-supp-summary`);
-        if (state) {
-            summaryHeader.classList.remove('divider-right');
-            summaryCells.forEach(el => el.classList.remove('divider-right'));
-        } else {
-            summaryHeader.classList.add('divider-right');
-            summaryCells.forEach(el => el.classList.add('divider-right'));
-        }
+        const state = !expandedStates[level.toLowerCase()]; expandedStates[level.toLowerCase()] = state;
+        document.querySelectorAll(`.${level.toLowerCase()}-supp-details`).forEach(el => el.classList.toggle('expanded', state));
+        const btn = document.querySelector(`.expand-btn[data-target="${level.toLowerCase()}-supp"]`); btn.textContent = state ? "-" : "+"; btn.style.background = state ? "#b71c1c" : "#4caf50";
+        const sumHead = document.getElementById(`${level.toLowerCase()}-supp-header`), sumCells = document.querySelectorAll(`.${level.toLowerCase()}-supp-summary`);
+        if (state) { sumHead.classList.remove('divider-right'); sumCells.forEach(el => el.classList.remove('divider-right')); } 
+        else { sumHead.classList.add('divider-right'); sumCells.forEach(el => el.classList.add('divider-right')); }
         let baseFlex = globalConfig[`show${level.toUpperCase()}Gate`] ? 3 : 2;
         document.getElementById(`group-${level.toLowerCase()}`).style.flex = state ? (baseFlex + 10) : baseFlex;
     }
-
     function toggleGlobalIssues() {
-        const state = !expandedStates.iss;
-        expandedStates.iss = state;
-        const targets = document.querySelectorAll(`.global-iss-details`);
-        targets.forEach(el => el.classList.toggle('expanded', state));
-        const btn = document.querySelector(`.expand-btn[data-target="global-iss"]`);
-        btn.textContent = state ? "-" : "+";
-        btn.style.background = state ? "#b71c1c" : "#4caf50";
-        const summaryHeader = document.getElementById(`global-iss-header`);
-        const summaryCells = document.querySelectorAll(`.global-iss-summary`);
-        if (state) {
-            summaryHeader.classList.remove('divider-right');
-            summaryCells.forEach(el => el.classList.remove('divider-right'));
-        } else {
-            summaryHeader.classList.add('divider-right');
-            summaryCells.forEach(el => el.classList.add('divider-right'));
-        }
+        const state = !expandedStates.iss; expandedStates.iss = state;
+        document.querySelectorAll(`.global-iss-details`).forEach(el => el.classList.toggle('expanded', state));
+        const btn = document.querySelector(`.expand-btn[data-target="global-iss"]`); btn.textContent = state ? "-" : "+"; btn.style.background = state ? "#b71c1c" : "#4caf50";
+        const sumHead = document.getElementById(`global-iss-header`), sumCells = document.querySelectorAll(`.global-iss-summary`);
+        if (state) { sumHead.classList.remove('divider-right'); sumCells.forEach(el => el.classList.remove('divider-right')); } 
+        else { sumHead.classList.add('divider-right'); sumCells.forEach(el => el.classList.add('divider-right')); }
         document.getElementById(`group-iss`).style.flex = state ? 3 : 1;
     }
 
-    // --- ENHANCED FILTER ENGINE ---
+    // --- FILTER ENGINE ---
     let activeFilters = {}; let currentDropdown = null;
     function toggleFilter(event, colIndex) {
         event.stopPropagation();
@@ -512,61 +510,38 @@
         const rows = document.querySelectorAll('.cell-row'); const uniqueValues = new Set();
         rows.forEach(row => { 
             const inputs = row.querySelectorAll('.filter-target'); 
-            if(inputs[colIndex]) {
-                let cell = inputs[colIndex];
-                let val = cell.tagName === 'INPUT' ? cell.value : (cell.dataset.val || '');
-                uniqueValues.add(val.trim()); 
-            }
+            if(inputs[colIndex]) { let cell = inputs[colIndex]; uniqueValues.add((cell.tagName === 'INPUT' ? cell.value : (cell.dataset.val || '')).trim()); }
         });
         const dropdown = document.createElement('div'); dropdown.className = 'filter-dropdown'; dropdown.dataset.col = colIndex;
         const rect = event.target.getBoundingClientRect(); dropdown.style.top = (rect.bottom + window.scrollY + 5) + 'px'; dropdown.style.left = (rect.left + window.scrollX - 120) + 'px';
         dropdown.innerHTML = `<input type="text" id="filter-search" class="filter-search-input" placeholder="Search values..." autocomplete="off"><label style="font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:8px; margin-bottom:8px;"><input type="checkbox" id="filter-select-all" checked> (Select All)</label>`;
         const valContainer = document.createElement('div'); valContainer.style.overflowY = 'auto'; valContainer.style.flex = '1';
-        const sortedVals = Array.from(uniqueValues).sort(); const currentFilterSet = activeFilters[colIndex];
-        sortedVals.forEach(val => { const isChecked = currentFilterSet ? currentFilterSet.has(val) : true; valContainer.innerHTML += `<label class="filter-val-label"><input type="checkbox" class="filter-val-cb" value="${val}" ${isChecked ? 'checked' : ''}> <span class="val-text">${val || '(Blank)'}</span></label>`; });
+        Array.from(uniqueValues).sort().forEach(val => { const isChecked = activeFilters[colIndex] ? activeFilters[colIndex].has(val) : true; valContainer.innerHTML += `<label class="filter-val-label"><input type="checkbox" class="filter-val-cb" value="${val}" ${isChecked ? 'checked' : ''}> <span class="val-text">${val || '(Blank)'}</span></label>`; });
         dropdown.appendChild(valContainer);
         const actions = document.createElement('div'); actions.className = 'filter-actions'; actions.innerHTML = `<button class="filter-btn clear" onclick="clearFilter(${colIndex})">Clear</button><button class="filter-btn" onclick="applyFilter(${colIndex})">OK</button>`;
         dropdown.appendChild(actions); document.body.appendChild(dropdown); currentDropdown = dropdown;
         setTimeout(() => document.getElementById('filter-search').focus(), 10);
         const searchInput = dropdown.querySelector('#filter-search'); const selectAllCb = dropdown.querySelector('#filter-select-all'); const allLabels = dropdown.querySelectorAll('.filter-val-label'); const valCbs = dropdown.querySelectorAll('.filter-val-cb');
-        if (currentFilterSet && currentFilterSet.size < sortedVals.length) selectAllCb.checked = false;
-        searchInput.addEventListener('input', (e) => { const term = e.target.value.toLowerCase(); let visibleCount = 0; let checkedVisibleCount = 0; allLabels.forEach(label => { const text = label.querySelector('.val-text').textContent.toLowerCase(); const cb = label.querySelector('.filter-val-cb'); if (text.includes(term)) { label.style.display = 'block'; visibleCount++; if (cb.checked) checkedVisibleCount++; } else { label.style.display = 'none'; } }); selectAllCb.checked = (visibleCount > 0 && visibleCount === checkedVisibleCount); });
-        selectAllCb.addEventListener('change', (e) => { const isChecked = e.target.checked; allLabels.forEach(label => { if (label.style.display !== 'none') label.querySelector('.filter-val-cb').checked = isChecked; }); });
-        valCbs.forEach(cb => { cb.addEventListener('change', () => { let allVisibleChecked = true; allLabels.forEach(label => { if (label.style.display !== 'none' && !label.querySelector('.filter-val-cb').checked) allVisibleChecked = false; }); selectAllCb.checked = allVisibleChecked; }); });
+        if (activeFilters[colIndex] && activeFilters[colIndex].size < uniqueValues.size) selectAllCb.checked = false;
+        searchInput.addEventListener('input', (e) => { const term = e.target.value.toLowerCase(); let vis = 0, chkVis = 0; allLabels.forEach(lbl => { if (lbl.querySelector('.val-text').textContent.toLowerCase().includes(term)) { lbl.style.display = 'block'; vis++; if (lbl.querySelector('.filter-val-cb').checked) chkVis++; } else lbl.style.display = 'none'; }); selectAllCb.checked = (vis > 0 && vis === chkVis); });
+        selectAllCb.addEventListener('change', (e) => { allLabels.forEach(lbl => { if (lbl.style.display !== 'none') lbl.querySelector('.filter-val-cb').checked = e.target.checked; }); });
+        valCbs.forEach(cb => { cb.addEventListener('change', () => { let allVisChk = true; allLabels.forEach(lbl => { if (lbl.style.display !== 'none' && !lbl.querySelector('.filter-val-cb').checked) allVisChk = false; }); selectAllCb.checked = allVisChk; }); });
     }
-    
     window.applyFilter = function(colIndex) {
         if (!currentDropdown) return; const valCbs = currentDropdown.querySelectorAll('.filter-val-cb'); const selected = new Set(); valCbs.forEach(cb => { if (cb.checked) selected.add(cb.value); });
-        const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); const headerCell = icon.closest('.header-cell'); const titleSpan = headerCell.querySelector('.col-title');
-        if (selected.size === valCbs.length) { delete activeFilters[colIndex]; icon.classList.remove('active'); headerCell.classList.remove('is-filtered'); titleSpan.textContent = titleSpan.dataset.original; } 
-        else { activeFilters[colIndex] = selected; icon.classList.add('active'); headerCell.classList.add('is-filtered'); titleSpan.textContent = titleSpan.dataset.original + ' - Filtered'; }
+        const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); const titleSpan = icon.closest('.header-cell').querySelector('.col-title');
+        if (selected.size === valCbs.length) { delete activeFilters[colIndex]; icon.classList.remove('active'); icon.closest('.header-cell').classList.remove('is-filtered'); titleSpan.textContent = titleSpan.dataset.original; } 
+        else { activeFilters[colIndex] = selected; icon.classList.add('active'); icon.closest('.header-cell').classList.add('is-filtered'); titleSpan.textContent = titleSpan.dataset.original + ' - Filtered'; }
         closeFilterMenu(); executeFilters();
     };
-    
-    window.clearFilter = function(colIndex) {
-        delete activeFilters[colIndex]; const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); const headerCell = icon.closest('.header-cell'); const titleSpan = headerCell.querySelector('.col-title');
-        icon.classList.remove('active'); headerCell.classList.remove('is-filtered'); titleSpan.textContent = titleSpan.dataset.original; closeFilterMenu(); executeFilters();
-    };
-    
+    window.clearFilter = function(colIndex) { delete activeFilters[colIndex]; const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); icon.classList.remove('active'); icon.closest('.header-cell').classList.remove('is-filtered'); const titleSpan = icon.closest('.header-cell').querySelector('.col-title'); titleSpan.textContent = titleSpan.dataset.original; closeFilterMenu(); executeFilters(); };
     function executeFilters() {
-        const rows = document.querySelectorAll('.cell-row');
-        rows.forEach(row => { 
-            const inputs = row.querySelectorAll('.filter-target'); 
-            let isVisible = true; 
-            for (let col in activeFilters) { 
-                if (inputs[col]) { 
-                    let cell = inputs[col];
-                    let val = cell.tagName === 'INPUT' ? cell.value : (cell.dataset.val || '');
-                    if (!activeFilters[col].has(val.trim())) { 
-                        isVisible = false; 
-                        break; 
-                    } 
-                } 
-            } 
+        document.querySelectorAll('.cell-row').forEach(row => { 
+            const inputs = row.querySelectorAll('.filter-target'); let isVisible = true; 
+            for (let col in activeFilters) { if (inputs[col]) { let val = (inputs[col].tagName === 'INPUT' ? inputs[col].value : (inputs[col].dataset.val || '')); if (!activeFilters[col].has(val.trim())) { isVisible = false; break; } } } 
             row.style.display = isVisible ? 'flex' : 'none'; 
         });
     }
-    
     function closeFilterMenu() { if (currentDropdown) { document.body.removeChild(currentDropdown); currentDropdown = null; } }
     document.addEventListener('click', (e) => { if (currentDropdown && !currentDropdown.contains(e.target) && !e.target.classList.contains('filter-icon')) closeFilterMenu(); });
 </script>
