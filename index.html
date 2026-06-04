@@ -41,12 +41,12 @@
             padding: 0;
         }
 
-        /* Overall Status is Wider (140px) */
+        /* Overall Status is Wider (180px) */
         .summary-cell { 
-            flex: 0 0 140px !important; 
-            width: 140px !important; 
-            min-width: 140px !important; 
-            max-width: 140px !important;
+            flex: 0 0 180px !important; 
+            width: 180px !important; 
+            min-width: 180px !important; 
+            max-width: 180px !important;
             border-right: 2px solid #78909c !important; 
             overflow: hidden; 
             padding: 0;
@@ -64,7 +64,7 @@
         } 
 
         /* --- ASSET CELL FULL FILL --- */
-        .group-asset { flex: 0 0 140px !important; width: 140px !important; min-width: 140px !important; max-width: 140px !important; position: sticky; left: 0; z-index: 10; }
+        .group-asset { flex: 0 0 180px !important; width: 180px !important; min-width: 180px !important; max-width: 180px !important; position: sticky; left: 0; z-index: 10; }
         .frozen-group-bar .group-asset { background-color: #1b5e20; z-index: 12; border-right: 1px solid #0d3b10 !important; }
         .frozen-col-bar .group-asset { background-color: #2e7d32; z-index: 12; border-right: 1px solid #1b5e20 !important; }
         
@@ -600,7 +600,7 @@
             let gateL2 = globalConfig.showL2Gate !== false ? 100 : 0;
             let gateL3 = globalConfig.showL3Gate !== false ? 100 : 0;
             let gateL4 = globalConfig.showL4Gate !== false ? 100 : 0;
-            let summaryW = 140; // The Overall Status width
+            let summaryW = 180; // The Overall Status width
             
             document.getElementById('group-l2').style.flex = `0 0 ${gateL2 + summaryW}px`;
             document.getElementById('group-l3').style.flex = `0 0 ${gateL3 + summaryW}px`;
@@ -774,7 +774,7 @@
             // Dynamic Math based on backend scanned totals
             let maxCols = globalConfig.maxCols[lvl] || 0;
             let gateWidth = globalConfig[`show${level.toUpperCase()}Gate`] !== false ? 100 : 0;
-            let summaryWidth = 140;
+            let summaryWidth = 180;
             let baseWidth = gateWidth + summaryWidth;
             
             // Math: Base + (Number of Real Supp columns * 100px)
@@ -806,10 +806,10 @@
                 btn.style.background = state ? "#b71c1c" : "#4caf50";
             }
 
-            let summaryWidth = 140;
+            let summaryWidth = 180;
             let maxIss = globalConfig.maxCols.iss || 0;
             
-            // Math: Summary Cell (140px) + (Number of Real Issues * 100px)
+            // Math: Summary Cell (180px) + (Number of Real Issues * 100px)
             let exactIssWidth = state ? (summaryWidth + (maxIss * 100)) : summaryWidth;
             
             let issGroup = document.getElementById(`group-iss`);
