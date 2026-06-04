@@ -41,11 +41,11 @@
         .col-details { display: none; }
         .col-details.expanded { display: flex; }
         
-        .summary-cell { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 12px; font-weight: 600; line-height: 1.3; padding: 4px 6px; border-right: 1px solid #f0f0f0; white-space: normal; word-break: break-word; }
+        .summary-cell { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 11px; line-height: 1.3; padding: 4px 6px; border-right: 1px solid #f0f0f0; white-space: normal; word-break: break-word; }
         
         /* SPREADSHEET STACKED CARDS */
-        .stacked-cell { display: flex; flex-direction: column; min-width: 80px; border-right: 1px solid #e0e0e0; flex: 1; }
-        .checklist-header { flex: 1; background-color: #f1f3f4; color: #333; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgba(0,0,0,0.15); padding: 4px; }
+        .stacked-cell { display: flex; flex-direction: column; min-width: 80px; border-right: 1px solid #e0e0e0; flex: 1;}
+        .checklist-header { flex: 1; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgba(0,0,0,0.15); padding: 4px; }
         .checklist-status { flex: 1; font-size: 9px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; padding: 4px; text-align: center; white-space: normal; word-break: break-word; line-height: 1.1; }
         
         /* ISSUES BLOCK */
@@ -71,15 +71,16 @@
         body.hide-l3-gate .l3-gate-col { display: none !important; }
         body.hide-l4-gate .l4-gate-col { display: none !important; }
 
-        /* --- SETTINGS MODAL (3 Column Grid) --- */
+        /* --- SETTINGS MODAL --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; display: none; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
-        .modal-box { background: white; border-radius: 8px; width: 900px; max-width: 95%; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .modal-box { background: white; border-radius: 8px; width: 1100px; max-width: 98%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
         .modal-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
         .modal-header h2 { margin: 0; color: #2e7d32; }
         .close-btn { cursor: pointer; font-size: 20px; color: #999; border: none; background: none; }
         
-        .modal-body { padding: 20px; overflow-y: auto; flex: 1; display: flex; gap: 20px; }
+        .modal-body { padding: 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .status-config-wrap { display: flex; gap: 20px; }
         .settings-col { flex: 1; background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px solid #eee;}
         .settings-col h3 { margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #2e7d32; padding-bottom: 5px; color: #333; text-align: center; }
         
@@ -91,6 +92,17 @@
         .btn-del { background: #ffcdd2; color: #b71c1c; padding: 6px 10px; border-radius: 4px; font-weight: bold; border: none; cursor: pointer;}
         .btn-add { background: #e3f2fd; color: #0277bd; margin-top: 5px; width: 100%; border: none; padding: 6px; border-radius: 4px; cursor: pointer; font-weight: bold;}
         
+        /* NEW: PHASE RULES SECTION */
+        .rules-section { border-top: 2px solid #eee; padding-top: 20px; }
+        .rules-section h3 { margin-top: 0; color: #2e7d32; }
+        .table-responsive { width: 100%; overflow-x: auto; margin-bottom: 10px; }
+        #phase-rules-table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        #phase-rules-table th { background: #f1f3f4; padding: 8px; text-align: left; font-size: 12px; color: #555; }
+        #phase-rules-table td { padding: 6px; border-bottom: 1px solid #eee; }
+        #phase-rules-table input[type="text"], #phase-rules-table input[type="number"], #phase-rules-table select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
+        #phase-rules-table input[type="color"] { width: 35px; height: 28px; padding: 0; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; }
+        #phase-rules-table input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+
         .modal-footer { padding: 15px 20px; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px; background: #f1f3f4; border-radius: 0 0 8px 8px;}
         .btn { padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; border: none; }
         .btn-save { background: #2e7d32; color: white; }
@@ -173,51 +185,80 @@
 <div class="modal-overlay" id="settings-modal">
     <div class="modal-box">
         <div class="modal-header">
-            <h2>System Color Configurations</h2>
+            <h2>System Config</h2>
             <button class="close-btn" onclick="closeSettingsModal()">×</button>
         </div>
         <div class="modal-body">
-            <div class="settings-col">
-                <h3>Checklists (L2 & L3)</h3>
-                <div class="status-group">
-                    <h4>Active / Open</h4>
-                    <div id="cl-open-list"></div>
-                    <button class="btn btn-add" onclick="addStatusRow('cl-open-list', '#fff9c4')">+ Add Status</button>
-                </div>
-                <div class="status-group">
-                    <h4>Completed / Closed</h4>
-                    <div id="cl-closed-list"></div>
-                    <button class="btn btn-add" onclick="addStatusRow('cl-closed-list', '#c8e6c9')">+ Add Status</button>
-                </div>
-            </div>
             
-            <div class="settings-col">
-                <h3>Tests (L4)</h3>
-                <div class="status-group">
-                    <h4>Active / Open</h4>
-                    <div id="test-open-list"></div>
-                    <button class="btn btn-add" onclick="addStatusRow('test-open-list', '#fff9c4')">+ Add Status</button>
+            <div class="status-config-wrap">
+                <div class="settings-col">
+                    <h3>Checklists (L2 & L3)</h3>
+                    <div class="status-group">
+                        <h4>Active / Open</h4>
+                        <div id="cl-open-list"></div>
+                        <button class="btn btn-add" onclick="addStatusRow('cl-open-list', '#fff9c4')">+ Add Status</button>
+                    </div>
+                    <div class="status-group">
+                        <h4>Completed / Closed</h4>
+                        <div id="cl-closed-list"></div>
+                        <button class="btn btn-add" onclick="addStatusRow('cl-closed-list', '#c8e6c9')">+ Add Status</button>
+                    </div>
                 </div>
-                <div class="status-group">
-                    <h4>Completed / Closed</h4>
-                    <div id="test-closed-list"></div>
-                    <button class="btn btn-add" onclick="addStatusRow('test-closed-list', '#c8e6c9')">+ Add Status</button>
+                
+                <div class="settings-col">
+                    <h3>Tests (L4)</h3>
+                    <div class="status-group">
+                        <h4>Active / Open</h4>
+                        <div id="test-open-list"></div>
+                        <button class="btn btn-add" onclick="addStatusRow('test-open-list', '#fff9c4')">+ Add Status</button>
+                    </div>
+                    <div class="status-group">
+                        <h4>Completed / Closed</h4>
+                        <div id="test-closed-list"></div>
+                        <button class="btn btn-add" onclick="addStatusRow('test-closed-list', '#c8e6c9')">+ Add Status</button>
+                    </div>
+                </div>
+
+                <div class="settings-col">
+                    <h3>Global Issues</h3>
+                    <div class="status-group">
+                        <h4>Active / Open</h4>
+                        <div id="iss-open-list"></div>
+                        <button class="btn btn-add" onclick="addStatusRow('iss-open-list', '#ffcdd2')">+ Add Status</button>
+                    </div>
+                    <div class="status-group">
+                        <h4>Completed / Closed</h4>
+                        <div id="iss-closed-list"></div>
+                        <button class="btn btn-add" onclick="addStatusRow('iss-closed-list', '#c8e6c9')">+ Add Status</button>
+                    </div>
                 </div>
             </div>
 
-            <div class="settings-col">
-                <h3>Global Issues</h3>
-                <div class="status-group">
-                    <h4>Active / Open</h4>
-                    <div id="iss-open-list"></div>
-                    <button class="btn btn-add" onclick="addStatusRow('iss-open-list', '#ffcdd2')">+ Add Status</button>
+            <div class="rules-section">
+                <h3>Phase Rules Engine</h3>
+                <div class="table-responsive">
+                    <table id="phase-rules-table">
+                        <thead>
+                            <tr>
+                                <th>Active?</th>
+                                <th>Phase</th>
+                                <th>Req. Prev Status</th>
+                                <th title="Max Gate CL Open">Max Gate</th>
+                                <th title="Max Support CL Open">Max Supp</th>
+                                <th title="Max Gating Issues Open">Max Gate Iss.</th>
+                                <th title="Max Non-Gating Issues Open">Max Non-Gate Iss.</th>
+                                <th>Result Status</th>
+                                <th>Color</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="phase-rules-list">
+                            </tbody>
+                    </table>
                 </div>
-                <div class="status-group">
-                    <h4>Completed / Closed</h4>
-                    <div id="iss-closed-list"></div>
-                    <button class="btn btn-add" onclick="addStatusRow('iss-closed-list', '#c8e6c9')">+ Add Status</button>
-                </div>
+                <button class="btn btn-add" style="width:auto; padding: 6px 15px;" onclick="addPhaseRuleRow()">+ Add Rule</button>
             </div>
+
         </div>
         <div class="modal-footer">
             <button class="btn btn-cancel" onclick="closeSettingsModal()">Cancel</button>
@@ -233,7 +274,8 @@
         showL2Gate: true, showL3Gate: true, showL4Gate: true,
         openStatuses: [], closedStatuses: [],
         testOpenStatuses: [], testClosedStatuses: [],
-        issueOpenStatuses: [], issueClosedStatuses: []
+        issueOpenStatuses: [], issueClosedStatuses: [],
+        phaseRules: []
     };
 
     function getContrastYIQ(hexcolor){
@@ -250,6 +292,15 @@
         if (!value || value === "N/A" || value === "") return 'background-color:#f5f5f5; color:#616161;';
         let lowerVal = value.toString().toLowerCase();
         
+        // 1. Check Phase Rules FIRST
+        if (globalConfig.phaseRules && globalConfig.phaseRules.length > 0) {
+            let ruleMatch = globalConfig.phaseRules.find(r => r.resultingStatus && lowerVal.includes(r.resultingStatus.toLowerCase()));
+            if (ruleMatch && ruleMatch.color) {
+                return `background-color:${ruleMatch.color}; color:${getContrastYIQ(ruleMatch.color)};`;
+            }
+        }
+
+        // 2. Check general Status settings
         let openArr = globalConfig.openStatuses;
         let closedArr = globalConfig.closedStatuses;
         
@@ -281,7 +332,6 @@
                 styleStr = getDynamicStyle(status, type);
             } else { id = rawVal; status = 'Unknown'; }
         }
-        
         if (id === '') {
             return `<div class="filter-target stacked-cell ${extraClasses}" data-val="" style="background-color:#f5f5f5; color:transparent;">
                         <div class="checklist-header" style="border-bottom:none;">-</div>
@@ -428,6 +478,13 @@
             container.innerHTML = '';
             map[id].forEach(s => container.appendChild(createRowHTML(s.name, s.color)));
         }
+
+        // Render Phase Rules
+        const prList = document.getElementById('phase-rules-list');
+        prList.innerHTML = '';
+        if(globalConfig.phaseRules) {
+            globalConfig.phaseRules.forEach(rule => addPhaseRuleRow(rule));
+        }
     }
 
     function closeSettingsModal() { document.getElementById('settings-modal').classList.remove('active'); }
@@ -440,6 +497,25 @@
 
     function addStatusRow(listId, defaultColor) { document.getElementById(listId).appendChild(createRowHTML('', defaultColor)); }
 
+    function addPhaseRuleRow(r = {}) {
+        const tbody = document.getElementById('phase-rules-list');
+        const tr = document.createElement('tr');
+        tr.className = 'rule-row';
+        tr.innerHTML = `
+            <td><input type="checkbox" class="r-active" ${r.active !== false && r.active !== 'false' && r.active !== 'FALSE' ? 'checked' : ''}></td>
+            <td><select class="r-phase"><option value="L2" ${r.phase=='L2'?'selected':''}>L2</option><option value="L3" ${r.phase=='L3'?'selected':''}>L3</option><option value="L4" ${r.phase=='L4'?'selected':''}>L4</option></select></td>
+            <td><input type="text" class="r-prev" value="${r.prevStatus || ''}" placeholder="e.g. Complete"></td>
+            <td><input type="number" class="r-mg" value="${r.maxGate !== undefined ? r.maxGate : ''}" placeholder="0"></td>
+            <td><input type="number" class="r-ms" value="${r.maxSupport !== undefined ? r.maxSupport : ''}" placeholder="0"></td>
+            <td><input type="number" class="r-mgi" value="${r.maxGatingIssues !== undefined ? r.maxGatingIssues : ''}" placeholder="0"></td>
+            <td><input type="number" class="r-mngi" value="${r.maxNonGatingIssues !== undefined ? r.maxNonGatingIssues : ''}" placeholder="0"></td>
+            <td><input type="text" class="r-res" value="${r.resultingStatus || ''}" placeholder="Result"></td>
+            <td><input type="color" class="r-color" value="${r.color || '#e0e0e0'}"></td>
+            <td><button class="btn btn-del" style="padding:4px 8px;" onclick="this.closest('tr').remove()">🗑</button></td>
+        `;
+        tbody.appendChild(tr);
+    }
+
     function getListValues(listId) {
         return Array.from(document.querySelectorAll(`#${listId} .status-row`)).map(row => ({
             name: row.querySelector('.s-name').value.trim(), color: row.querySelector('.s-color').value
@@ -450,10 +526,25 @@
         const btn = document.querySelector('.btn-save');
         btn.innerText = 'Saving...'; btn.disabled = true;
 
+        // Parse Phase Rules Table
+        const prRows = document.querySelectorAll('.rule-row');
+        const newPhaseRules = Array.from(prRows).map(row => ({
+            active: row.querySelector('.r-active').checked,
+            phase: row.querySelector('.r-phase').value,
+            prevStatus: row.querySelector('.r-prev').value.trim(),
+            maxGate: row.querySelector('.r-mg').value,
+            maxSupport: row.querySelector('.r-ms').value,
+            maxGatingIssues: row.querySelector('.r-mgi').value,
+            maxNonGatingIssues: row.querySelector('.r-mngi').value,
+            resultingStatus: row.querySelector('.r-res').value.trim(),
+            color: row.querySelector('.r-color').value
+        }));
+
         const payload = { 
             openStatuses: getListValues('cl-open-list'), closedStatuses: getListValues('cl-closed-list'),
             testOpenStatuses: getListValues('test-open-list'), testClosedStatuses: getListValues('test-closed-list'),
-            issueOpenStatuses: getListValues('iss-open-list'), issueClosedStatuses: getListValues('iss-closed-list')
+            issueOpenStatuses: getListValues('iss-open-list'), issueClosedStatuses: getListValues('iss-closed-list'),
+            phaseRules: newPhaseRules
         };
 
         try {
@@ -461,6 +552,8 @@
             globalConfig.openStatuses = payload.openStatuses; globalConfig.closedStatuses = payload.closedStatuses;
             globalConfig.testOpenStatuses = payload.testOpenStatuses; globalConfig.testClosedStatuses = payload.testClosedStatuses;
             globalConfig.issueOpenStatuses = payload.issueOpenStatuses; globalConfig.issueClosedStatuses = payload.issueClosedStatuses;
+            globalConfig.phaseRules = payload.phaseRules;
+            
             closeSettingsModal(); fetchTrackerData(); 
         } catch(e) {
             console.error("Save failed", e); alert("Failed to save to Google Sheets.");
