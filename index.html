@@ -64,7 +64,7 @@
         } 
 
         /* --- ASSET CELL FULL FILL --- */
-        .group-asset { flex: 0 0 180px !important; width: 180px !important; min-width: 180px !important; max-width: 180px !important; position: sticky; left: 0; z-index: 10; }
+        .group-asset { flex: 0 0 140px !important; width: 140px !important; min-width: 140px !important; max-width: 140px !important; position: sticky; left: 0; z-index: 10; }
         .frozen-group-bar .group-asset { background-color: #1b5e20; z-index: 12; border-right: 1px solid #0d3b10 !important; }
         .frozen-col-bar .group-asset { background-color: #2e7d32; z-index: 12; border-right: 1px solid #1b5e20 !important; }
         
@@ -109,7 +109,6 @@
         .checklist-header { flex: 1; background-color: #f1f3f4; color: #333; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; padding: 4px; border-bottom: none !important; text-align: center;}
         .checklist-status { flex: 1; font-size: 10px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; padding: 4px; text-align: center; white-space: normal; word-break: break-word; line-height: 1.1; }
         
-        /* OVERRIDE FOR ISSUE HEADERS (Thinner to fit ID text properly) */
         .header-cell.iss-cell { font-size: 10px !important; justify-content: center; }
 
         .expand-btn { 
@@ -220,7 +219,6 @@
                     <div class="title-wrap"><span class="col-title" data-original="Status">Status</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div>
                     <div class="expand-btn" data-target="l2-supp" onclick="window.toggleExpansion('l2')">+</div>
                 </div>
-                <div class="header-cell col-details l2-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l2-supp-details cl-cell divider-right">Supp 10</div>
                 <div class="phase-gap"></div>
                 
                 <div class="header-cell gate-cell l3-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span></div></div>
@@ -228,7 +226,6 @@
                     <div class="title-wrap"><span class="col-title" data-original="Status">Status</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div>
                     <div class="expand-btn" data-target="l3-supp" onclick="window.toggleExpansion('l3')">+</div>
                 </div>
-                <div class="header-cell col-details l3-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l3-supp-details cl-cell divider-right">Supp 10</div>
                 <div class="phase-gap"></div>
                 
                 <div class="header-cell gate-cell l4-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div></div>
@@ -236,48 +233,13 @@
                     <div class="title-wrap"><span class="col-title" data-original="Status">Status</span><span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span></div>
                     <div class="expand-btn" data-target="l4-supp" onclick="window.toggleExpansion('l4')">+</div>
                 </div>
-                <div class="header-cell col-details l4-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l4-supp-details cl-cell divider-right">Supp 10</div>
                 <div class="phase-gap"></div>
 
                 <div class="header-cell summary-cell" id="global-iss-header">
                     <div class="title-wrap"><span class="col-title" data-original="Open Issues">Open Issues</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div>
                     <div class="expand-btn" data-target="global-iss" onclick="window.toggleGlobalIssues()">+</div>
                 </div>
-                
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 1</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 2</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 3</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 4</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 5</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 6</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 7</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 8</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 9</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 10</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 11</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 12</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 13</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 14</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 15</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 16</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 17</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 18</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 19</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 20</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 21</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 22</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 23</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 24</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 25</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 26</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 27</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 28</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 29</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 30</div>
-                <div class="header-cell col-details global-iss-details iss-cell">Iss 31</div>
-                <div class="header-cell col-details global-iss-details iss-cell divider-right">Iss 32</div>
-
-            </div>
+                </div>
         </div>
         <div class="rows-container" id="tracker-rows"><div class="loading-text">Stitching and Parsing Relational Data Arrays... 🚀</div></div>
     </div>
@@ -381,8 +343,8 @@
         openStatuses: [], closedStatuses: [],
         testOpenStatuses: [], testClosedStatuses: [],
         issueOpenStatuses: [], issueClosedStatuses: [],
-        phaseRules: [],
-        fallbackColor: '#f5f5f5'
+        phaseRules: [], fallbackColor: '#f5f5f5',
+        maxCols: { l2: 0, l3: 0, l4: 0, iss: 0 }
     };
 
     let expandedStates = { l2: false, l3: false, l4: false, iss: false };
@@ -491,31 +453,31 @@
         }
     }
 
-    function render10SupportCells(row, level) {
+    // Dynamic generation based on backend max limits
+    function renderSupportCells(row, level, maxCount) {
         let html = '';
         let type = (level === 'L4') ? 'test' : 'checklist';
-        for (let i = 1; i <= 10; i++) {
-            const isTenth = (i === 10) ? 'divider-right' : '';
-            html += renderStackedCell(row[`${level} Support CL ${i}`], `cell-row-detail col-details ${level.toLowerCase()}-supp-details cl-cell ${isTenth}`, type).replace('filter-target', ''); 
+        for (let i = 1; i <= maxCount; i++) {
+            const isLast = (i === maxCount) ? 'divider-right' : '';
+            html += renderStackedCell(row[`${level} Support CL ${i}`], `cell-row-detail col-details ${level.toLowerCase()}-supp-details cl-cell ${isLast}`, type).replace('filter-target', ''); 
         }
         return html;
     }
 
-    function renderIssuesBlock(row) {
+    function renderIssuesBlock(row, maxCount) {
         let html = '';
-        for (let i = 1; i <= 32; i++) {
-            const is32 = (i === 32) ? 'divider-right' : '';
-            // We ALWAYS generate 32 cells so the math grid never breaks, even if they are empty
+        for (let i = 1; i <= maxCount; i++) {
+            const isLast = (i === maxCount) ? 'divider-right' : '';
             let val = row[`Issue ${i}`];
-            html += renderStackedCell(val, `cell-row-detail col-details global-iss-details iss-cell ${is32}`, 'issue').replace('filter-target', ''); 
+            html += renderStackedCell(val, `cell-row-detail col-details global-iss-details iss-cell ${isLast}`, 'issue').replace('filter-target', ''); 
         }
         return html;
     }
 
-    function combineOpenSupportCLs(row, level) {
+    function combineOpenSupportCLs(row, level, maxCount) {
         let openIds = [];
         let closedArr = (level === 'L4') ? (globalConfig.testClosedStatuses || []) : (globalConfig.closedStatuses || []);
-        for (let i = 1; i <= 10; i++) {
+        for (let i = 1; i <= maxCount; i++) {
             const val = row[`${level} Support CL ${i}`];
             if (val && val !== 'N/A' && val !== 'Clear' && String(val).trim() !== '') {
                 const match = String(val).match(/(.+?)\s*\((.+)\)/);
@@ -532,10 +494,10 @@
         return { display: openIds.join(', '), count: openIds.length };
     }
 
-    function combineOpenIssues(row) {
+    function combineOpenIssues(row, maxCount) {
         let openIds = [];
         let issueClosedArr = globalConfig.issueClosedStatuses || [];
-        for (let i = 1; i <= 32; i++) {
+        for (let i = 1; i <= maxCount; i++) {
             const val = row[`Issue ${i}`];
             if (val && val !== 'N/A' && val !== 'Clear' && String(val).trim() !== '') {
                 const match = String(val).match(/(.+?)\s*\((.+)\)/);
@@ -548,6 +510,24 @@
         }
         if (openIds.length === 0) return { display: "0", count: 0 };
         return { display: openIds.join(', '), count: openIds.length };
+    }
+
+    function generateHeaderHTML(level, max) {
+        let html = '';
+        for (let i = 1; i <= max; i++) {
+            let isLast = (i === max) ? 'divider-right' : '';
+            html += `<div class="header-cell col-details ${level.toLowerCase()}-supp-details cl-cell dynamic-header ${isLast}">Supp ${i}</div>`;
+        }
+        return html;
+    }
+
+    function generateIssHeaderHTML(max) {
+        let html = '';
+        for (let i = 1; i <= max; i++) {
+            let isLast = (i === max) ? 'divider-right' : '';
+            html += `<div class="header-cell col-details global-iss-details iss-cell dynamic-header ${isLast}">Iss ${i}</div>`;
+        }
+        return html;
     }
 
     async function fetchTrackerData() {
@@ -564,6 +544,7 @@
 
             const rows = payload.data || [];
             if (payload.config) globalConfig = { ...globalConfig, ...payload.config };
+            if (payload.maxCols) globalConfig.maxCols = payload.maxCols;
 
             if (!globalConfig.showL2Gate) document.body.classList.add('hide-l2-gate');
             else document.body.classList.remove('hide-l2-gate');
@@ -571,6 +552,14 @@
             else document.body.classList.remove('hide-l3-gate');
             if (!globalConfig.showL4Gate) document.body.classList.add('hide-l4-gate');
             else document.body.classList.remove('hide-l4-gate');
+
+            // --- INJECT DYNAMIC HEADERS based on Backend Math ---
+            document.querySelectorAll('.dynamic-header').forEach(el => el.remove()); // Clear previous
+            
+            if(globalConfig.maxCols.l2 > 0) document.getElementById('l2-supp-header').insertAdjacentHTML('afterend', generateHeaderHTML('L2', globalConfig.maxCols.l2));
+            if(globalConfig.maxCols.l3 > 0) document.getElementById('l3-supp-header').insertAdjacentHTML('afterend', generateHeaderHTML('L3', globalConfig.maxCols.l3));
+            if(globalConfig.maxCols.l4 > 0) document.getElementById('l4-supp-header').insertAdjacentHTML('afterend', generateHeaderHTML('L4', globalConfig.maxCols.l4));
+            if(globalConfig.maxCols.iss > 0) document.getElementById('global-iss-header').insertAdjacentHTML('afterend', generateIssHeaderHTML(globalConfig.maxCols.iss));
 
             // --- STRICT MATH INITIALIZATION ---
             let gateL2 = globalConfig.showL2Gate !== false ? 100 : 0;
@@ -593,10 +582,10 @@
 
             rows.forEach(row => {
                 const assetId = row['Asset'] || 'N/A';
-                const l2Open = combineOpenSupportCLs(row, 'L2');
-                const l3Open = combineOpenSupportCLs(row, 'L3');
-                const l4Open = combineOpenSupportCLs(row, 'L4');
-                const issuesOpen = combineOpenIssues(row);
+                const l2Open = combineOpenSupportCLs(row, 'L2', globalConfig.maxCols.l2);
+                const l3Open = combineOpenSupportCLs(row, 'L3', globalConfig.maxCols.l3);
+                const l4Open = combineOpenSupportCLs(row, 'L4', globalConfig.maxCols.l4);
+                const issuesOpen = combineOpenIssues(row, globalConfig.maxCols.iss);
                 
                 const rowHTML = `
                 <div class="cell-row">
@@ -605,21 +594,21 @@
                     
                     ${renderStackedCell(row['L2 Gate CL 1'], 'gate-cell l2-gate-col', 'checklist')}
                     <div class="filter-target summary-cell l2-supp-summary divider-right" style="${getDynamicStyle(row['L2 Overall Status'], 'checklist', true)}" data-val="${row['L2 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l2Open.display}">${row['L2 Overall Status'] || 'N/A'}</div>
-                    ${render10SupportCells(row, 'L2')}
+                    ${renderSupportCells(row, 'L2', globalConfig.maxCols.l2)}
                     <div class="phase-gap"></div>
                     
                     ${renderStackedCell(row['L3 Gate CL 1'], 'gate-cell l3-gate-col', 'checklist')}
                     <div class="filter-target summary-cell l3-supp-summary divider-right" style="${getDynamicStyle(row['L3 Overall Status'], 'checklist', true)}" data-val="${row['L3 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l3Open.display}">${row['L3 Overall Status'] || 'N/A'}</div>
-                    ${render10SupportCells(row, 'L3')}
+                    ${renderSupportCells(row, 'L3', globalConfig.maxCols.l3)}
                     <div class="phase-gap"></div>
                     
                     ${renderStackedCell(row['L4 Gate CL 1'], 'gate-cell l4-gate-col', 'test')}
                     <div class="filter-target summary-cell l4-supp-summary divider-right" style="${getDynamicStyle(row['L4 Overall Status'], 'test', true)}" data-val="${row['L4 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l4Open.display}">${row['L4 Overall Status'] || 'N/A'}</div>
-                    ${render10SupportCells(row, 'L4')}
+                    ${renderSupportCells(row, 'L4', globalConfig.maxCols.l4)}
                     <div class="phase-gap"></div>
                     
-                    <div class="filter-target summary-cell global-iss-summary" style="${getDynamicStyle(issuesOpen.count, 'issue', false)}" data-val="${issuesOpen.display}">${issuesOpen.display}</div>
-                    ${renderIssuesBlock(row)}
+                    <div class="filter-target summary-cell global-iss-summary divider-right" style="${getDynamicStyle(issuesOpen.count, 'issue', false)}" data-val="${issuesOpen.display}">${issuesOpen.display}</div>
+                    ${renderIssuesBlock(row, globalConfig.maxCols.iss)}
                 </div>`;
                 container.insertAdjacentHTML('beforeend', rowHTML);
             });
@@ -747,11 +736,12 @@
                 btn.style.background = state ? "#b71c1c" : "#4caf50";
             }
             
-            // Calculate the exact pixel width
+            // Dynamic Math based on how many columns are actively populated in backend
+            let maxCols = globalConfig.maxCols[lvl] || 0;
             let gateWidth = globalConfig[`show${level.toUpperCase()}Gate`] !== false ? 100 : 0;
             let summaryWidth = 180;
             let baseWidth = gateWidth + summaryWidth;
-            let exactWidth = state ? (baseWidth + 1000) : baseWidth; // 10 cols * 100px = 1000px
+            let exactWidth = state ? (baseWidth + (maxCols * 100)) : baseWidth;
             
             let headerGroup = document.getElementById(`group-${lvl}`);
             if(headerGroup) {
@@ -779,8 +769,10 @@
                 btn.style.background = state ? "#b71c1c" : "#4caf50";
             }
 
-            // Summary (180px) + 32 Issues (100px * 32 = 3200px) = 3340px mathematically
-            let exactIssWidth = state ? 3340 : 180;
+            // Summary (180px) + (Dynamic Max Issues * 100px)
+            let maxIss = globalConfig.maxCols.iss || 0;
+            let exactIssWidth = state ? (180 + (maxIss * 100)) : 180;
+            
             let issGroup = document.getElementById(`group-iss`);
             if(issGroup) {
                 issGroup.style.flex = `0 0 ${exactIssWidth}px`;
