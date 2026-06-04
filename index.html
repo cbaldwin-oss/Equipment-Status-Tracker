@@ -18,29 +18,35 @@
         .subheader { position: sticky; top: 0; z-index: 1000; background-color: #f1f3f4; height: 50px; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; }
         #app-body { height: calc(100vh - 80px); width: 100%; overflow-y: auto; background: #fff;}
         
-        /* --- EQUIPMENT TRACKER GRID (UPDATED FOR HORIZONTAL SCROLL) --- */
+        /* --- STATUS CELL COLORS --- */
+        .bg-green   { background-color: #c8e6c9 !important; color: #1b5e20 !important; }
+        .bg-yellow  { background-color: #fff9c4 !important; color: #f57f17 !important; }
+        .bg-red     { background-color: #ffcdd2 !important; color: #b71c1c !important; }
+        .bg-grey    { background-color: #f5f5f5 !important; color: #616161 !important; }
+        .bg-filled  { background-color: #e1f5fe !important; color: #01579b !important; }
+
+        /* --- EQUIPMENT TRACKER GRID (FLEXIBLE FILL & HORIZONTAL SCROLL) --- */
         .tracker-container { width: 95%; margin: 20px auto; border: 2px solid #2e7d32; border-radius: 8px; background: #ffffff; overflow-x: auto; }
         
-        /* Force internal elements to stretch with content to prevent squishing */
-        .tracker-header-wrapper { position: sticky; top: 51px; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: max-content; min-width: 100%; background: #ffffff;}
-        .rows-container { width: max-content; min-width: 100%; } 
+        .tracker-header-wrapper { position: sticky; top: 51px; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 100%; width: fit-content; background: #ffffff;}
+        .rows-container { min-width: 100%; width: fit-content; padding-top: 5px; } 
         
-        .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 1px solid #0d3b10; width: max-content; min-width: 100%; }
-        .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: stretch; width: max-content; min-width: 100%; }
-        .cell-row { display: flex; align-items: stretch; border-bottom: 1px solid #ccc; gap: 0; width: max-content; min-width: 100%; }
+        .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 1px solid #0d3b10; min-width: 100%; width: fit-content; }
+        .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: stretch; min-width: 100%; width: fit-content; }
+        .cell-row { display: flex; align-items: stretch; border-bottom: 1px solid #ccc; gap: 0; min-width: 100%; width: fit-content; }
         
         .cell-row:hover { background-color: rgba(0,0,0,0.02); }
-        .cell-row:hover .group-asset { background-color: #e0e0e0; } /* Keep hover color on sticky asset */
+        .cell-row:hover .group-asset { background-color: #e0e0e0; }
 
         .cell-row input { padding: 8px 6px; font-size: 13px; border: none; border-right: 1px solid #f0f0f0; text-align: center; width: 100%; outline: none; text-overflow: ellipsis; min-height: 100%; }
         
-        /* --- FIXED WIDTHS & STICKY ASSET COLUMN --- */
-        .group-asset { flex: 0 0 90px; width: 90px; position: sticky; left: 0; z-index: 10; }
+        /* Layout Flex Alignment Scales - Asset Frozen Left */
+        .group-asset { flex: 0 0 110px; width: 110px; position: sticky; left: 0; z-index: 10; }
         .frozen-group-bar .group-asset { background-color: #1b5e20; z-index: 11; border-right: 3px solid #4caf50 !important; }
         .frozen-col-bar .group-asset { background-color: #2e7d32; z-index: 11; border-right: 3px solid #4caf50 !important; }
-        .cell-row .group-asset { background-color: #f5f5f5; z-index: 10; border-right: 3px solid #b0bec5 !important; }
+        .cell-row .group-asset { background-color: #f5f5f5; z-index: 10; border-right: 3px solid #78909c !important; }
         
-        .col-single { flex: 0 0 90px; width: 90px; }
+        .col-single { flex: 1; min-width: 85px; border-right: 2px solid #aeb6ba; }
         .group-header, .group-issues { transition: flex 0.2s ease; display: flex; align-items: center; justify-content: center;} 
 
         .header-cell { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: bold; text-transform: uppercase; padding: 0 6px; }
@@ -50,20 +56,20 @@
         .col-details { display: none; }
         .col-details.expanded { display: flex; }
         
-        .summary-cell { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 11px; line-height: 1.3; padding: 4px 6px; border-right: 1px solid #f0f0f0; white-space: normal; word-break: break-word; }
+        .summary-cell { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 12px; font-weight: 600; line-height: 1.3; padding: 4px 6px; border-right: 2px solid #aeb6ba; white-space: normal; word-break: break-word; }
         
-        /* SPREADSHEET STACKED CARDS */
-        .stacked-cell { display: flex; flex-direction: column; flex: 0 0 90px; width: 90px; border-right: 2px solid #aeb6ba; }
-        .checklist-header { flex: 1; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; padding: 4px; border-bottom: none; background-color: #f1f3f4; color: #333; }
+        /* SPREADSHEET STACKED CARDS (UNDO HEADER COLOR / REMOVE CENTER LINE) */
+        .stacked-cell { display: flex; flex-direction: column; flex: 1; min-width: 85px; border-right: 2px solid #aeb6ba; background: #fff;}
+        .checklist-header { flex: 1; background-color: #f1f3f4; color: #333; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; padding: 4px; border-bottom: none; }
         .checklist-status { flex: 1; font-size: 9px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; padding: 4px; text-align: center; white-space: normal; word-break: break-word; line-height: 1.1; }
         
         /* ISSUES BLOCK */
-        .header-cell.iss-details { flex: 0 0 360px; width: 360px; font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; border-right: 1px solid #1b5e20; }
-        .row-details.iss-details { flex: 0 0 360px; width: 360px; border-right: 1px solid #e0e0e0; background-color: #ffffff; flex-direction: row; align-items: stretch; overflow-x: auto; }
+        .header-cell.iss-details { flex: 2; min-width: 250px; font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; border-right: 2px solid #1b5e20; }
+        .row-details.iss-details { flex: 2; min-width: 250px; border-right: 2px solid #aeb6ba; background-color: #ffffff; flex-direction: row; align-items: stretch; overflow-x: auto; }
         
         /* CHECKLIST 10 BLOCK */
-        .header-cell.cl-cell { flex: 0 0 90px; width: 90px; font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; border-right: 1px solid #1b5e20;}
-        .cell-row-detail.cl-cell { display: none; flex: 0 0 90px; width: 90px; flex-direction: column; border-right: 1px solid #e0e0e0; background-color: #ffffff; }
+        .header-cell.cl-cell { flex: 1; min-width: 85px; font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; border-right: 2px solid #1b5e20;}
+        .cell-row-detail.cl-cell { display: none; flex: 1; min-width: 85px; flex-direction: column; border-right: 2px solid #aeb6ba; background-color: #ffffff; }
         .cell-row-detail.cl-cell.expanded { display: flex; }
         
         .row-details::-webkit-scrollbar { height: 5px; }
@@ -71,9 +77,11 @@
         
         .expand-btn { cursor: pointer; color: white; background: #4caf50; border: 1px solid #1b5e20; border-radius: 3px; padding: 1px 4px; font-weight: bold; font-size: 11px; margin-left: 4px; user-select: none; display: flex; align-items: center;}
         .expand-btn:hover { background: #1b5e20; }
-        .divider-right { border-right: 3px solid #b0bec5 !important; }
-        .frozen-group-bar .divider-right, .frozen-col-bar .divider-right { border-right: 2px solid #4caf50 !important; }
-        .loading-text { text-align: center; padding: 30px; color: #555; font-weight: bold; font-size: 18px; }
+        
+        /* Heavy Phase Separation Dividers */
+        .divider-right { border-right: 3px solid #78909c !important; }
+        .frozen-group-bar .divider-right, .frozen-col-bar .divider-right { border-right: 3px solid #4caf50 !important; }
+        .loading-text { text-align: center; padding: 30px; color: #555; font-weight: bold; font-size: 18px; width: 100vw;}
 
         /* GLOBAL CONFIG TOGGLES */
         body.hide-l2-gate .l2-gate-col { display: none !important; }
@@ -164,6 +172,7 @@
             <div class="frozen-col-bar" id="main-column-headers">
                 <div class="header-cell group-asset divider-right"><div class="title-wrap"><span class="col-title" data-original="Asset">Asset</span> <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span></div></div>
                 
+                <!-- L2 -->
                 <div class="header-cell col-single l2-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l2-supp-header">
                     <div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div>
@@ -171,6 +180,7 @@
                 </div>
                 <div class="header-cell col-details l2-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l2-supp-details cl-cell divider-right">Supp 10</div>
                 
+                <!-- L3 -->
                 <div class="header-cell col-single l3-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l3-supp-header">
                     <div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div>
@@ -178,6 +188,7 @@
                 </div>
                 <div class="header-cell col-details l3-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l3-supp-details cl-cell divider-right">Supp 10</div>
                 
+                <!-- L4 -->
                 <div class="header-cell col-single l4-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l4-supp-header">
                     <div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span></div>
@@ -185,6 +196,7 @@
                 </div>
                 <div class="header-cell col-details l4-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l4-supp-details cl-cell divider-right">Supp 10</div>
 
+                <!-- ISSUES -->
                 <div class="header-cell col-single" id="global-iss-header">
                     <div class="title-wrap"><span class="col-title" data-original="Open Issues">Open Issues</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div>
                     <div class="expand-btn" data-target="global-iss" onclick="toggleGlobalIssues()">+</div>
@@ -196,6 +208,7 @@
     </div>
 </div>
 
+<!-- SETTINGS MODAL -->
 <div class="modal-overlay" id="settings-modal">
     <div class="modal-box">
         <div class="modal-header">
@@ -210,6 +223,7 @@
             </div>
 
             <div class="status-config-wrap">
+                <!-- CHECKLISTS -->
                 <div class="settings-col">
                     <h3>Checklists (L2 & L3)</h3>
                     <div class="status-group">
@@ -224,6 +238,7 @@
                     </div>
                 </div>
                 
+                <!-- TESTS -->
                 <div class="settings-col">
                     <h3>Tests (L4)</h3>
                     <div class="status-group">
@@ -238,6 +253,7 @@
                     </div>
                 </div>
 
+                <!-- ISSUES -->
                 <div class="settings-col">
                     <h3>Global Issues</h3>
                     <div class="status-group">
@@ -253,6 +269,7 @@
                 </div>
             </div>
 
+            <!-- PHASE RULES SECTION -->
             <div class="rules-section">
                 <h3>Phase Rules Engine</h3>
                 <div class="table-responsive">
@@ -272,7 +289,8 @@
                             </tr>
                         </thead>
                         <tbody id="phase-rules-list">
-                            </tbody>
+                            <!-- Rule rows will dynamically inject here -->
+                        </tbody>
                     </table>
                 </div>
                 <button class="btn btn-add" style="width:auto; padding: 6px 15px;" onclick="addPhaseRuleRow()">+ Add Rule</button>
@@ -310,17 +328,17 @@
     }
 
     // --- SCOPED DYNAMIC STYLE MATCHER ---
-    // If isOverallStatus = true, blanks fall back to the Custom User Settings Color
-    // If isOverallStatus = false (Checklists/Tests/Issues), blanks fall back strictly to gray
+    // isOverallStatus = true -> applies Global Fallback Color if unmatched/empty.
+    // isOverallStatus = false -> strictly applies gray (#f5f5f5) if empty/unmatched.
     function getDynamicStyle(value, type = 'checklist', isOverallStatus = false) {
         let fbColor = isOverallStatus ? (globalConfig.fallbackColor || '#f5f5f5') : '#f5f5f5';
         let fbStyle = `background-color:${fbColor}; color:${getContrastYIQ(fbColor)};`;
-        let emptyStyle = `background-color:#f5f5f5; color:#616161;`;
-        let fallbackToUse = isOverallStatus ? fbStyle : emptyStyle;
+        let emptyStyle = `background-color:#f5f5f5; color:#616161;`; // Empty cells are strictly grayed out
 
-        if (value === undefined || value === null || value === "N/A" || value === "Clear" || value === "") {
-            return fallbackToUse;
+        if (value === undefined || value === null || value === "N/A" || value === "Clear" || value === "" || value === "-") {
+            return emptyStyle; // Force empty individual cells to gray out
         }
+        
         let lowerVal = String(value).toLowerCase().trim();
         
         // 1. Check Phase Rules FIRST
@@ -370,7 +388,8 @@
             }
         }
 
-        return fallbackToUse;
+        // Return phase rule fallback if it's an overall status, otherwise grey.
+        return isOverallStatus ? fbStyle : emptyStyle;
     }
 
     function isStatusMatch(statusString, statusArray) {
@@ -380,6 +399,7 @@
         return statusArray.some(item => item.name && s.includes(String(item.name).toLowerCase().trim()));
     }
 
+    // --- REVERTED STACKED CELL RENDERER (ID GRAY, STATUS COLORED, NO CENTER LINE) ---
     function renderStackedCell(val, extraClasses = '', type = 'checklist') {
         let id = '', status = '', styleStr = '', rawVal = '';
         
@@ -388,15 +408,18 @@
             const match = rawVal.match(/(.+?)\s*\((.+)\)/);
             if (match) {
                 id = match[1]; status = match[2];
-                // Pass false here because individual checklists shouldn't get the phase fallback color
+                // apply coloring ONLY to the bottom half
                 styleStr = getDynamicStyle(status, type, false);
-            } else { id = rawVal; status = 'Unknown'; styleStr = getDynamicStyle('Unknown', type, false); }
+            } else { 
+                id = rawVal; status = 'Unknown'; 
+                styleStr = getDynamicStyle('Unknown', type, false); 
+            }
         }
         
         if (id === '') {
             return `<div class="filter-target stacked-cell ${extraClasses}" data-val="">
                         <div class="checklist-header">-</div>
-                        <div class="checklist-status" style="background-color:#f5f5f5; color:transparent;">-</div>
+                        <div class="checklist-status" style="background-color:#f5f5f5; color:#616161;">-</div>
                     </div>`;
         } else {
             return `<div class="filter-target stacked-cell ${extraClasses}" data-val="${rawVal}">
@@ -488,11 +511,12 @@
             if (!globalConfig.showL4Gate) document.body.classList.add('hide-l4-gate');
             else document.body.classList.remove('hide-l4-gate');
 
-            // Set fixed widths in JS based on visibility instead of fluid ratios
-            document.getElementById('group-l2').style.flex = `0 0 ${globalConfig.showL2Gate ? 180 : 90}px`;
-            document.getElementById('group-l3').style.flex = `0 0 ${globalConfig.showL3Gate ? 180 : 90}px`;
-            document.getElementById('group-l4').style.flex = `0 0 ${globalConfig.showL4Gate ? 180 : 90}px`;
-            document.getElementById('group-iss').style.flex = `0 0 90px`;
+            // --- FLEX MATH FOR FILLING THE SCREEN ---
+            // Flex ratios ensure the initial un-expanded setup perfectly spreads across the monitor
+            document.getElementById('group-l2').style.flex = globalConfig.showL2Gate ? 2 : 1;
+            document.getElementById('group-l3').style.flex = globalConfig.showL3Gate ? 2 : 1;
+            document.getElementById('group-l4').style.flex = globalConfig.showL4Gate ? 2 : 1;
+            document.getElementById('group-iss').style.flex = 1;
 
             const container = document.getElementById('tracker-rows');
             container.innerHTML = ''; 
@@ -509,18 +533,22 @@
                 <div class="cell-row">
                     <input type="text" class="filter-target group-asset divider-right bg-grey" value="${assetId}" readonly title="${assetId}">
                     
+                    <!-- L2 SECTION -->
                     ${renderStackedCell(row['L2 Gate CL 1'], 'col-single l2-gate-col', 'checklist')}
                     <div class="filter-target col-single summary-cell l2-supp-summary divider-right" style="${getDynamicStyle(row['L2 Overall Status'], 'checklist', true)}" data-val="${row['L2 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l2Open.display}">${row['L2 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L2')}
                     
+                    <!-- L3 SECTION -->
                     ${renderStackedCell(row['L3 Gate CL 1'], 'col-single l3-gate-col', 'checklist')}
                     <div class="filter-target col-single summary-cell l3-supp-summary divider-right" style="${getDynamicStyle(row['L3 Overall Status'], 'checklist', true)}" data-val="${row['L3 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l3Open.display}">${row['L3 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L3')}
                     
+                    <!-- L4 SECTION -->
                     ${renderStackedCell(row['L4 Gate CL 1'], 'col-single l4-gate-col', 'test')}
                     <div class="filter-target col-single summary-cell l4-supp-summary divider-right" style="${getDynamicStyle(row['L4 Overall Status'], 'test', true)}" data-val="${row['L4 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l4Open.display}">${row['L4 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L4')}
                     
+                    <!-- GLOBAL ISSUES -->
                     <div class="filter-target col-single summary-cell global-iss-summary" style="${getDynamicStyle(issuesOpen.count, 'issue', false)}" data-val="${issuesOpen.display}">${issuesOpen.display}</div>
                     <div class="row-details col-details global-iss-details iss-details">
                         ${renderIssuesBlock(row)}
@@ -637,6 +665,8 @@
 
     // --- TRACKING COLUMN EXPANSION LOGIC ---
     let expandedStates = { l2: false, l3: false, l4: false, iss: false };
+    
+    // Updates flex shares proportionally. Flex dynamically adjusts boundaries to trigger scroll only when too tight.
     function toggleExpansion(level) {
         const state = !expandedStates[level.toLowerCase()]; expandedStates[level.toLowerCase()] = state;
         document.querySelectorAll(`.${level.toLowerCase()}-supp-details`).forEach(el => el.classList.toggle('expanded', state));
@@ -645,9 +675,8 @@
         if (state) { sumHead.classList.remove('divider-right'); sumCells.forEach(el => el.classList.remove('divider-right')); } 
         else { sumHead.classList.add('divider-right'); sumCells.forEach(el => el.classList.add('divider-right')); }
         
-        // Updates Fixed Container Width Math
-        let baseFlex = globalConfig[`show${level.toUpperCase()}Gate`] ? 180 : 90;
-        document.getElementById(`group-${level.toLowerCase()}`).style.flex = state ? `0 0 ${baseFlex + 900}px` : `0 0 ${baseFlex}px`;
+        let baseFlex = globalConfig[`show${level.toUpperCase()}Gate`] ? 2 : 1;
+        document.getElementById(`group-${level.toLowerCase()}`).style.flex = state ? (baseFlex + 10) : baseFlex;
     }
     
     function toggleGlobalIssues() {
@@ -657,9 +686,7 @@
         const sumHead = document.getElementById(`global-iss-header`), sumCells = document.querySelectorAll(`.global-iss-summary`);
         if (state) { sumHead.classList.remove('divider-right'); sumCells.forEach(el => el.classList.remove('divider-right')); } 
         else { sumHead.classList.add('divider-right'); sumCells.forEach(el => el.classList.add('divider-right')); }
-        
-        // Updates Fixed Container Width Math
-        document.getElementById(`group-iss`).style.flex = state ? `0 0 450px` : `0 0 90px`;
+        document.getElementById(`group-iss`).style.flex = state ? 3 : 1;
     }
 
     // --- FILTER ENGINE ---
