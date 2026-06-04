@@ -18,6 +18,13 @@
         .subheader { position: sticky; top: 0; z-index: 1000; background-color: #f1f3f4; height: 50px; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; }
         #app-body { height: calc(100vh - 80px); width: 100%; overflow-y: auto; background: #fff;}
         
+        /* --- STATUS CELL COLORS --- */
+        .bg-green   { background-color: #c8e6c9 !important; color: #1b5e20 !important; }
+        .bg-yellow  { background-color: #fff9c4 !important; color: #f57f17 !important; }
+        .bg-red     { background-color: #ffcdd2 !important; color: #b71c1c !important; }
+        .bg-grey    { background-color: #f5f5f5 !important; color: #616161 !important; }
+        .bg-filled  { background-color: #e1f5fe !important; color: #01579b !important; }
+
         /* --- EQUIPMENT TRACKER GRID --- */
         .tracker-container { width: 95%; margin: 20px auto; border: 2px solid #2e7d32; border-radius: 8px; background: #ffffff; overflow-x: auto; }
         .tracker-header-wrapper { position: sticky; top: 51px; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 1300px; background: #ffffff;}
@@ -151,6 +158,7 @@
             <div class="frozen-col-bar" id="main-column-headers">
                 <div class="header-cell group-asset divider-right"><div class="title-wrap"><span class="col-title" data-original="Asset">Asset</span> <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span></div></div>
                 
+                <!-- L2 -->
                 <div class="header-cell col-single l2-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l2-supp-header">
                     <div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div>
@@ -158,6 +166,7 @@
                 </div>
                 <div class="header-cell col-details l2-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l2-supp-details cl-cell divider-right">Supp 10</div>
                 
+                <!-- L3 -->
                 <div class="header-cell col-single l3-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l3-supp-header">
                     <div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div>
@@ -165,6 +174,7 @@
                 </div>
                 <div class="header-cell col-details l3-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l3-supp-details cl-cell divider-right">Supp 10</div>
                 
+                <!-- L4 -->
                 <div class="header-cell col-single l4-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l4-supp-header">
                     <div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span></div>
@@ -172,6 +182,7 @@
                 </div>
                 <div class="header-cell col-details l4-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l4-supp-details cl-cell divider-right">Supp 10</div>
 
+                <!-- ISSUES -->
                 <div class="header-cell col-single" id="global-iss-header">
                     <div class="title-wrap"><span class="col-title" data-original="Open Issues">Open Issues</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div>
                     <div class="expand-btn" data-target="global-iss" onclick="toggleGlobalIssues()">+</div>
@@ -183,6 +194,7 @@
     </div>
 </div>
 
+<!-- SETTINGS MODAL -->
 <div class="modal-overlay" id="settings-modal">
     <div class="modal-box">
         <div class="modal-header">
@@ -192,6 +204,7 @@
         <div class="modal-body">
             
             <div class="status-config-wrap">
+                <!-- CHECKLISTS -->
                 <div class="settings-col">
                     <h3>Checklists (L2 & L3)</h3>
                     <div class="status-group">
@@ -206,6 +219,7 @@
                     </div>
                 </div>
                 
+                <!-- TESTS -->
                 <div class="settings-col">
                     <h3>Tests (L4)</h3>
                     <div class="status-group">
@@ -220,6 +234,7 @@
                     </div>
                 </div>
 
+                <!-- ISSUES -->
                 <div class="settings-col">
                     <h3>Global Issues</h3>
                     <div class="status-group">
@@ -235,6 +250,7 @@
                 </div>
             </div>
 
+            <!-- PHASE RULES SECTION -->
             <div class="rules-section">
                 <h3>Phase Rules Engine</h3>
                 <div class="table-responsive">
@@ -254,7 +270,8 @@
                             </tr>
                         </thead>
                         <tbody id="phase-rules-list">
-                            </tbody>
+                            <!-- Rule rows will dynamically inject here -->
+                        </tbody>
                     </table>
                 </div>
                 <button class="btn btn-add" style="width:auto; padding: 6px 15px;" onclick="addPhaseRuleRow()">+ Add Rule</button>
@@ -290,8 +307,7 @@
         return (yiq >= 128) ? '#000000' : '#ffffff';
     }
 
-    // --- UPDATED DYNAMIC STYLE MATCHER ---
-    // Now intercepts counts for the Open Issues block and dynamically colors them!
+    // --- STRICT MATCHING ALGORITHM ---
     function getDynamicStyle(value, type = 'checklist') {
         if (value === undefined || value === null || value === "N/A" || value === "Clear" || value === "") {
             return 'background-color:#f5f5f5; color:#616161;';
@@ -300,7 +316,11 @@
         
         // 1. Check Phase Rules FIRST
         if (globalConfig.phaseRules && globalConfig.phaseRules.length > 0) {
-            let ruleMatch = globalConfig.phaseRules.find(r => r.resultingStatus && lowerVal.includes(r.resultingStatus.toLowerCase()));
+            // Check EXACT match first
+            let ruleMatch = globalConfig.phaseRules.find(r => r.resultingStatus && lowerVal === r.resultingStatus.toLowerCase().trim());
+            // Fallback to partial match if no exact match found
+            if (!ruleMatch) ruleMatch = globalConfig.phaseRules.find(r => r.resultingStatus && lowerVal.includes(r.resultingStatus.toLowerCase().trim()));
+            
             if (ruleMatch && ruleMatch.color) {
                 return `background-color:${ruleMatch.color}; color:${getContrastYIQ(ruleMatch.color)};`;
             }
@@ -312,12 +332,21 @@
         if (type === 'test') { openArr = globalConfig.testOpenStatuses; closedArr = globalConfig.testClosedStatuses; }
         if (type === 'issue') { openArr = globalConfig.issueOpenStatuses; closedArr = globalConfig.issueClosedStatuses; }
         
-        // 2. Direct Status Strings (e.g. "In Progress", "Closed")
-        let match = closedArr.find(s => lowerVal.includes(s.name.toLowerCase()));
-        if (match) return `background-color:${match.color}; color:${getContrastYIQ(match.color)};`;
+        // 2. Direct Status Strings
         
-        match = openArr.find(s => lowerVal.includes(s.name.toLowerCase()));
-        if (match) return `background-color:${match.color}; color:${getContrastYIQ(match.color)};`;
+        // A) STRICT EXACT MATCHING (Prevents "Not Open" from matching "Open")
+        let exactClosed = closedArr.find(s => lowerVal === s.name.toLowerCase().trim());
+        if (exactClosed) return `background-color:${exactClosed.color}; color:${getContrastYIQ(exactClosed.color)};`;
+        
+        let exactOpen = openArr.find(s => lowerVal === s.name.toLowerCase().trim());
+        if (exactOpen) return `background-color:${exactOpen.color}; color:${getContrastYIQ(exactOpen.color)};`;
+
+        // B) LOOSE INCLUDES MATCHING (Fallback)
+        let matchClosed = closedArr.find(s => lowerVal.includes(s.name.toLowerCase().trim()));
+        if (matchClosed) return `background-color:${matchClosed.color}; color:${getContrastYIQ(matchClosed.color)};`;
+        
+        let matchOpen = openArr.find(s => lowerVal.includes(s.name.toLowerCase().trim()));
+        if (matchOpen) return `background-color:${matchOpen.color}; color:${getContrastYIQ(matchOpen.color)};`;
         
         if (lowerVal.includes('no cl') || lowerVal.includes('no l4') || lowerVal.includes('no l3')) {
             return 'background-color:#f5f5f5; color:#616161;';
@@ -342,8 +371,11 @@
     }
 
     function isStatusMatch(statusString, statusArray) {
-        const s = statusString.toLowerCase();
-        return statusArray.some(item => s.includes(item.name.toLowerCase()));
+        const s = statusString.toLowerCase().trim();
+        // Exact match first
+        if (statusArray.some(item => s === item.name.toLowerCase().trim())) return true;
+        // Fallback partial match
+        return statusArray.some(item => s.includes(item.name.toLowerCase().trim()));
     }
 
     function renderStackedCell(val, extraClasses = '', type = 'checklist') {
@@ -462,18 +494,22 @@
                 <div class="cell-row">
                     <input type="text" class="filter-target group-asset divider-right bg-grey" value="${assetId}" readonly style="font-weight: bold;">
                     
+                    <!-- L2 SECTION -->
                     ${renderStackedCell(row['L2 Gate CL 1'], 'col-single l2-gate-col', 'checklist')}
                     <div class="filter-target col-single summary-cell l2-supp-summary divider-right" style="${getDynamicStyle(row['L2 Overall Status'], 'checklist')}" data-val="${row['L2 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l2Open.display}">${row['L2 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L2')}
                     
+                    <!-- L3 SECTION -->
                     ${renderStackedCell(row['L3 Gate CL 1'], 'col-single l3-gate-col', 'checklist')}
                     <div class="filter-target col-single summary-cell l3-supp-summary divider-right" style="${getDynamicStyle(row['L3 Overall Status'], 'checklist')}" data-val="${row['L3 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l3Open.display}">${row['L3 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L3')}
                     
+                    <!-- L4 SECTION -->
                     ${renderStackedCell(row['L4 Gate CL 1'], 'col-single l4-gate-col', 'test')}
                     <div class="filter-target col-single summary-cell l4-supp-summary divider-right" style="${getDynamicStyle(row['L4 Overall Status'], 'test')}" data-val="${row['L4 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l4Open.display}">${row['L4 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L4')}
                     
+                    <!-- GLOBAL ISSUES -->
                     <div class="filter-target col-single summary-cell global-iss-summary" style="${getDynamicStyle(issuesOpen.count, 'issue')}" data-val="${issuesOpen.display}">${issuesOpen.display}</div>
                     <div class="row-details col-details global-iss-details iss-details">
                         ${renderIssuesBlock(row)}
