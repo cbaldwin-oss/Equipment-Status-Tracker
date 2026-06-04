@@ -6,7 +6,7 @@
     <title>QCx LaunchPad - Live Relational Equipment Tracker</title>
     <style>
         /* --- BASE STYLES --- */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; overflow: hidden; }
         * { box-sizing: border-box; } 
         .header { height: 80px; background-color: #ffffff; border-bottom: 1px solid #dcdcdc; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
         .header-center { white-space: nowrap; }
@@ -15,8 +15,10 @@
         .setup-btn { background: #f1f3f4; border: 1px solid #dcdcdc; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; color: #555; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
         .setup-btn:hover { background: #e0e0e0; }
 
-        .subheader { position: sticky; top: 0; z-index: 1000; background-color: #f1f3f4; height: 50px; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; }
-        #app-body { height: calc(100vh - 80px); width: 100%; overflow-y: auto; background: #fff;}
+        .subheader { background-color: #f1f3f4; height: 50px; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; z-index: 1000;}
+        
+        /* Forces app body to fill the screen without scrolling */
+        #app-body { display: flex; flex-direction: column; height: calc(100vh - 80px); width: 100%; background: #f8f9fa;}
         
         /* --- STATUS CELL COLORS --- */
         .bg-green   { background-color: #c8e6c9 !important; color: #1b5e20 !important; }
@@ -25,11 +27,11 @@
         .bg-grey    { background-color: #f5f5f5 !important; color: #616161 !important; }
         .bg-filled  { background-color: #e1f5fe !important; color: #01579b !important; }
 
-        /* --- EQUIPMENT TRACKER GRID (FLEXIBLE FILL & HORIZONTAL SCROLL) --- */
-        .tracker-container { width: 95%; margin: 20px auto; border: 2px solid #2e7d32; border-radius: 8px; background: #ffffff; overflow-x: auto; }
+        /* --- EQUIPMENT TRACKER GRID (FLEXIBLE FILL & INTERNAL HORIZONTAL/VERTICAL SCROLL) --- */
+        .tracker-container { flex: 1; margin: 15px 20px; border: 2px solid #2e7d32; border-radius: 8px; background: #ffffff; overflow: auto; }
         
-        .tracker-header-wrapper { position: sticky; top: 51px; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 100%; width: fit-content; background: #ffffff;}
-        .rows-container { min-width: 100%; width: fit-content; padding-top: 5px; } 
+        .tracker-header-wrapper { position: sticky; top: 0; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 100%; width: fit-content; background: #ffffff;}
+        .rows-container { min-width: 100%; width: fit-content; padding-top: 0; } 
         
         .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 1px solid #0d3b10; min-width: 100%; width: fit-content; }
         .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: stretch; min-width: 100%; width: fit-content; }
@@ -47,7 +49,7 @@
         .cell-row .group-asset { background-color: #f5f5f5; z-index: 10; border-right: 3px solid #78909c !important; }
         
         .col-single { flex: 1; min-width: 85px; border-right: 2px solid #aeb6ba; }
-        .group-header, .group-issues { transition: flex 0.2s ease; display: flex; align-items: center; justify-content: center;} 
+        .group-header, .group-issues { transition: all 0.2s ease; display: flex; align-items: center; justify-content: center;} 
 
         .header-cell { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: bold; text-transform: uppercase; padding: 0 6px; }
         .title-wrap { display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; }
@@ -172,7 +174,6 @@
             <div class="frozen-col-bar" id="main-column-headers">
                 <div class="header-cell group-asset divider-right"><div class="title-wrap"><span class="col-title" data-original="Asset">Asset</span> <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span></div></div>
                 
-                <!-- L2 -->
                 <div class="header-cell col-single l2-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l2-supp-header">
                     <div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div>
@@ -180,7 +181,6 @@
                 </div>
                 <div class="header-cell col-details l2-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l2-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l2-supp-details cl-cell divider-right">Supp 10</div>
                 
-                <!-- L3 -->
                 <div class="header-cell col-single l3-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l3-supp-header">
                     <div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div>
@@ -188,7 +188,6 @@
                 </div>
                 <div class="header-cell col-details l3-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l3-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l3-supp-details cl-cell divider-right">Supp 10</div>
                 
-                <!-- L4 -->
                 <div class="header-cell col-single l4-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div></div>
                 <div class="header-cell col-single divider-right" id="l4-supp-header">
                     <div class="title-wrap"><span class="col-title" data-original="Overall Status">Overall Status</span><span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span></div>
@@ -196,7 +195,6 @@
                 </div>
                 <div class="header-cell col-details l4-supp-details cl-cell">Supp 1</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 2</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 3</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 4</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 5</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 6</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 7</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 8</div><div class="header-cell col-details l4-supp-details cl-cell">Supp 9</div><div class="header-cell col-details l4-supp-details cl-cell divider-right">Supp 10</div>
 
-                <!-- ISSUES -->
                 <div class="header-cell col-single" id="global-iss-header">
                     <div class="title-wrap"><span class="col-title" data-original="Open Issues">Open Issues</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div>
                     <div class="expand-btn" data-target="global-iss" onclick="toggleGlobalIssues()">+</div>
@@ -208,7 +206,6 @@
     </div>
 </div>
 
-<!-- SETTINGS MODAL -->
 <div class="modal-overlay" id="settings-modal">
     <div class="modal-box">
         <div class="modal-header">
@@ -223,7 +220,6 @@
             </div>
 
             <div class="status-config-wrap">
-                <!-- CHECKLISTS -->
                 <div class="settings-col">
                     <h3>Checklists (L2 & L3)</h3>
                     <div class="status-group">
@@ -238,7 +234,6 @@
                     </div>
                 </div>
                 
-                <!-- TESTS -->
                 <div class="settings-col">
                     <h3>Tests (L4)</h3>
                     <div class="status-group">
@@ -253,7 +248,6 @@
                     </div>
                 </div>
 
-                <!-- ISSUES -->
                 <div class="settings-col">
                     <h3>Global Issues</h3>
                     <div class="status-group">
@@ -269,7 +263,6 @@
                 </div>
             </div>
 
-            <!-- PHASE RULES SECTION -->
             <div class="rules-section">
                 <h3>Phase Rules Engine</h3>
                 <div class="table-responsive">
@@ -289,8 +282,7 @@
                             </tr>
                         </thead>
                         <tbody id="phase-rules-list">
-                            <!-- Rule rows will dynamically inject here -->
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
                 <button class="btn btn-add" style="width:auto; padding: 6px 15px;" onclick="addPhaseRuleRow()">+ Add Rule</button>
@@ -512,11 +504,17 @@
             else document.body.classList.remove('hide-l4-gate');
 
             // --- FLEX MATH FOR FILLING THE SCREEN ---
-            // Flex ratios ensure the initial un-expanded setup perfectly spreads across the monitor
+            // Base flex ratio sets the columns to equal shares
             document.getElementById('group-l2').style.flex = globalConfig.showL2Gate ? 2 : 1;
             document.getElementById('group-l3').style.flex = globalConfig.showL3Gate ? 2 : 1;
             document.getElementById('group-l4').style.flex = globalConfig.showL4Gate ? 2 : 1;
             document.getElementById('group-iss').style.flex = 1;
+
+            // Make sure the minWidth matches the base columns so they don't break flex rules
+            document.getElementById('group-l2').style.minWidth = globalConfig.showL2Gate ? '170px' : '85px';
+            document.getElementById('group-l3').style.minWidth = globalConfig.showL3Gate ? '170px' : '85px';
+            document.getElementById('group-l4').style.minWidth = globalConfig.showL4Gate ? '170px' : '85px';
+            document.getElementById('group-iss').style.minWidth = '85px';
 
             const container = document.getElementById('tracker-rows');
             container.innerHTML = ''; 
@@ -533,22 +531,18 @@
                 <div class="cell-row">
                     <input type="text" class="filter-target group-asset divider-right bg-grey" value="${assetId}" readonly title="${assetId}">
                     
-                    <!-- L2 SECTION -->
                     ${renderStackedCell(row['L2 Gate CL 1'], 'col-single l2-gate-col', 'checklist')}
                     <div class="filter-target col-single summary-cell l2-supp-summary divider-right" style="${getDynamicStyle(row['L2 Overall Status'], 'checklist', true)}" data-val="${row['L2 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l2Open.display}">${row['L2 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L2')}
                     
-                    <!-- L3 SECTION -->
                     ${renderStackedCell(row['L3 Gate CL 1'], 'col-single l3-gate-col', 'checklist')}
                     <div class="filter-target col-single summary-cell l3-supp-summary divider-right" style="${getDynamicStyle(row['L3 Overall Status'], 'checklist', true)}" data-val="${row['L3 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l3Open.display}">${row['L3 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L3')}
                     
-                    <!-- L4 SECTION -->
                     ${renderStackedCell(row['L4 Gate CL 1'], 'col-single l4-gate-col', 'test')}
                     <div class="filter-target col-single summary-cell l4-supp-summary divider-right" style="${getDynamicStyle(row['L4 Overall Status'], 'test', true)}" data-val="${row['L4 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l4Open.display}">${row['L4 Overall Status'] || 'N/A'}</div>
                     ${render10SupportCells(row, 'L4')}
                     
-                    <!-- GLOBAL ISSUES -->
                     <div class="filter-target col-single summary-cell global-iss-summary" style="${getDynamicStyle(issuesOpen.count, 'issue', false)}" data-val="${issuesOpen.display}">${issuesOpen.display}</div>
                     <div class="row-details col-details global-iss-details iss-details">
                         ${renderIssuesBlock(row)}
@@ -666,7 +660,7 @@
     // --- TRACKING COLUMN EXPANSION LOGIC ---
     let expandedStates = { l2: false, l3: false, l4: false, iss: false };
     
-    // Updates flex shares proportionally. Flex dynamically adjusts boundaries to trigger scroll only when too tight.
+    // Mathematically lock the min-width of the parent to match the children so flex acts correctly
     function toggleExpansion(level) {
         const state = !expandedStates[level.toLowerCase()]; expandedStates[level.toLowerCase()] = state;
         document.querySelectorAll(`.${level.toLowerCase()}-supp-details`).forEach(el => el.classList.toggle('expanded', state));
@@ -675,8 +669,11 @@
         if (state) { sumHead.classList.remove('divider-right'); sumCells.forEach(el => el.classList.remove('divider-right')); } 
         else { sumHead.classList.add('divider-right'); sumCells.forEach(el => el.classList.add('divider-right')); }
         
-        let baseFlex = globalConfig[`show${level.toUpperCase()}Gate`] ? 2 : 1;
-        document.getElementById(`group-${level.toLowerCase()}`).style.flex = state ? (baseFlex + 10) : baseFlex;
+        let baseCols = globalConfig[`show${level.toUpperCase()}Gate`] ? 2 : 1;
+        let totalCols = state ? (baseCols + 10) : baseCols;
+        
+        document.getElementById(`group-${level.toLowerCase()}`).style.flex = totalCols;
+        document.getElementById(`group-${level.toLowerCase()}`).style.minWidth = (totalCols * 85) + 'px';
     }
     
     function toggleGlobalIssues() {
@@ -686,10 +683,12 @@
         const sumHead = document.getElementById(`global-iss-header`), sumCells = document.querySelectorAll(`.global-iss-summary`);
         if (state) { sumHead.classList.remove('divider-right'); sumCells.forEach(el => el.classList.remove('divider-right')); } 
         else { sumHead.classList.add('divider-right'); sumCells.forEach(el => el.classList.add('divider-right')); }
+        
         document.getElementById(`group-iss`).style.flex = state ? 3 : 1;
+        document.getElementById(`group-iss`).style.minWidth = state ? '335px' : '85px';
     }
 
-    // --- FILTER ENGINE ---
+    // --- FILTER ENGINE (WITH BOUNDARY CHECKS) ---
     let activeFilters = {}; let currentDropdown = null;
     function toggleFilter(event, colIndex) {
         event.stopPropagation();
@@ -700,7 +699,14 @@
             if(inputs[colIndex]) { let cell = inputs[colIndex]; uniqueValues.add(String(cell.tagName === 'INPUT' ? cell.value : (cell.dataset.val || '')).trim()); }
         });
         const dropdown = document.createElement('div'); dropdown.className = 'filter-dropdown'; dropdown.dataset.col = colIndex;
-        const rect = event.target.getBoundingClientRect(); dropdown.style.top = (rect.bottom + window.scrollY + 5) + 'px'; dropdown.style.left = (rect.left + window.scrollX - 120) + 'px';
+        
+        const rect = event.target.getBoundingClientRect(); 
+        let dropTop = rect.bottom + 5;
+        let dropLeft = rect.left - 120;
+        if (dropLeft < 10) dropLeft = 10;
+        if (dropLeft + 220 > window.innerWidth) dropLeft = window.innerWidth - 220;
+
+        dropdown.style.top = dropTop + 'px'; dropdown.style.left = dropLeft + 'px';
         dropdown.innerHTML = `<input type="text" id="filter-search" class="filter-search-input" placeholder="Search values..." autocomplete="off"><label style="font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:8px; margin-bottom:8px;"><input type="checkbox" id="filter-select-all" checked> (Select All)</label>`;
         const valContainer = document.createElement('div'); valContainer.style.overflowY = 'auto'; valContainer.style.flex = '1';
         Array.from(uniqueValues).sort().forEach(val => { const isChecked = activeFilters[colIndex] ? activeFilters[colIndex].has(val) : true; valContainer.innerHTML += `<label class="filter-val-label"><input type="checkbox" class="filter-val-cb" value="${val}" ${isChecked ? 'checked' : ''}> <span class="val-text">${val || '(Blank)'}</span></label>`; });
