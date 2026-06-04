@@ -33,7 +33,7 @@
         .rows-container { min-width: 1300px; padding-top: 5px; } 
         .cell-row { display: flex; align-items: stretch; padding: 0 10px; border-bottom: 1px solid #ccc; gap: 0; }
         .cell-row:hover { background-color: rgba(0,0,0,0.02); }
-        .cell-row input { padding: 8px 6px; font-size: 13px; border: none; border-right: 1px solid #f0f0f0; text-align: center; background-color: #f9f9f9; width: 100%; outline: none; text-overflow: ellipsis; }
+        .cell-row input { padding: 8px 6px; font-size: 13px; border: none; border-right: 1px solid #f0f0f0; text-align: center; background-color: #f9f9f9; width: 100%; outline: none; text-overflow: ellipsis; min-height: 100%; }
         
         /* Layout Flex Alignment Scales */
         .group-asset { flex: 1.5; min-width: 110px; }
@@ -44,7 +44,22 @@
         .col-details { display: none; }
         .col-details.expanded { display: flex; }
         
-        /* SPREADSHEET STACKED CARDS (GATE CL & SCROLLABLES) */
+        /* NEW: Summary Wrap Cells for Open CLs and Issues */
+        .summary-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 11px; /* Smaller font to fit more string */
+            line-height: 1.3;
+            padding: 4px 6px;
+            background-color: #f9f9f9;
+            border-right: 1px solid #f0f0f0;
+            white-space: normal; /* Enables wrapping */
+            word-break: break-word; /* Allows safe breaking of long commas */
+        }
+        
+        /* SPREADSHEET STACKED CARDS */
         .stacked-cell { display: flex; flex-direction: column; min-width: 80px; border-right: 1px solid #e0e0e0; flex: 1; background: #fff;}
         .checklist-header { flex: 1; background-color: #f1f3f4; color: #333; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #e0e0e0; padding: 4px; }
         .checklist-status { flex: 1; font-size: 10px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; padding: 4px; text-align: center; }
@@ -70,8 +85,7 @@
         .frozen-group-bar .divider-right, .frozen-col-bar .divider-right { border-right: 2px solid #4caf50 !important; }
         .loading-text { text-align: center; padding: 30px; color: #555; font-weight: bold; font-size: 18px; }
 
-        /* --- GLOBAL GATE CONFIG TOGGLES --- */
-        /* These force the entire column mapping out of existence perfectly when toggled by JS */
+        /* GLOBAL GATE CONFIG TOGGLES */
         body.hide-l2-gate .l2-gate-col { display: none !important; }
         body.hide-l3-gate .l3-gate-col { display: none !important; }
         body.hide-l4-gate .l4-gate-col { display: none !important; }
@@ -274,7 +288,6 @@
             const rows = payload.data || [];
             globalConfig = payload.config || globalConfig; 
 
-            // Applies a hidden CSS class to the body to completely erase the requested columns
             if (!globalConfig.showL2Gate) document.body.classList.add('hide-l2-gate');
             else document.body.classList.remove('hide-l2-gate');
 
@@ -284,7 +297,6 @@
             if (!globalConfig.showL4Gate) document.body.classList.add('hide-l4-gate');
             else document.body.classList.remove('hide-l4-gate');
 
-            // Apply base flex ratios directly to master headers based on settings
             document.getElementById('group-l2').style.flex = globalConfig.showL2Gate ? 3 : 2;
             document.getElementById('group-l3').style.flex = globalConfig.showL3Gate ? 3 : 2;
             document.getElementById('group-l4').style.flex = globalConfig.showL4Gate ? 3 : 2;
@@ -299,27 +311,27 @@
                 const l4Open = combineOpenSupportCLs(row, 'L4');
                 const issuesOpen = combineOpenIssues(row);
                 
-                // Generates the DOM data unconditionally, trusting the global CSS to collapse the UI accurately
+                // Using div.summary-cell allows CSS wrapping, keeping filter system fully functional via data-val
                 const rowHTML = `
                 <div class="cell-row">
                     <input type="text" class="filter-target group-asset divider-right bg-grey" value="${assetId}" readonly style="font-weight: bold;">
                     
                     <input type="text" class="filter-target col-single ${getColorClass(row['L2 Overall Status'])}" value="${row['L2 Overall Status'] || 'N/A'}" readonly>
                     ${renderStackedCell(row['L2 Gate CL 1'], 'col-single l2-gate-col')}
-                    <input type="text" class="filter-target col-single l2-supp-summary divider-right ${getColorClass(l2Open.count)}" value="${l2Open.display}" title="${l2Open.display}" readonly>
+                    <div class="filter-target col-single summary-cell l2-supp-summary divider-right ${getColorClass(l2Open.count)}" data-val="${l2Open.display}" title="${l2Open.display}">${l2Open.display}</div>
                     ${render10SupportCells(row, 'L2')}
                     
                     <input type="text" class="filter-target col-single ${getColorClass(row['L3 Overall Status'])}" value="${row['L3 Overall Status'] || 'N/A'}" readonly>
                     ${renderStackedCell(row['L3 Gate CL 1'], 'col-single l3-gate-col')}
-                    <input type="text" class="filter-target col-single l3-supp-summary divider-right ${getColorClass(l3Open.count)}" value="${l3Open.display}" title="${l3Open.display}" readonly>
+                    <div class="filter-target col-single summary-cell l3-supp-summary divider-right ${getColorClass(l3Open.count)}" data-val="${l3Open.display}" title="${l3Open.display}">${l3Open.display}</div>
                     ${render10SupportCells(row, 'L3')}
                     
                     <input type="text" class="filter-target col-single ${getColorClass(row['L4 Overall Status'])}" value="${row['L4 Overall Status'] || 'N/A'}" readonly>
                     ${renderStackedCell(row['L4 Gate CL 1'], 'col-single l4-gate-col')}
-                    <input type="text" class="filter-target col-single l4-supp-summary divider-right ${getColorClass(l4Open.count)}" value="${l4Open.display}" title="${l4Open.display}" readonly>
+                    <div class="filter-target col-single summary-cell l4-supp-summary divider-right ${getColorClass(l4Open.count)}" data-val="${l4Open.display}" title="${l4Open.display}">${l4Open.display}</div>
                     ${render10SupportCells(row, 'L4')}
                     
-                    <input type="text" class="filter-target col-single global-iss-summary ${getColorClass(issuesOpen.count)}" value="${issuesOpen.display}" title="${issuesOpen.display}" readonly>
+                    <div class="filter-target col-single summary-cell global-iss-summary ${getColorClass(issuesOpen.count)}" data-val="${issuesOpen.display}" title="${issuesOpen.display}">${issuesOpen.display}</div>
                     <div class="row-details col-details global-iss-details iss-details">
                         ${renderIssuesBlock(row)}
                     </div>
