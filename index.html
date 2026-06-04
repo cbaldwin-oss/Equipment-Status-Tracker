@@ -15,11 +15,10 @@
         .setup-btn { background: #f1f3f4; border: 1px solid #dcdcdc; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; color: #555; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
         .setup-btn:hover { background: #e0e0e0; }
 
-        /* Lock the app body to the exact screen height so the container handles the scrolling */
         #app-body { display: flex; flex-direction: column; height: calc(100vh - 80px); width: 100%; background: #f8f9fa;}
         .subheader { flex: 0 0 50px; background-color: #f1f3f4; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; z-index: 1000;}
         
-        /* --- EQUIPMENT TRACKER GRID (ADJUSTING FLEX SCROLLING) --- */
+        /* --- EQUIPMENT TRACKER GRID --- */
         .tracker-container { flex: 1; margin: 0; width: 100%; border: none; border-top: 1px solid #dcdcdc; background: #ffffff; overflow: auto; min-height: 0; }
         
         .tracker-header-wrapper { position: sticky; top: 0; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 100%; width: max-content; background: #ffffff;}
@@ -30,17 +29,14 @@
         .cell-row { display: flex; align-items: stretch; border-bottom: 1px solid #ccc; gap: 0; min-width: 100%; width: max-content; }
         
         .cell-row:hover { background-color: rgba(0,0,0,0.02); }
-        .cell-row:hover .group-asset { background-color: #e0e0e0; }
 
-        .cell-row input { padding: 8px 6px; font-size: 13px; border: none; text-align: center; width: 100%; height: 100%; outline: none; text-overflow: ellipsis; background: transparent;}
-        
-        /* --- PROPORTIONAL FLEX ALIGNMENT SYSTEM --- */
-        /* All child columns get exactly 1 flex share and a strict proportional minimum */
+        /* --- FLAWLESS COLUMN ALIGNMENT SYSTEM --- */
+        /* All standard columns mathematically locked to exactly 100px */
         .col-single, .stacked-cell, .cl-cell, .summary-cell { 
-            flex: 1 1 0px !important; 
-            min-width: 85px !important; 
-            width: auto !important; 
-            max-width: none !important;
+            flex: 0 0 100px !important; 
+            width: 100px !important; 
+            min-width: 100px !important; 
+            max-width: 100px !important;
             border-right: 2px solid #aeb6ba; 
             overflow: hidden; 
             padding: 0;
@@ -49,13 +45,13 @@
         .group-header, .group-issues { 
             display: flex; align-items: center; justify-content: center;
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-            /* Flex and width managed precisely by proportional Javascript math */
+            transition: all 0.2s ease;
         } 
 
         .group-asset { flex: 0 0 120px !important; width: 120px !important; min-width: 120px !important; max-width: 120px !important; position: sticky; left: 0; z-index: 10; }
         .frozen-group-bar .group-asset { background-color: #1b5e20; z-index: 11; border-right: 3px solid #4caf50 !important; }
         .frozen-col-bar .group-asset { background-color: #2e7d32; z-index: 11; border-right: 3px solid #4caf50 !important; }
-        .cell-row .group-asset { background-color: #f5f5f5; z-index: 10; border-right: 3px solid #78909c !important; }
+        .cell-row .group-asset { background-color: #e0e0e0; z-index: 10; border-right: 3px solid #78909c !important; }
 
         .header-cell { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: bold; text-transform: uppercase; padding: 0 6px; }
         .title-wrap { display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; }
@@ -72,9 +68,8 @@
         .checklist-status { flex: 1; font-size: 9px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; padding: 4px; text-align: center; white-space: normal; word-break: break-word; line-height: 1.1; }
         
         /* ISSUES BLOCK */
-        /* Takes up 4 flex shares proportionally */
-        .header-cell.iss-details { flex: 4 4 0px !important; min-width: 340px !important; width: auto !important; max-width: none !important; font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; border-right: 2px solid #1b5e20; }
-        .row-details.iss-details { flex: 4 4 0px !important; min-width: 340px !important; width: auto !important; max-width: none !important; border-right: 2px solid #aeb6ba; background-color: #ffffff; flex-direction: row; align-items: stretch; overflow-x: auto; }
+        .header-cell.iss-details { flex: 0 0 400px !important; width: 400px !important; min-width: 400px !important; max-width: 400px !important; font-size: 10px; color: #fff; background: #1e5221; justify-content: center; text-align: center; border-right: 2px solid #1b5e20; }
+        .row-details.iss-details { flex: 0 0 400px !important; width: 400px !important; min-width: 400px !important; max-width: 400px !important; border-right: 2px solid #aeb6ba; background-color: #ffffff; flex-direction: row; align-items: stretch; overflow-x: auto; }
         
         .row-details::-webkit-scrollbar { height: 5px; }
         .row-details::-webkit-scrollbar-thumb { background: #b0bec5; border-radius: 4px; }
@@ -496,20 +491,21 @@
             if (!globalConfig.showL4Gate) document.body.classList.add('hide-l4-gate');
             else document.body.classList.remove('hide-l4-gate');
 
-            // --- PROPORTIONAL FLEX ALIGNMENT ON LOAD ---
+            // --- STRICT WIDTH MATH INITIALIZATION ---
             let baseL2 = globalConfig.showL2Gate ? 2 : 1;
             let baseL3 = globalConfig.showL3Gate ? 2 : 1;
             let baseL4 = globalConfig.showL4Gate ? 2 : 1;
             
-            document.getElementById('group-l2').style.flex = `${baseL2} ${baseL2} 0px`;
-            document.getElementById('group-l3').style.flex = `${baseL3} ${baseL3} 0px`;
-            document.getElementById('group-l4').style.flex = `${baseL4} ${baseL4} 0px`;
-            document.getElementById('group-iss').style.flex = `1 1 0px`;
+            // Set fixed widths dynamically based on the active columns on load
+            document.getElementById('group-l2').style.flex = `0 0 ${baseL2 * 100}px`;
+            document.getElementById('group-l3').style.flex = `0 0 ${baseL3 * 100}px`;
+            document.getElementById('group-l4').style.flex = `0 0 ${baseL4 * 100}px`;
+            document.getElementById('group-iss').style.flex = `0 0 100px`;
 
-            document.getElementById('group-l2').style.minWidth = (baseL2 * 85) + 'px';
-            document.getElementById('group-l3').style.minWidth = (baseL3 * 85) + 'px';
-            document.getElementById('group-l4').style.minWidth = (baseL4 * 85) + 'px';
-            document.getElementById('group-iss').style.minWidth = '85px';
+            document.getElementById('group-l2').style.width = (baseL2 * 100) + 'px';
+            document.getElementById('group-l3').style.width = (baseL3 * 100) + 'px';
+            document.getElementById('group-l4').style.width = (baseL4 * 100) + 'px';
+            document.getElementById('group-iss').style.width = '100px';
 
             const container = document.getElementById('tracker-rows');
             container.innerHTML = ''; 
@@ -521,9 +517,10 @@
                 const l4Open = combineOpenSupportCLs(row, 'L4');
                 const issuesOpen = combineOpenIssues(row);
                 
+                // --- ASSET CELL CONVERTED FROM INPUT TO SOLID DIV ---
                 const rowHTML = `
                 <div class="cell-row">
-                    <input type="text" class="filter-target group-asset divider-right bg-grey" value="${assetId}" readonly title="${assetId}">
+                    <div class="filter-target group-asset divider-right" data-val="${assetId}" style="display:flex; align-items:center; justify-content:center; text-align:center; font-weight:bold; font-size:12px; background:#e0e0e0; color:#333;">${assetId}</div>
                     
                     ${renderStackedCell(row['L2 Gate CL 1'], 'col-single l2-gate-col', 'checklist')}
                     <div class="filter-target col-single summary-cell l2-supp-summary divider-right" style="${getDynamicStyle(row['L2 Overall Status'], 'checklist', true)}" data-val="${row['L2 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l2Open.display}">${row['L2 Overall Status'] || 'N/A'}</div>
@@ -651,36 +648,61 @@
         btn.innerText = 'Save & Sync to Sheet'; btn.disabled = false;
     }
 
-    // --- PROPORTIONAL EXPANSION MATH ---
+    // --- MATHEMATICAL EXPANSION LOGIC ---
     function toggleExpansion(level) {
         const state = !expandedStates[level.toLowerCase()]; expandedStates[level.toLowerCase()] = state;
         document.querySelectorAll(`.${level.toLowerCase()}-supp-details`).forEach(el => el.classList.toggle('expanded', state));
-        const btn = document.querySelector(`.expand-btn[data-target="${level.toLowerCase()}-supp"]`); btn.textContent = state ? "-" : "+"; btn.style.background = state ? "#b71c1c" : "#4caf50";
+        
+        const btn = document.querySelector(`.expand-btn[data-target="${level.toLowerCase()}-supp"]`); 
+        if (btn) {
+            btn.textContent = state ? "-" : "+"; 
+            btn.style.background = state ? "#b71c1c" : "#4caf50";
+        }
+        
         const sumHead = document.getElementById(`${level.toLowerCase()}-supp-header`), sumCells = document.querySelectorAll(`.${level.toLowerCase()}-supp-summary`);
         if (state) { sumHead.classList.remove('divider-right'); sumCells.forEach(el => el.classList.remove('divider-right')); } 
         else { sumHead.classList.add('divider-right'); sumCells.forEach(el => el.classList.add('divider-right')); }
         
+        // Exact pixel calculation ensures the header matches the cells underneath it precisely!
         let baseCols = globalConfig[`show${level.toUpperCase()}Gate`] ? 2 : 1;
         let totalCols = state ? (baseCols + 10) : baseCols;
+        let exactWidth = totalCols * 100;
         
-        document.getElementById(`group-${level.toLowerCase()}`).style.flex = `${totalCols} ${totalCols} 0px`;
-        document.getElementById(`group-${level.toLowerCase()}`).style.minWidth = (totalCols * 85) + 'px';
+        let headerGroup = document.getElementById(`group-${level.toLowerCase()}`);
+        if(headerGroup) {
+            headerGroup.style.flex = `0 0 ${exactWidth}px`;
+            headerGroup.style.width = `${exactWidth}px`;
+            headerGroup.style.minWidth = `${exactWidth}px`;
+            headerGroup.style.maxWidth = `${exactWidth}px`;
+        }
     }
     
     function toggleGlobalIssues() {
         const state = !expandedStates.iss; expandedStates.iss = state;
         document.querySelectorAll(`.global-iss-details`).forEach(el => el.classList.toggle('expanded', state));
-        const btn = document.querySelector(`.expand-btn[data-target="global-iss"]`); btn.textContent = state ? "-" : "+"; btn.style.background = state ? "#b71c1c" : "#4caf50";
+        
+        const btn = document.querySelector(`.expand-btn[data-target="global-iss"]`); 
+        if(btn) {
+            btn.textContent = state ? "-" : "+"; 
+            btn.style.background = state ? "#b71c1c" : "#4caf50";
+        }
+
         const sumHead = document.getElementById(`global-iss-header`), sumCells = document.querySelectorAll(`.global-iss-summary`);
         if (state) { sumHead.classList.remove('divider-right'); sumCells.forEach(el => el.classList.remove('divider-right')); } 
         else { sumHead.classList.add('divider-right'); sumCells.forEach(el => el.classList.add('divider-right')); }
         
-        // Expanded Issues acts as 4 extra proportional columns for width calculation
-        document.getElementById(`group-iss`).style.flex = state ? `5 5 0px` : `1 1 0px`;
-        document.getElementById(`group-iss`).style.minWidth = state ? '425px' : '85px';
+        // 100px for Summary Cell + 400px for Details Container = 500px mathematically
+        let exactIssWidth = state ? 500 : 100;
+        let issGroup = document.getElementById(`group-iss`);
+        if(issGroup) {
+            issGroup.style.flex = `0 0 ${exactIssWidth}px`;
+            issGroup.style.width = `${exactIssWidth}px`;
+            issGroup.style.minWidth = `${exactIssWidth}px`;
+            issGroup.style.maxWidth = `${exactIssWidth}px`;
+        }
     }
 
-    // --- FILTER ENGINE WITH SCREEN BOUNDARY PROTECTIONS ---
+    // --- FILTER ENGINE WITH BOUNDARY PROTECTIONS ---
     let activeFilters = {}; let currentDropdown = null;
     function toggleFilter(event, colIndex) {
         event.stopPropagation();
@@ -688,15 +710,16 @@
         const rows = document.querySelectorAll('.cell-row'); const uniqueValues = new Set();
         rows.forEach(row => { 
             const inputs = row.querySelectorAll('.filter-target'); 
-            if(inputs[colIndex]) { let cell = inputs[colIndex]; uniqueValues.add(String(cell.tagName === 'INPUT' ? cell.value : (cell.dataset.val || '')).trim()); }
+            // Handles both inputs AND standard divs
+            if(inputs[colIndex]) { let cell = inputs[colIndex]; uniqueValues.add(String(cell.tagName === 'INPUT' ? cell.value : (cell.dataset.val || cell.innerText || '')).trim()); }
         });
         const dropdown = document.createElement('div'); dropdown.className = 'filter-dropdown'; dropdown.dataset.col = colIndex;
         
         const rect = event.target.getBoundingClientRect(); 
         let dropTop = rect.bottom + 5;
-        let dropLeft = rect.left; 
-        if (dropLeft + 220 > window.innerWidth) dropLeft = window.innerWidth - 230;
+        let dropLeft = rect.left - 120;
         if (dropLeft < 10) dropLeft = 10;
+        if (dropLeft + 200 > window.innerWidth) dropLeft = window.innerWidth - 200;
 
         dropdown.style.top = dropTop + 'px'; dropdown.style.left = dropLeft + 'px';
         dropdown.innerHTML = `<input type="text" id="filter-search" class="filter-search-input" placeholder="Search values..." autocomplete="off"><label style="font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:8px; margin-bottom:8px;"><input type="checkbox" id="filter-select-all" checked> (Select All)</label>`;
@@ -723,7 +746,7 @@
     function executeFilters() {
         document.querySelectorAll('.cell-row').forEach(row => { 
             const inputs = row.querySelectorAll('.filter-target'); let isVisible = true; 
-            for (let col in activeFilters) { if (inputs[col]) { let val = String(inputs[col].tagName === 'INPUT' ? inputs[col].value : (inputs[col].dataset.val || '')); if (!activeFilters[col].has(val.trim())) { isVisible = false; break; } } } 
+            for (let col in activeFilters) { if (inputs[col]) { let val = String(inputs[col].tagName === 'INPUT' ? inputs[col].value : (inputs[col].dataset.val || inputs[col].innerText || '')); if (!activeFilters[col].has(val.trim())) { isVisible = false; break; } } } 
             row.style.display = isVisible ? 'flex' : 'none'; 
         });
     }
