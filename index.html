@@ -290,7 +290,7 @@
         return (yiq >= 128) ? '#000000' : '#ffffff';
     }
 
-    // --- BULLETPROOFED DYNAMIC STYLE MATCHER ---
+    // --- BULLETPROOFED & HARDCODED FALLBACK MATCHER ---
     function getDynamicStyle(value, type = 'checklist') {
         if (value === undefined || value === null || value === "N/A" || value === "Clear" || value === "") {
             return 'background-color:#f5f5f5; color:#616161;';
@@ -313,24 +313,38 @@
         if (type === 'test') { openArr = globalConfig.testOpenStatuses || []; closedArr = globalConfig.testClosedStatuses || []; }
         if (type === 'issue') { openArr = globalConfig.issueOpenStatuses || []; closedArr = globalConfig.issueClosedStatuses || []; }
         
-        // 2. Direct Status Strings
+        // 2. Exact User Matches
         let exactClosed = closedArr.find(s => s.name && lowerVal === String(s.name).toLowerCase().trim());
         if (exactClosed) return `background-color:${exactClosed.color}; color:${getContrastYIQ(exactClosed.color)};`;
         
         let exactOpen = openArr.find(s => s.name && lowerVal === String(s.name).toLowerCase().trim());
         if (exactOpen) return `background-color:${exactOpen.color}; color:${getContrastYIQ(exactOpen.color)};`;
 
+        // 3. Partial User Matches
         let matchClosed = closedArr.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim()));
         if (matchClosed) return `background-color:${matchClosed.color}; color:${getContrastYIQ(matchClosed.color)};`;
         
         let matchOpen = openArr.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim()));
         if (matchOpen) return `background-color:${matchOpen.color}; color:${getContrastYIQ(matchOpen.color)};`;
         
+        // Exclusions
         if (lowerVal.includes('no cl') || lowerVal.includes('no l4') || lowerVal.includes('no l3')) {
             return 'background-color:#f5f5f5; color:#616161;';
         }
 
-        // 3. Smart Counts Fallback (For the Open Items lists rendering counts)
+        // --- 4. HARDCODED UNIVERSAL KEYWORD FALLBACKS ---
+        // If the user's lists missed it, we catch it here.
+        if (lowerVal.includes('open') || lowerVal.includes('progress') || lowerVal.includes('pending') || lowerVal.includes('assigned')) {
+            return 'background-color:#fff9c4; color:#000000;'; // Light Yellow fallback
+        }
+        if (lowerVal.includes('closed') || lowerVal.includes('complete') || lowerVal.includes('verified')) {
+            return 'background-color:#c8e6c9; color:#000000;'; // Light Green fallback
+        }
+        if (lowerVal.includes('issue') || lowerVal.includes('gap') || lowerVal.includes('high')) {
+            return 'background-color:#ffcdd2; color:#b71c1c;'; // Red fallback
+        }
+
+        // 5. Smart Counts Fallback
         if (!isNaN(lowerVal) && lowerVal !== '') {
             let num = parseFloat(lowerVal);
             if (num === 0) {
@@ -347,7 +361,6 @@
         return 'background-color:#f5f5f5; color:#616161;';
     }
 
-    // BULLETPROOFED MATCH FUNCTION
     function isStatusMatch(statusString, statusArray) {
         if(!statusString || !statusArray || !Array.isArray(statusArray)) return false;
         const s = String(statusString).toLowerCase().trim();
@@ -408,7 +421,7 @@
             if (val && val !== 'N/A' && val !== 'Clear' && String(val).trim() !== '') {
                 const match = String(val).match(/(.+?)\s*\((.+)\)/);
                 if (match) {
-                    if (!isStatusMatch(match[2], closedArr) && !String(match[2]).toLowerCase().includes('no cl')) {
+                    if (!isStatusMatch(match[2], closedArr) && !String(match[2]).toLowerCase().includes('no cl') && !String(match[2]).toLowerCase().includes('complete') && !String(match[2]).toLowerCase().includes('closed') && !String(match[2]).toLowerCase().includes('verified')) {
                         openIds.push(match[1].trim());
                     }
                 } else if (String(val).toLowerCase() !== 'no cl' && String(val).toLowerCase() !== 'unknown') {
@@ -428,7 +441,9 @@
             if (val && val !== 'N/A' && val !== 'Clear' && String(val).trim() !== '') {
                 const match = String(val).match(/(.+?)\s*\((.+)\)/);
                 if (match) {
-                    if (!isStatusMatch(match[2], issueClosedArr)) openIds.push(match[1].trim());
+                    if (!isStatusMatch(match[2], issueClosedArr) && !String(match[2]).toLowerCase().includes('closed') && !String(match[2]).toLowerCase().includes('complete')) {
+                        openIds.push(match[1].trim());
+                    }
                 } else if (String(val).toLowerCase() !== 'unknown') {
                     openIds.push(String(val).trim());
                 }
