@@ -80,6 +80,11 @@
         .close-btn { cursor: pointer; font-size: 20px; color: #999; border: none; background: none; }
         
         .modal-body { padding: 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        
+        /* NEW: Global Config Wrapper */
+        .global-config-wrap { padding: 15px; background: #e8f5e9; border-radius: 6px; border: 1px solid #c8e6c9; display: flex; align-items: center; gap: 15px; }
+        .global-config-wrap h3 { margin: 0; color: #1b5e20; font-size: 16px; }
+
         .status-config-wrap { display: flex; gap: 20px; }
         .settings-col { flex: 1; background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px solid #eee;}
         .settings-col h3 { margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #2e7d32; padding-bottom: 5px; color: #333; text-align: center; }
@@ -191,6 +196,11 @@
         </div>
         <div class="modal-body">
             
+            <div class="global-config-wrap">
+                <h3>Global Fallback Color <span style="font-size:12px; font-weight:normal; color:#555;">(For Unknown / Blank Data)</span></h3>
+                <input type="color" id="fallback-color-picker" value="#f5f5f5" style="width: 40px; height: 30px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+
             <div class="status-config-wrap">
                 <div class="settings-col">
                     <h3>Checklists (L2 & L3)</h3>
@@ -276,7 +286,8 @@
         openStatuses: [], closedStatuses: [],
         testOpenStatuses: [], testClosedStatuses: [],
         issueOpenStatuses: [], issueClosedStatuses: [],
-        phaseRules: []
+        phaseRules: [],
+        fallbackColor: '#f5f5f5'
     };
 
     function getContrastYIQ(hexcolor){
@@ -290,10 +301,13 @@
         return (yiq >= 128) ? '#000000' : '#ffffff';
     }
 
-    // --- BULLETPROOFED & HARDCODED FALLBACK MATCHER ---
+    // --- BULLETPROOFED DYNAMIC STYLE MATCHER ---
     function getDynamicStyle(value, type = 'checklist') {
+        let fbColor = globalConfig.fallbackColor || '#f5f5f5';
+        let fbStyle = `background-color:${fbColor}; color:${getContrastYIQ(fbColor)};`;
+
         if (value === undefined || value === null || value === "N/A" || value === "Clear" || value === "") {
-            return 'background-color:#f5f5f5; color:#616161;';
+            return fbStyle;
         }
         let lowerVal = String(value).toLowerCase().trim();
         
@@ -313,38 +327,24 @@
         if (type === 'test') { openArr = globalConfig.testOpenStatuses || []; closedArr = globalConfig.testClosedStatuses || []; }
         if (type === 'issue') { openArr = globalConfig.issueOpenStatuses || []; closedArr = globalConfig.issueClosedStatuses || []; }
         
-        // 2. Exact User Matches
+        // 2. Direct Status Strings
         let exactClosed = closedArr.find(s => s.name && lowerVal === String(s.name).toLowerCase().trim());
         if (exactClosed) return `background-color:${exactClosed.color}; color:${getContrastYIQ(exactClosed.color)};`;
         
         let exactOpen = openArr.find(s => s.name && lowerVal === String(s.name).toLowerCase().trim());
         if (exactOpen) return `background-color:${exactOpen.color}; color:${getContrastYIQ(exactOpen.color)};`;
 
-        // 3. Partial User Matches
         let matchClosed = closedArr.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim()));
         if (matchClosed) return `background-color:${matchClosed.color}; color:${getContrastYIQ(matchClosed.color)};`;
         
         let matchOpen = openArr.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim()));
         if (matchOpen) return `background-color:${matchOpen.color}; color:${getContrastYIQ(matchOpen.color)};`;
         
-        // Exclusions
         if (lowerVal.includes('no cl') || lowerVal.includes('no l4') || lowerVal.includes('no l3')) {
-            return 'background-color:#f5f5f5; color:#616161;';
+            return fbStyle;
         }
 
-        // --- 4. HARDCODED UNIVERSAL KEYWORD FALLBACKS ---
-        // If the user's lists missed it, we catch it here.
-        if (lowerVal.includes('open') || lowerVal.includes('progress') || lowerVal.includes('pending') || lowerVal.includes('assigned')) {
-            return 'background-color:#fff9c4; color:#000000;'; // Light Yellow fallback
-        }
-        if (lowerVal.includes('closed') || lowerVal.includes('complete') || lowerVal.includes('verified')) {
-            return 'background-color:#c8e6c9; color:#000000;'; // Light Green fallback
-        }
-        if (lowerVal.includes('issue') || lowerVal.includes('gap') || lowerVal.includes('high')) {
-            return 'background-color:#ffcdd2; color:#b71c1c;'; // Red fallback
-        }
-
-        // 5. Smart Counts Fallback
+        // 3. Smart Counts Fallback (For the Open Items lists rendering counts)
         if (!isNaN(lowerVal) && lowerVal !== '') {
             let num = parseFloat(lowerVal);
             if (num === 0) {
@@ -358,7 +358,7 @@
             }
         }
 
-        return 'background-color:#f5f5f5; color:#616161;';
+        return fbStyle;
     }
 
     function isStatusMatch(statusString, statusArray) {
@@ -369,7 +369,11 @@
     }
 
     function renderStackedCell(val, extraClasses = '', type = 'checklist') {
-        let id = '', status = '', styleStr = 'background-color:#f5f5f5; color:transparent;', rawVal = '';
+        let id = '', status = '', styleStr = '', rawVal = '';
+        
+        let fbColor = globalConfig.fallbackColor || '#f5f5f5';
+        let fbStyle = `background-color:${fbColor}; color:transparent;`;
+
         if (val && val !== 'N/A' && val !== 'Clear') {
             rawVal = String(val).trim();
             const match = rawVal.match(/(.+?)\s*\((.+)\)/);
@@ -379,7 +383,7 @@
             } else { id = rawVal; status = 'Unknown'; }
         }
         if (id === '') {
-            return `<div class="filter-target stacked-cell ${extraClasses}" data-val="" style="background-color:#f5f5f5; color:transparent;">
+            return `<div class="filter-target stacked-cell ${extraClasses}" data-val="" style="${fbStyle}">
                         <div class="checklist-header" style="border-bottom:none;">-</div>
                         <div class="checklist-status">-</div>
                     </div>`;
@@ -421,7 +425,7 @@
             if (val && val !== 'N/A' && val !== 'Clear' && String(val).trim() !== '') {
                 const match = String(val).match(/(.+?)\s*\((.+)\)/);
                 if (match) {
-                    if (!isStatusMatch(match[2], closedArr) && !String(match[2]).toLowerCase().includes('no cl') && !String(match[2]).toLowerCase().includes('complete') && !String(match[2]).toLowerCase().includes('closed') && !String(match[2]).toLowerCase().includes('verified')) {
+                    if (!isStatusMatch(match[2], closedArr) && !String(match[2]).toLowerCase().includes('no cl')) {
                         openIds.push(match[1].trim());
                     }
                 } else if (String(val).toLowerCase() !== 'no cl' && String(val).toLowerCase() !== 'unknown') {
@@ -441,9 +445,7 @@
             if (val && val !== 'N/A' && val !== 'Clear' && String(val).trim() !== '') {
                 const match = String(val).match(/(.+?)\s*\((.+)\)/);
                 if (match) {
-                    if (!isStatusMatch(match[2], issueClosedArr) && !String(match[2]).toLowerCase().includes('closed') && !String(match[2]).toLowerCase().includes('complete')) {
-                        openIds.push(match[1].trim());
-                    }
+                    if (!isStatusMatch(match[2], issueClosedArr)) openIds.push(match[1].trim());
                 } else if (String(val).toLowerCase() !== 'unknown') {
                     openIds.push(String(val).trim());
                 }
@@ -523,6 +525,10 @@
     // --- SETTINGS UI LOGIC ---
     function openSettingsModal() {
         document.getElementById('settings-modal').classList.add('active');
+        
+        // Populate Fallback Color
+        document.getElementById('fallback-color-picker').value = globalConfig.fallbackColor || '#f5f5f5';
+
         const map = {
             'cl-open-list': globalConfig.openStatuses, 'cl-closed-list': globalConfig.closedStatuses,
             'test-open-list': globalConfig.testOpenStatuses, 'test-closed-list': globalConfig.testClosedStatuses,
@@ -597,7 +603,8 @@
             openStatuses: getListValues('cl-open-list'), closedStatuses: getListValues('cl-closed-list'),
             testOpenStatuses: getListValues('test-open-list'), testClosedStatuses: getListValues('test-closed-list'),
             issueOpenStatuses: getListValues('iss-open-list'), issueClosedStatuses: getListValues('iss-closed-list'),
-            phaseRules: newPhaseRules
+            phaseRules: newPhaseRules,
+            fallbackColor: document.getElementById('fallback-color-picker').value
         };
 
         try {
@@ -606,6 +613,7 @@
             globalConfig.testOpenStatuses = payload.testOpenStatuses; globalConfig.testClosedStatuses = payload.testClosedStatuses;
             globalConfig.issueOpenStatuses = payload.issueOpenStatuses; globalConfig.issueClosedStatuses = payload.issueClosedStatuses;
             globalConfig.phaseRules = payload.phaseRules;
+            globalConfig.fallbackColor = payload.fallbackColor;
             
             closeSettingsModal(); fetchTrackerData(); 
         } catch(e) {
