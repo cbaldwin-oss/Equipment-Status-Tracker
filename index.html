@@ -7,10 +7,8 @@
     <style>
         /* --- EASY SIZING CONFIGURATION --- */
         :root {
-            --asset-col-width: 150px;  /* Change this to adjust the Asset column width */
-            --area-col-width: 110px;   /* Change this to adjust the Area column width */
-            
-            /* Automatically calculates the master header size. Do not change. */
+            --asset-col-width: 150px;  
+            --area-col-width: 110px;   
             --frozen-total-width: calc(var(--asset-col-width) + var(--area-col-width));
         }
 
@@ -27,6 +25,9 @@
         #app-body { display: flex; flex-direction: column; height: calc(100vh - 80px); width: 100%; background: #f8f9fa;}
         .subheader { flex: 0 0 50px; background-color: #f1f3f4; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; z-index: 1000;}
         
+        .pdf-btn { background: #2e7d32; color: white; border: 1px solid #1b5e20; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s; }
+        .pdf-btn:hover { background: #1b5e20; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+
         /* --- EQUIPMENT TRACKER GRID --- */
         .tracker-container { flex: 1; margin: 0; width: 100%; border: none; border-top: 1px solid #dcdcdc; background: #ffffff; overflow: auto; min-height: 0; }
         
@@ -50,10 +51,10 @@
         }
 
         .summary-cell { 
-            flex: 0 0 190px !important; 
-            width: 190px !important; 
-            min-width: 190px !important; 
-            max-width: 190px !important;
+            flex: 0 0 140px !important; 
+            width: 140px !important; 
+            min-width: 140px !important; 
+            max-width: 140px !important;
             border-right: 2px solid #78909c !important; 
             overflow: hidden; 
             padding: 0;
@@ -70,7 +71,7 @@
             transition: all 0.2s ease;
         } 
 
-        /* --- ASSET / AREA FROZEN COLUMNS (Driven by CSS Variables) --- */
+        /* --- ASSET / AREA FROZEN COLUMNS --- */
         .group-asset-details { flex: 0 0 var(--frozen-total-width) !important; width: var(--frozen-total-width) !important; min-width: var(--frozen-total-width) !important; max-width: var(--frozen-total-width) !important; position: sticky; left: 0; z-index: 12; background-color: #1b5e20; border-right: 1px solid #0d3b10 !important; }
         .group-asset { flex: 0 0 var(--asset-col-width) !important; width: var(--asset-col-width) !important; min-width: var(--asset-col-width) !important; max-width: var(--asset-col-width) !important; position: sticky; left: 0; z-index: 12; background-color: #2e7d32; border-right: 1px solid #1b5e20 !important; }
         .group-area  { flex: 0 0 var(--area-col-width) !important; width: var(--area-col-width) !important; min-width: var(--area-col-width) !important; max-width: var(--area-col-width) !important; position: sticky; left: var(--asset-col-width); z-index: 12; background-color: #2e7d32; border-right: 3px solid #4caf50 !important; }
@@ -160,7 +161,9 @@
         .modal-header h2 { margin: 0; color: #2e7d32; }
         .close-btn { cursor: pointer; font-size: 20px; color: #999; border: none; background: none; }
         .modal-body { padding: 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; }
-        .global-config-wrap { padding: 15px; background: #e8f5e9; border-radius: 6px; border: 1px solid #c8e6c9; display: flex; align-items: center; gap: 15px; }
+        
+        /* Flex-start ensures inputs stack cleanly beneath headers */
+        .global-config-wrap { padding: 15px; background: #e8f5e9; border-radius: 6px; border: 1px solid #c8e6c9; display: flex; align-items: flex-start; gap: 15px; }
         .global-config-wrap h3 { margin: 0; color: #1b5e20; font-size: 16px; }
 
         .status-config-wrap { display: flex; gap: 20px; }
@@ -217,7 +220,12 @@
 <div id="app-body">
     <div class="subheader">
         <div style="font-weight: bold; color: #555;">Zone 1 • Relational Asset Status Tracker</div>
-        <div style="font-size: 13px; color: #2e7d32; font-weight: bold;" id="sync-status">Connecting Backend...</div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="font-size: 13px; color: #2e7d32; font-weight: bold;" id="sync-status">Connecting Backend...</div>
+            <button onclick="exportToPDF()" class="pdf-btn">
+                <span style="font-size: 14px;">📄</span> Export PDF
+            </button>
+        </div>
     </div>
 
     <div class="tracker-container">
@@ -283,13 +291,13 @@
         <div class="modal-body">
             
             <div class="global-config-wrap">
-                <div style="flex: 1;">
-                    <h3>Global Phase Fallback Color <span style="font-size:12px; font-weight:normal; color:#555;">(For empty Overall Statuses)</span></h3>
-                    <input type="color" id="fallback-color-picker" value="#f5f5f5" style="width: 40px; height: 30px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;">
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                    <h3 style="margin: 0;">Global Phase Fallback Color <span style="font-size:12px; font-weight:normal; color:#555;">(For empty Overall Statuses)</span></h3>
+                    <input type="color" id="fallback-color-picker" value="#f5f5f5" style="width: 40px; height: 30px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
-                <div style="flex: 1; border-left: 2px solid #c8e6c9; padding-left: 15px;">
-                    <h3>Area Column Header Prefix</h3>
-                    <input type="text" id="cust-area-prefix" placeholder="e.g. Area" style="padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 80%; margin-top: 5px;">
+                <div style="flex: 1; border-left: 2px solid #c8e6c9; padding-left: 15px; display: flex; flex-direction: column; gap: 8px;">
+                    <h3 style="margin: 0;">Area Column Header Prefix</h3>
+                    <input type="text" id="cust-area-prefix" placeholder="e.g. Area" style="padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 80%;">
                 </div>
             </div>
 
@@ -785,7 +793,7 @@
             let gateL2 = globalConfig.showL2Gate !== false ? 100 : 0;
             let gateL3 = globalConfig.showL3Gate !== false ? 100 : 0;
             let gateL4 = globalConfig.showL4Gate !== false ? 100 : 0;
-            let summaryW = 190; 
+            let summaryW = 140; 
             
             document.getElementById('group-l2').style.flex = `0 0 ${gateL2 + summaryW}px`;
             document.getElementById('group-l3').style.flex = `0 0 ${gateL3 + summaryW}px`;
@@ -1014,7 +1022,7 @@
             let isSuppShown = globalConfig[`show${level.toUpperCase()}Supp`] !== false;
 
             let gateWidth = isGateShown ? 100 : 0;
-            let summaryWidth = 190;
+            let summaryWidth = 140;
             let baseWidth = gateWidth + summaryWidth;
             let exactWidth = (state && isSuppShown) ? (baseWidth + (maxCols * 100)) : baseWidth;
             
@@ -1044,7 +1052,7 @@
                 btn.style.background = state ? "#b71c1c" : "#4caf50";
             }
 
-            let summaryWidth = 190;
+            let summaryWidth = 140;
             let maxIss = globalConfig.maxCols.iss || 0;
             let exactIssWidth = state ? (summaryWidth + (maxIss * 100)) : summaryWidth;
             
@@ -1089,6 +1097,7 @@
         selectAllCb.addEventListener('change', (e) => { allLabels.forEach(lbl => { if (lbl.style.display !== 'none') lbl.querySelector('.filter-val-cb').checked = e.target.checked; }); });
         valCbs.forEach(cb => { cb.addEventListener('change', () => { let allVisChk = true; allLabels.forEach(lbl => { if (lbl.style.display !== 'none' && !lbl.querySelector('.filter-val-cb').checked) allVisChk = false; }); selectAllCb.checked = allVisChk; }); });
     }
+    
     window.applyFilter = function(colIndex) {
         if (!currentDropdown) return; const valCbs = currentDropdown.querySelectorAll('.filter-val-cb'); const selected = new Set(); valCbs.forEach(cb => { if (cb.checked) selected.add(cb.value); });
         const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); const titleSpan = icon.closest('.header-cell').querySelector('.col-title');
@@ -1096,7 +1105,9 @@
         else { activeFilters[colIndex] = selected; icon.classList.add('active'); icon.closest('.header-cell').classList.add('is-filtered'); titleSpan.textContent = titleSpan.dataset.original; }
         closeFilterMenu(); executeFilters();
     };
+    
     window.clearFilter = function(colIndex) { delete activeFilters[colIndex]; const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); icon.classList.remove('active'); icon.closest('.header-cell').classList.remove('is-filtered'); const titleSpan = icon.closest('.header-cell').querySelector('.col-title'); titleSpan.textContent = titleSpan.dataset.original; closeFilterMenu(); executeFilters(); };
+    
     function executeFilters() {
         document.querySelectorAll('.cell-row').forEach(row => { 
             const inputs = row.querySelectorAll('.filter-target'); let isVisible = true; 
@@ -1104,8 +1115,88 @@
             row.style.display = isVisible ? 'flex' : 'none'; 
         });
     }
+    
     function closeFilterMenu() { if (currentDropdown) { document.body.removeChild(currentDropdown); currentDropdown = null; } }
     document.addEventListener('click', (e) => { if (currentDropdown && !currentDropdown.contains(e.target) && !e.target.classList.contains('filter-icon')) closeFilterMenu(); });
+
+    // --- PDF EXPORT ENGINE ---
+    window.exportToPDF = function() {
+        let printWin = window.open('', '_blank');
+        let html = `<html><head><title>LaunchPad PDF Export</title><style>
+            @page { size: landscape; margin: 10mm; }
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; font-size: 9px; }
+            h2 { color: #2e7d32; text-align: center; margin-bottom: 10px; font-size: 16px; text-transform: uppercase; }
+            table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+            th, td { border: 1px solid #aeb6ba; padding: 6px 4px; text-align: center; vertical-align: middle; word-wrap: break-word; overflow: hidden; }
+            th { background-color: #2e7d32 !important; color: white !important; font-size: 10px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .bg-gray { background-color: #f5f5f5 !important; color: #616161 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        </style></head><body><h2>Relational Asset Status Tracker Export</h2><table>`;
+        
+        html += '<thead><tr>';
+        const headerChildren = Array.from(document.getElementById('main-column-headers').children).filter(el => !el.classList.contains('phase-gap'));
+        
+        headerChildren.forEach((cell) => {
+            let isHidden = window.getComputedStyle(cell).display === 'none';
+            if (!isHidden) {
+                let titleNode = cell.querySelector('.col-title');
+                let title = titleNode ? titleNode.innerText.trim() : cell.innerText.trim();
+                title = title.replace('▼', '').trim();
+                html += `<th>${title}</th>`;
+            }
+        });
+        html += '</tr></thead><tbody>';
+
+        const rows = document.querySelectorAll('.cell-row');
+        rows.forEach(row => {
+            if (window.getComputedStyle(row).display !== 'none') {
+                html += '<tr>';
+                const rowChildren = Array.from(row.children).filter(el => !el.classList.contains('phase-gap'));
+                
+                headerChildren.forEach((headCell, i) => {
+                    let isHidden = window.getComputedStyle(headCell).display === 'none';
+                    if (!isHidden) {
+                        let cellHtml = '';
+                        let rowCell = rowChildren[i];
+                        if(rowCell) {
+                            if(rowCell.classList.contains('stacked-cell')) {
+                                let hdrNode = rowCell.querySelector('.checklist-header');
+                                let statNode = rowCell.querySelector('.checklist-status');
+                                let id = hdrNode ? hdrNode.innerText : '-';
+                                let stat = statNode ? statNode.innerText : '-';
+                                
+                                if(id === '-') {
+                                    cellHtml = `<td class="bg-gray">-</td>`;
+                                } else {
+                                    let bg = statNode.style.backgroundColor || '';
+                                    let bgImg = statNode.style.backgroundImage || '';
+                                    let txtColor = statNode.style.color || '#000';
+                                    let styleStr = bgImg ? `background-image: ${bgImg}; color: #111;` : `background-color: ${bg}; color: ${txtColor};`;
+                                    cellHtml = `<td style="${styleStr}"><b>${id}</b><br><span style="font-size:8px;">${stat}</span></td>`;
+                                }
+                            } else {
+                                let val = rowCell.innerText.trim();
+                                let bg = rowCell.style.backgroundColor || '#fff';
+                                let txtColor = rowCell.style.color || '#000';
+                                cellHtml = `<td style="background-color: ${bg}; color: ${txtColor};"><b>${val}</b></td>`;
+                            }
+                        } else {
+                            cellHtml = `<td></td>`;
+                        }
+                        html += cellHtml;
+                    }
+                });
+                
+                html += '</tr>';
+            }
+        });
+        
+        html += '</tbody></table></body></html>';
+        printWin.document.write(html);
+        printWin.document.close();
+        printWin.focus();
+        setTimeout(() => { printWin.print(); printWin.close(); }, 500);
+    }
 </script>
 </body>
 </html>
