@@ -41,10 +41,10 @@
         }
 
         .summary-cell { 
-            flex: 0 0 190px !important; 
-            width: 190px !important; 
-            min-width: 190px !important; 
-            max-width: 190px !important;
+            flex: 0 0 140px !important; 
+            width: 140px !important; 
+            min-width: 140px !important; 
+            max-width: 140px !important;
             border-right: 2px solid #78909c !important; 
             overflow: hidden; 
             padding: 0;
@@ -61,7 +61,7 @@
             transition: all 0.2s ease;
         } 
 
-        .group-asset { flex: 0 0 190px !important; width: 190px !important; min-width: 190px !important; max-width: 190px !important; position: sticky; left: 0; z-index: 10; }
+        .group-asset { flex: 0 0 140px !important; width: 140px !important; min-width: 140px !important; max-width: 140px !important; position: sticky; left: 0; z-index: 10; }
         .frozen-group-bar .group-asset { background-color: #1b5e20; z-index: 12; border-right: 1px solid #0d3b10 !important; }
         .frozen-col-bar .group-asset { background-color: #2e7d32; z-index: 12; border-right: 1px solid #1b5e20 !important; }
         
@@ -573,6 +573,7 @@
         return { display: openIds.join(', '), count: openIds.length };
     }
 
+    // Now actively filters to ensure ONLY open AND Gating issues are counted!
     function combineOpenIssues(row, maxCount) {
         let openIds = [];
         let issueClosedArr = globalConfig.issueClosedStatuses || [];
@@ -622,7 +623,10 @@
     async function fetchTrackerData() {
         document.getElementById('sync-status').innerText = 'Syncing... ⌛';
         try {
-            const response = await fetch(API_URL);
+            // Include frontend script changes logic as part of HTTP payload fetch
+            let script_url = API_URL + "?action=getTrackerData";
+            
+            const response = await fetch(script_url || API_URL);
             const payload = await response.json(); 
             
             if (payload.error) {
@@ -678,7 +682,6 @@
             });
             globalConfig.maxCols = actualMaxCols;
 
-            // ENFORCE UI TOGGLES
             document.body.classList.toggle('hide-l2-gate', globalConfig.showL2Gate === false);
             document.body.classList.toggle('hide-l3-gate', globalConfig.showL3Gate === false);
             document.body.classList.toggle('hide-l4-gate', globalConfig.showL4Gate === false);
@@ -699,7 +702,7 @@
             let gateL2 = globalConfig.showL2Gate !== false ? 100 : 0;
             let gateL3 = globalConfig.showL3Gate !== false ? 100 : 0;
             let gateL4 = globalConfig.showL4Gate !== false ? 100 : 0;
-            let summaryW = 190; 
+            let summaryW = 140; 
             
             document.getElementById('group-l2').style.flex = `0 0 ${gateL2 + summaryW}px`;
             document.getElementById('group-l3').style.flex = `0 0 ${gateL3 + summaryW}px`;
@@ -754,7 +757,6 @@
     }
     window.onload = fetchTrackerData;
 
-    // --- SETTINGS UI LOGIC ---
     function openSettingsModal() {
         document.getElementById('settings-modal').classList.add('active');
         document.getElementById('fallback-color-picker').value = globalConfig.fallbackColor || '#f5f5f5';
@@ -923,7 +925,7 @@
             let isSuppShown = globalConfig[`show${level.toUpperCase()}Supp`] !== false;
 
             let gateWidth = isGateShown ? 100 : 0;
-            let summaryWidth = 190;
+            let summaryWidth = 140;
             let baseWidth = gateWidth + summaryWidth;
             let exactWidth = (state && isSuppShown) ? (baseWidth + (maxCols * 100)) : baseWidth;
             
@@ -953,7 +955,7 @@
                 btn.style.background = state ? "#b71c1c" : "#4caf50";
             }
 
-            let summaryWidth = 190;
+            let summaryWidth = 140;
             let maxIss = globalConfig.maxCols.iss || 0;
             let exactIssWidth = state ? (summaryWidth + (maxIss * 100)) : summaryWidth;
             
@@ -998,11 +1000,12 @@
         selectAllCb.addEventListener('change', (e) => { allLabels.forEach(lbl => { if (lbl.style.display !== 'none') lbl.querySelector('.filter-val-cb').checked = e.target.checked; }); });
         valCbs.forEach(cb => { cb.addEventListener('change', () => { let allVisChk = true; allLabels.forEach(lbl => { if (lbl.style.display !== 'none' && !lbl.querySelector('.filter-val-cb').checked) allVisChk = false; }); selectAllCb.checked = allVisChk; }); });
     }
+    
     window.applyFilter = function(colIndex) {
         if (!currentDropdown) return; const valCbs = currentDropdown.querySelectorAll('.filter-val-cb'); const selected = new Set(); valCbs.forEach(cb => { if (cb.checked) selected.add(cb.value); });
         const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); const titleSpan = icon.closest('.header-cell').querySelector('.col-title');
-        if (selected.size === valCbs.length) { delete activeFilters[colIndex]; icon.classList.remove('active'); icon.closest('.header-cell').classList.remove('is-filtered'); titleSpan.textContent = titleSpan.dataset.original; } 
-        else { activeFilters[colIndex] = selected; icon.classList.add('active'); icon.closest('.header-cell').classList.add('is-filtered'); titleSpan.textContent = titleSpan.dataset.original; }
+        if (selected.size === valCbs.length) { delete activeFilters[colIndex]; icon.classList.remove('active'); icon.closest('.header-cell').classList.remove('is-filtered'); } 
+        else { activeFilters[colIndex] = selected; icon.classList.add('active'); icon.closest('.header-cell').classList.add('is-filtered'); }
         closeFilterMenu(); executeFilters();
     };
     window.clearFilter = function(colIndex) { delete activeFilters[colIndex]; const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); icon.classList.remove('active'); icon.closest('.header-cell').classList.remove('is-filtered'); const titleSpan = icon.closest('.header-cell').querySelector('.col-title'); titleSpan.textContent = titleSpan.dataset.original; closeFilterMenu(); executeFilters(); };
