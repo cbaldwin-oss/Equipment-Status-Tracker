@@ -153,7 +153,7 @@
         body.hide-l3-gate .l3-gate-col { display: none !important; }
         body.hide-l4-gate .l4-gate-col { display: none !important; }
 
-        /* --- SETTINGS MODAL --- */
+        /* --- MODALS --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; display: none; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: white; border-radius: 8px; width: 1350px; max-width: 98%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
@@ -162,7 +162,6 @@
         .close-btn { cursor: pointer; font-size: 20px; color: #999; border: none; background: none; }
         .modal-body { padding: 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; }
         
-        /* Flex-start ensures inputs stack cleanly beneath headers */
         .global-config-wrap { padding: 15px; background: #e8f5e9; border-radius: 6px; border: 1px solid #c8e6c9; display: flex; align-items: flex-start; gap: 15px; }
         .global-config-wrap h3 { margin: 0; color: #1b5e20; font-size: 16px; }
 
@@ -222,7 +221,7 @@
         <div style="font-weight: bold; color: #555;">Zone 1 • Relational Asset Status Tracker</div>
         <div style="display: flex; align-items: center; gap: 15px;">
             <div style="font-size: 13px; color: #2e7d32; font-weight: bold;" id="sync-status">Connecting Backend...</div>
-            <button onclick="exportToPDF()" class="pdf-btn">
+            <button onclick="openPdfModal()" class="pdf-btn">
                 <span style="font-size: 14px;">📄</span> Export PDF
             </button>
         </div>
@@ -279,6 +278,24 @@
             </div>
         </div>
         <div class="rows-container" id="tracker-rows"><div class="loading-text">Stitching and Parsing Relational Data Arrays... 🚀</div></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="pdf-modal">
+    <div class="modal-box" style="width: 500px;">
+        <div class="modal-header">
+            <h2>Export to PDF</h2>
+            <button class="close-btn" onclick="closePdfModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <h3 style="margin-top: 0; color: #555; font-size: 14px; border-bottom: 2px solid #eee; padding-bottom: 8px;">Select columns to include in PDF:</h3>
+            <div id="pdf-column-list" style="display: flex; flex-direction: column; gap: 8px;">
+                </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-cancel" onclick="closePdfModal()">Cancel</button>
+            <button class="btn btn-save" onclick="generatePDF()">Generate & Print PDF</button>
+        </div>
     </div>
 </div>
 
@@ -1119,8 +1136,41 @@
     function closeFilterMenu() { if (currentDropdown) { document.body.removeChild(currentDropdown); currentDropdown = null; } }
     document.addEventListener('click', (e) => { if (currentDropdown && !currentDropdown.contains(e.target) && !e.target.classList.contains('filter-icon')) closeFilterMenu(); });
 
-    // --- PDF EXPORT ENGINE ---
-    window.exportToPDF = function() {
+    // --- PDF EXPORT MODAL LOGIC ---
+    window.openPdfModal = function() {
+        const listContainer = document.getElementById('pdf-column-list');
+        listContainer.innerHTML = '<label class="checkbox-row" style="border-bottom: 1px solid #ccc; padding-bottom: 8px; margin-bottom: 8px;"><input type="checkbox" id="pdf-select-all" checked onchange="toggleAllPdfCols(this)"> Select All</label>';
+        
+        const headerChildren = Array.from(document.getElementById('main-column-headers').children).filter(el => !el.classList.contains('phase-gap'));
+        
+        let html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">';
+        headerChildren.forEach((cell, index) => {
+            let isHidden = window.getComputedStyle(cell).display === 'none';
+            if (!isHidden) {
+                let titleNode = cell.querySelector('.col-title');
+                let title = titleNode ? titleNode.innerText.trim() : cell.innerText.trim();
+                title = title.replace('▼', '').trim();
+                html += `<label class="checkbox-row"><input type="checkbox" class="pdf-col-cb" value="${index}" checked> ${title}</label>`;
+            }
+        });
+        html += '</div>';
+        listContainer.innerHTML += html;
+        document.getElementById('pdf-modal').classList.add('active');
+    };
+
+    window.closePdfModal = function() {
+        document.getElementById('pdf-modal').classList.remove('active');
+    };
+
+    window.toggleAllPdfCols = function(source) {
+        document.querySelectorAll('.pdf-col-cb').forEach(cb => cb.checked = source.checked);
+    };
+
+    // --- PDF GENERATION ENGINE ---
+    window.generatePDF = function() {
+        const selectedIndices = Array.from(document.querySelectorAll('.pdf-col-cb:checked')).map(cb => parseInt(cb.value));
+        if (selectedIndices.length === 0) { alert('Please select at least one column.'); return; }
+        
         let printWin = window.open('', '_blank');
         let html = `<html><head><title>LaunchPad PDF Export</title><style>
             @page { size: landscape; margin: 10mm; }
@@ -1136,9 +1186,8 @@
         html += '<thead><tr>';
         const headerChildren = Array.from(document.getElementById('main-column-headers').children).filter(el => !el.classList.contains('phase-gap'));
         
-        headerChildren.forEach((cell) => {
-            let isHidden = window.getComputedStyle(cell).display === 'none';
-            if (!isHidden) {
+        headerChildren.forEach((cell, index) => {
+            if (selectedIndices.includes(index)) {
                 let titleNode = cell.querySelector('.col-title');
                 let title = titleNode ? titleNode.innerText.trim() : cell.innerText.trim();
                 title = title.replace('▼', '').trim();
@@ -1154,8 +1203,7 @@
                 const rowChildren = Array.from(row.children).filter(el => !el.classList.contains('phase-gap'));
                 
                 headerChildren.forEach((headCell, i) => {
-                    let isHidden = window.getComputedStyle(headCell).display === 'none';
-                    if (!isHidden) {
+                    if (selectedIndices.includes(i)) {
                         let cellHtml = '';
                         let rowCell = rowChildren[i];
                         if(rowCell) {
@@ -1196,6 +1244,8 @@
         printWin.document.close();
         printWin.focus();
         setTimeout(() => { printWin.print(); printWin.close(); }, 500);
+        
+        closePdfModal();
     }
 </script>
 </body>
