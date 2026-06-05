@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QCx LaunchPad - Live Relational Equipment Tracker</title>
     <style>
+        /* --- EASY SIZING CONFIGURATION --- */
+        :root {
+            --asset-col-width: 150px;  /* Change this to adjust the Asset column width */
+            --area-col-width: 110px;   /* Change this to adjust the Area column width */
+            
+            /* Automatically calculates the master header size. Do not change. */
+            --frozen-total-width: calc(var(--asset-col-width) + var(--area-col-width));
+        }
+
         /* --- BASE STYLES --- */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; overflow: hidden; height: 100vh; }
         * { box-sizing: border-box; } 
@@ -41,10 +50,10 @@
         }
 
         .summary-cell { 
-            flex: 0 0 140px !important; 
-            width: 140px !important; 
-            min-width: 140px !important; 
-            max-width: 140px !important;
+            flex: 0 0 190px !important; 
+            width: 190px !important; 
+            min-width: 190px !important; 
+            max-width: 190px !important;
             border-right: 2px solid #78909c !important; 
             overflow: hidden; 
             padding: 0;
@@ -61,15 +70,15 @@
             transition: all 0.2s ease;
         } 
 
-        /* --- ASSET / AREA FROZEN COLUMNS --- */
-        .group-asset-details { flex: 0 0 240px !important; width: 240px !important; min-width: 240px !important; max-width: 240px !important; position: sticky; left: 0; z-index: 12; background-color: #1b5e20; border-right: 1px solid #0d3b10 !important; }
-        .group-asset { flex: 0 0 140px !important; width: 140px !important; min-width: 140px !important; max-width: 140px !important; position: sticky; left: 0; z-index: 12; background-color: #2e7d32; border-right: 1px solid #1b5e20 !important; }
-        .group-area  { flex: 0 0 100px !important; width: 100px !important; min-width: 100px !important; max-width: 100px !important; position: sticky; left: 140px; z-index: 12; background-color: #2e7d32; border-right: 3px solid #4caf50 !important; }
+        /* --- ASSET / AREA FROZEN COLUMNS (Driven by CSS Variables) --- */
+        .group-asset-details { flex: 0 0 var(--frozen-total-width) !important; width: var(--frozen-total-width) !important; min-width: var(--frozen-total-width) !important; max-width: var(--frozen-total-width) !important; position: sticky; left: 0; z-index: 12; background-color: #1b5e20; border-right: 1px solid #0d3b10 !important; }
+        .group-asset { flex: 0 0 var(--asset-col-width) !important; width: var(--asset-col-width) !important; min-width: var(--asset-col-width) !important; max-width: var(--asset-col-width) !important; position: sticky; left: 0; z-index: 12; background-color: #2e7d32; border-right: 1px solid #1b5e20 !important; }
+        .group-area  { flex: 0 0 var(--area-col-width) !important; width: var(--area-col-width) !important; min-width: var(--area-col-width) !important; max-width: var(--area-col-width) !important; position: sticky; left: var(--asset-col-width); z-index: 12; background-color: #2e7d32; border-right: 3px solid #4caf50 !important; }
         
         .cell-row .group-asset { 
             background-color: #e8eaed !important; 
             z-index: 10; 
-            border-right: 1px solid #cfd8dc !important; 
+            border-right: 2px solid #cfd8dc !important; 
             display: flex !important; 
             align-items: center !important; 
             justify-content: center !important; 
@@ -77,6 +86,8 @@
             font-weight: bold !important; 
             font-size: 13px !important; 
             color: #333 !important;
+            padding: 0 6px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
 
         .cell-row .group-area { 
@@ -90,6 +101,8 @@
             font-weight: bold !important; 
             font-size: 12px !important; 
             color: #555 !important;
+            padding: 0 6px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
 
         .title-wrap { display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; }
@@ -417,7 +430,7 @@
 </div>
 
 <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbwcZdFdg90pf2LfQzbEsLf2WRIzMuC1gsB6hsaBMAx05PJmzkXESTGWPfPUa_8CiHcfiw/exec'; 
+    const API_URL = 'https://script.google.com/macros/s/AKfycbz-dXKX2ASq6J-lmkh9SU3FpGbb0s6tzWlPUeaIarshYo3pjko5kxs_gT9Eu6UAgbS4Vw/exec'; 
 
     let globalConfig = { 
         showL2Gate: true, showL3Gate: true, showL4Gate: true,
@@ -772,7 +785,7 @@
             let gateL2 = globalConfig.showL2Gate !== false ? 100 : 0;
             let gateL3 = globalConfig.showL3Gate !== false ? 100 : 0;
             let gateL4 = globalConfig.showL4Gate !== false ? 100 : 0;
-            let summaryW = 140; 
+            let summaryW = 190; 
             
             document.getElementById('group-l2').style.flex = `0 0 ${gateL2 + summaryW}px`;
             document.getElementById('group-l3').style.flex = `0 0 ${gateL3 + summaryW}px`;
@@ -1001,7 +1014,7 @@
             let isSuppShown = globalConfig[`show${level.toUpperCase()}Supp`] !== false;
 
             let gateWidth = isGateShown ? 100 : 0;
-            let summaryWidth = 140;
+            let summaryWidth = 190;
             let baseWidth = gateWidth + summaryWidth;
             let exactWidth = (state && isSuppShown) ? (baseWidth + (maxCols * 100)) : baseWidth;
             
@@ -1031,7 +1044,7 @@
                 btn.style.background = state ? "#b71c1c" : "#4caf50";
             }
 
-            let summaryWidth = 140;
+            let summaryWidth = 190;
             let maxIss = globalConfig.maxCols.iss || 0;
             let exactIssWidth = state ? (summaryWidth + (maxIss * 100)) : summaryWidth;
             
