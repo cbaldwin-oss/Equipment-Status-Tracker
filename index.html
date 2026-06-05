@@ -24,9 +24,9 @@
         .tracker-header-wrapper { position: sticky; top: 0; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 100%; width: max-content; background: #ffffff;}
         .rows-container { min-width: 100%; width: max-content; padding-top: 0; } 
         
-        .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 1px solid #0d3b10; min-width: 100%; width: max-content; }
-        .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 2px solid #1b5e20; min-width: 100%; width: max-content; }
-        .cell-row { display: flex; align-items: stretch; border-bottom: 1px solid #ccc; gap: 0; min-width: 100%; width: max-content; }
+        .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 1px solid #0d3b10; width: max-content; }
+        .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 2px solid #1b5e20; width: max-content; }
+        .cell-row { display: flex; align-items: stretch; border-bottom: 1px solid #ccc; gap: 0; width: max-content; }
         .cell-row:hover { background-color: rgba(0,0,0,0.02); }
 
         /* --- FLAWLESS COLUMN ALIGNMENT SYSTEM --- */
@@ -120,8 +120,12 @@
         .frozen-group-bar .divider-right, .frozen-col-bar .divider-right { border-right: 3px solid #4caf50 !important; }
         .loading-text { text-align: center; padding: 30px; color: #555; font-weight: bold; font-size: 18px; width: 100vw;}
 
+        /* --- CONFIG TOGGLES --- */
+        body.hide-l2-gate .l2-gate-col { display: none !important; }
+        body.hide-l3-gate .l3-gate-col { display: none !important; }
+        body.hide-l4-gate .l4-gate-col { display: none !important; }
+
         /* --- SETTINGS MODAL --- */
-        /* Widened modal box to 1350px to comfortably fit 4 columns */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; display: none; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: white; border-radius: 8px; width: 1350px; max-width: 98%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
@@ -143,6 +147,9 @@
         .btn-del { background: #ffcdd2; color: #b71c1c; padding: 6px 10px; border-radius: 4px; font-weight: bold; border: none; cursor: pointer;}
         .btn-add { background: #e3f2fd; color: #0277bd; margin-top: 5px; width: 100%; border: none; padding: 6px; border-radius: 4px; cursor: pointer; font-weight: bold;}
         
+        .checkbox-row { display: flex; align-items: center; margin-bottom: 6px; font-size: 13px; color: #333; cursor: pointer; font-weight: bold;}
+        .checkbox-row input { margin: 0 8px 0 0; cursor: pointer; width: 16px; height: 16px;}
+
         .rules-section { border-top: 2px solid #eee; padding-top: 20px; }
         .rules-section h3 { margin-top: 0; color: #2e7d32; }
         .table-responsive { width: 100%; overflow-x: auto; margin-bottom: 10px; }
@@ -253,25 +260,37 @@
             </div>
 
             <div class="rules-section">
-                <h3>Header Customization</h3>
+                <h3>Header Customization & Toggles</h3>
                 <div class="status-config-wrap">
                     <div class="settings-col">
                         <h4>Phase 1 (L2)</h4>
                         <div class="status-row"><input type="text" id="cust-l2-phase" placeholder="Phase Name (e.g. L2 Verification)"></div>
                         <div class="status-row"><input type="text" id="cust-l2-gate" placeholder="Gate Header (e.g. Gate CL)"></div>
                         <div class="status-row"><input type="text" id="cust-l2-status" placeholder="Status Header (e.g. Status)"></div>
+                        <div style="margin-top: 15px;">
+                            <label class="checkbox-row"><input type="checkbox" id="show-l2-gate"> Show Gate Column</label>
+                            <label class="checkbox-row"><input type="checkbox" id="show-l2-supp"> Enable Support CLs</label>
+                        </div>
                     </div>
                     <div class="settings-col">
                         <h4>Phase 2 (L3)</h4>
                         <div class="status-row"><input type="text" id="cust-l3-phase" placeholder="Phase Name (e.g. L3 Functional)"></div>
                         <div class="status-row"><input type="text" id="cust-l3-gate" placeholder="Gate Header (e.g. Gate CL)"></div>
                         <div class="status-row"><input type="text" id="cust-l3-status" placeholder="Status Header (e.g. Status)"></div>
+                        <div style="margin-top: 15px;">
+                            <label class="checkbox-row"><input type="checkbox" id="show-l3-gate"> Show Gate Column</label>
+                            <label class="checkbox-row"><input type="checkbox" id="show-l3-supp"> Enable Support CLs</label>
+                        </div>
                     </div>
                     <div class="settings-col">
                         <h4>Phase 3 (L4)</h4>
                         <div class="status-row"><input type="text" id="cust-l4-phase" placeholder="Phase Name (e.g. L4 Integrated)"></div>
                         <div class="status-row"><input type="text" id="cust-l4-gate" placeholder="Gate Header (e.g. Gate CL)"></div>
                         <div class="status-row"><input type="text" id="cust-l4-status" placeholder="Status Header (e.g. Status)"></div>
+                        <div style="margin-top: 15px;">
+                            <label class="checkbox-row"><input type="checkbox" id="show-l4-gate"> Show Gate Column</label>
+                            <label class="checkbox-row"><input type="checkbox" id="show-l4-supp"> Enable Support CLs</label>
+                        </div>
                     </div>
                     <div class="settings-col">
                         <h4>Global Issues</h4>
@@ -375,10 +394,11 @@
 </div>
 
 <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbwcZdFdg90pf2LfQzbEsLf2WRIzMuC1gsB6hsaBMAx05PJmzkXESTGWPfPUa_8CiHcfiw/exec'; 
+    const API_URL = 'https://script.google.com/macros/s/AKfycbz-dXKX2ASq6J-lmkh9SU3FpGbb0s6tzWlPUeaIarshYo3pjko5kxs_gT9Eu6UAgbS4Vw/exec'; 
 
     let globalConfig = { 
         showL2Gate: true, showL3Gate: true, showL4Gate: true,
+        showL2Supp: true, showL3Supp: true, showL4Supp: true,
         openStatuses: [], closedStatuses: [],
         testOpenStatuses: [], testClosedStatuses: [],
         issueOpenStatuses: [], issueClosedStatuses: [],
@@ -426,7 +446,6 @@
         
         if (type === 'test') { openArr = globalConfig.testOpenStatuses || []; closedArr = globalConfig.testClosedStatuses || []; }
         if (type === 'issue') { 
-            // Also factor in Gating / Non Gating as possible styles
             let gateExact = globalConfig.gatingIssues.find(s => s.name && lowerVal === String(s.name).toLowerCase().trim());
             if (gateExact) return `background-color:${gateExact.color}; color:${getContrastYIQ(gateExact.color)};`;
             
@@ -611,7 +630,6 @@
             const rows = payload.data || [];
             if (payload.config) globalConfig = { ...globalConfig, ...payload.config };
             
-            // Apply Custom Headers from Backend Data
             if (globalConfig.customHeaders) {
                 updateHeaderElement('group-l2', globalConfig.customHeaders.l2Phase);
                 updateHeaderElement('l2-gate-title', globalConfig.customHeaders.l2Gate, true);
@@ -656,12 +674,10 @@
             });
             globalConfig.maxCols = actualMaxCols;
 
-            if (!globalConfig.showL2Gate) document.body.classList.add('hide-l2-gate');
-            else document.body.classList.remove('hide-l2-gate');
-            if (!globalConfig.showL3Gate) document.body.classList.add('hide-l3-gate');
-            else document.body.classList.remove('hide-l3-gate');
-            if (!globalConfig.showL4Gate) document.body.classList.add('hide-l4-gate');
-            else document.body.classList.remove('hide-l4-gate');
+            // ENFORCE UI TOGGLES
+            document.body.classList.toggle('hide-l2-gate', globalConfig.showL2Gate === false);
+            document.body.classList.toggle('hide-l3-gate', globalConfig.showL3Gate === false);
+            document.body.classList.toggle('hide-l4-gate', globalConfig.showL4Gate === false);
 
             document.querySelectorAll('.dynamic-header').forEach(el => el.remove()); 
             if(globalConfig.maxCols.l2 > 0) document.getElementById('l2-supp-header').insertAdjacentHTML('afterend', generateHeaderHTML('L2', globalConfig.maxCols.l2));
@@ -671,7 +687,7 @@
 
             ['l2', 'l3', 'l4'].forEach(lvl => {
                 let btn = document.querySelector(`.expand-btn[data-target="${lvl}-supp"]`);
-                if(btn) btn.style.display = globalConfig.maxCols[lvl] > 0 ? 'flex' : 'none';
+                if(btn) btn.style.display = (globalConfig.maxCols[lvl] > 0 && globalConfig[`show${lvl.toUpperCase()}Supp`] !== false) ? 'flex' : 'none';
             });
             let issBtn = document.querySelector(`.expand-btn[data-target="global-iss"]`);
             if(issBtn) issBtn.style.display = globalConfig.maxCols.iss > 0 ? 'flex' : 'none';
@@ -755,6 +771,14 @@
             document.getElementById('cust-iss-phase').value = globalConfig.customHeaders.issPhase;
             document.getElementById('cust-iss-status').value = globalConfig.customHeaders.issStatus;
         }
+
+        document.getElementById('show-l2-gate').checked = globalConfig.showL2Gate !== false;
+        document.getElementById('show-l3-gate').checked = globalConfig.showL3Gate !== false;
+        document.getElementById('show-l4-gate').checked = globalConfig.showL4Gate !== false;
+
+        document.getElementById('show-l2-supp').checked = globalConfig.showL2Supp !== false;
+        document.getElementById('show-l3-supp').checked = globalConfig.showL3Supp !== false;
+        document.getElementById('show-l4-supp').checked = globalConfig.showL4Supp !== false;
 
         const map = {
             'cl-open-list': globalConfig.openStatuses, 'cl-closed-list': globalConfig.closedStatuses,
@@ -841,7 +865,13 @@
             gatingIssues: getListValues('iss-gating-list'), nonGatingIssues: getListValues('iss-nongating-list'),
             phaseRules: newPhaseRules,
             fallbackColor: document.getElementById('fallback-color-picker').value,
-            customHeaders: newCustomHeaders
+            customHeaders: newCustomHeaders,
+            showL2Gate: document.getElementById('show-l2-gate').checked,
+            showL3Gate: document.getElementById('show-l3-gate').checked,
+            showL4Gate: document.getElementById('show-l4-gate').checked,
+            showL2Supp: document.getElementById('show-l2-supp').checked,
+            showL3Supp: document.getElementById('show-l3-supp').checked,
+            showL4Supp: document.getElementById('show-l4-supp').checked
         };
 
         try {
@@ -853,6 +883,8 @@
             globalConfig.phaseRules = payload.phaseRules;
             globalConfig.fallbackColor = payload.fallbackColor;
             globalConfig.customHeaders = payload.customHeaders;
+            globalConfig.showL2Gate = payload.showL2Gate; globalConfig.showL3Gate = payload.showL3Gate; globalConfig.showL4Gate = payload.showL4Gate;
+            globalConfig.showL2Supp = payload.showL2Supp; globalConfig.showL3Supp = payload.showL3Supp; globalConfig.showL4Supp = payload.showL4Supp;
             
             closeSettingsModal(); fetchTrackerData(); 
         } catch(e) {
@@ -879,10 +911,13 @@
             }
             
             let maxCols = globalConfig.maxCols[lvl] || 0;
-            let gateWidth = globalConfig[`show${level.toUpperCase()}Gate`] !== false ? 100 : 0;
+            let isGateShown = globalConfig[`show${level.toUpperCase()}Gate`] !== false;
+            let isSuppShown = globalConfig[`show${level.toUpperCase()}Supp`] !== false;
+
+            let gateWidth = isGateShown ? 100 : 0;
             let summaryWidth = 190;
             let baseWidth = gateWidth + summaryWidth;
-            let exactWidth = state ? (baseWidth + (maxCols * 100)) : baseWidth;
+            let exactWidth = (state && isSuppShown) ? (baseWidth + (maxCols * 100)) : baseWidth;
             
             let headerGroup = document.getElementById(`group-${lvl}`);
             if(headerGroup) {
