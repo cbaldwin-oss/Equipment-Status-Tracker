@@ -246,7 +246,6 @@
                 <div class="header-cell group-area"><div class="title-wrap"><span class="col-title" id="area-title" data-original="Area">Area</span> <span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span></div></div>
                 <div class="phase-gap"></div>
                 
-                <!-- L2 -->
                 <div class="header-cell gate-cell l2-gate-col"><div class="title-wrap"><span class="col-title" id="l2-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div></div>
                 <div class="header-cell summary-cell" id="l2-supp-header">
                     <div class="title-wrap"><span class="col-title" id="l2-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span></div>
@@ -255,7 +254,6 @@
                 
                 <div class="phase-gap"></div>
                 
-                <!-- L3 -->
                 <div class="header-cell gate-cell l3-gate-col"><div class="title-wrap"><span class="col-title" id="l3-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div></div>
                 <div class="header-cell summary-cell" id="l3-supp-header">
                     <div class="title-wrap"><span class="col-title" id="l3-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div>
@@ -264,7 +262,6 @@
 
                 <div class="phase-gap"></div>
                 
-                <!-- L4 -->
                 <div class="header-cell gate-cell l4-gate-col"><div class="title-wrap"><span class="col-title" id="l4-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span></div></div>
                 <div class="header-cell summary-cell" id="l4-supp-header">
                     <div class="title-wrap"><span class="col-title" id="l4-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div>
@@ -273,7 +270,6 @@
 
                 <div class="phase-gap"></div>
 
-                <!-- ISSUES SUMMARY -->
                 <div class="header-cell summary-cell" id="global-iss-header">
                     <div class="title-wrap"><span class="col-title" id="iss-status-title" data-original="Open Issues">Open Issues</span><span class="filter-icon" data-col="8" onclick="toggleFilter(event, 8)">▼</span></div>
                     <div class="expand-btn" data-target="global-iss" onclick="window.toggleGlobalIssues()">+</div>
@@ -285,18 +281,16 @@
     </div>
 </div>
 
-<!-- PDF EXPORT MODAL -->
 <div class="modal-overlay" id="pdf-modal">
-    <div class="modal-box" style="width: 500px;">
+    <div class="modal-box" style="width: 450px;">
         <div class="modal-header">
             <h2>Export to PDF</h2>
             <button class="close-btn" onclick="closePdfModal()">×</button>
         </div>
         <div class="modal-body">
-            <h3 style="margin-top: 0; color: #555; font-size: 14px; border-bottom: 2px solid #eee; padding-bottom: 8px;">Select grouped columns to include in PDF:</h3>
+            <h3 style="margin-top: 0; color: #555; font-size: 14px; border-bottom: 2px solid #eee; padding-bottom: 8px;">Select columns to include in PDF:</h3>
             <div id="pdf-column-list" style="display: flex; flex-direction: column; gap: 8px;">
-                <!-- Dynamically Populated List -->
-            </div>
+                </div>
         </div>
         <div class="modal-footer">
             <button class="btn btn-cancel" onclick="closePdfModal()">Cancel</button>
@@ -305,7 +299,6 @@
     </div>
 </div>
 
-<!-- SETTINGS MODAL -->
 <div class="modal-overlay" id="settings-modal">
     <div class="modal-box">
         <div class="modal-header">
@@ -1171,18 +1164,18 @@
         const listContainer = document.getElementById('pdf-column-list');
         listContainer.innerHTML = '<label class="checkbox-row" style="border-bottom: 1px solid #ccc; padding-bottom: 8px; margin-bottom: 8px;"><input type="checkbox" id="pdf-select-all" checked onchange="toggleAllPdfCols(this)"> Select All</label>';
         
-        let html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">';
+        let html = '<div style="display: flex; flex-direction: column; gap: 8px;">';
         window.PDF_OPTIONS.forEach((opt, index) => {
             let displayLabel = opt.label;
             if(opt.id === 'asset') displayLabel = 'Asset Details';
             if(opt.id === 'area') displayLabel = globalConfig.customHeaders.areaPrefix || 'Area';
-            if(opt.id === 'l2-gate') displayLabel = globalConfig.customHeaders.l2Phase + ' - ' + globalConfig.customHeaders.l2Gate;
-            if(opt.id === 'l2-status') displayLabel = globalConfig.customHeaders.l2Phase + ' - ' + globalConfig.customHeaders.l2Status;
-            if(opt.id === 'l3-gate') displayLabel = globalConfig.customHeaders.l3Phase + ' - ' + globalConfig.customHeaders.l3Gate;
-            if(opt.id === 'l3-status') displayLabel = globalConfig.customHeaders.l3Phase + ' - ' + globalConfig.customHeaders.l3Status;
-            if(opt.id === 'l4-gate') displayLabel = globalConfig.customHeaders.l4Phase + ' - ' + globalConfig.customHeaders.l4Gate;
-            if(opt.id === 'l4-status') displayLabel = globalConfig.customHeaders.l4Phase + ' - ' + globalConfig.customHeaders.l4Status;
-            if(opt.id === 'iss-status') displayLabel = globalConfig.customHeaders.issPhase + ' - ' + globalConfig.customHeaders.issStatus;
+            if(opt.id === 'l2-gate') displayLabel = 'L2 ' + globalConfig.customHeaders.l2Gate;
+            if(opt.id === 'l2-status') displayLabel = 'L2 ' + globalConfig.customHeaders.l2Status;
+            if(opt.id === 'l3-gate') displayLabel = 'L3 ' + globalConfig.customHeaders.l3Gate;
+            if(opt.id === 'l3-status') displayLabel = 'L3 ' + globalConfig.customHeaders.l3Status;
+            if(opt.id === 'l4-gate') displayLabel = 'L4 ' + globalConfig.customHeaders.l4Gate;
+            if(opt.id === 'l4-status') displayLabel = 'L4 ' + globalConfig.customHeaders.l4Status;
+            if(opt.id === 'iss-status') displayLabel = globalConfig.customHeaders.issStatus;
             
             html += `<label class="checkbox-row"><input type="checkbox" class="pdf-col-cb" value="${index}" checked> ${displayLabel}</label>`;
         });
@@ -1279,12 +1272,12 @@
             let displayLabel = opt.label;
             if(opt.id === 'asset') displayLabel = 'Asset';
             if(opt.id === 'area') displayLabel = globalConfig.customHeaders.areaPrefix || 'Area';
-            if(opt.id === 'l2-gate') displayLabel = globalConfig.customHeaders.l2Gate;
-            if(opt.id === 'l2-status') displayLabel = globalConfig.customHeaders.l2Status;
-            if(opt.id === 'l3-gate') displayLabel = globalConfig.customHeaders.l3Gate;
-            if(opt.id === 'l3-status') displayLabel = globalConfig.customHeaders.l3Status;
-            if(opt.id === 'l4-gate') displayLabel = globalConfig.customHeaders.l4Gate;
-            if(opt.id === 'l4-status') displayLabel = globalConfig.customHeaders.l4Status;
+            if(opt.id === 'l2-gate') displayLabel = 'L2 ' + globalConfig.customHeaders.l2Gate;
+            if(opt.id === 'l2-status') displayLabel = 'L2 ' + globalConfig.customHeaders.l2Status;
+            if(opt.id === 'l3-gate') displayLabel = 'L3 ' + globalConfig.customHeaders.l3Gate;
+            if(opt.id === 'l3-status') displayLabel = 'L3 ' + globalConfig.customHeaders.l3Status;
+            if(opt.id === 'l4-gate') displayLabel = 'L4 ' + globalConfig.customHeaders.l4Gate;
+            if(opt.id === 'l4-status') displayLabel = 'L4 ' + globalConfig.customHeaders.l4Status;
             if(opt.id === 'iss-status') displayLabel = globalConfig.customHeaders.issStatus;
             html += `<th>${displayLabel}</th>`;
         });
@@ -1336,7 +1329,6 @@
         printWin.document.close();
         printWin.focus();
         setTimeout(() => { printWin.print(); printWin.close(); }, 500);
-        closePdfModal();
     };
 
     function extractStackedCellForPdf(cell) {
