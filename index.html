@@ -24,9 +24,9 @@
         .tracker-header-wrapper { position: sticky; top: 0; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 100%; width: max-content; background: #ffffff;}
         .rows-container { min-width: 100%; width: max-content; padding-top: 0; } 
         
-        .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 1px solid #0d3b10; min-width: 100%; width: max-content; }
-        .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 2px solid #1b5e20; min-width: 100%; width: max-content; }
-        .cell-row { display: flex; align-items: stretch; border-bottom: 1px solid #ccc; gap: 0; min-width: 100%; width: max-content; }
+        .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 1px solid #0d3b10; width: max-content; }
+        .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 2px solid #1b5e20; width: max-content; }
+        .cell-row { display: flex; align-items: stretch; border-bottom: 1px solid #ccc; gap: 0; width: max-content; }
         .cell-row:hover { background-color: rgba(0,0,0,0.02); }
 
         /* --- FLAWLESS COLUMN ALIGNMENT SYSTEM --- */
@@ -154,7 +154,7 @@
         .rules-section h3 { margin-top: 0; color: #2e7d32; }
         .table-responsive { width: 100%; overflow-x: auto; margin-bottom: 10px; }
         #phase-rules-table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        #phase-rules-table th { background: #f1f3f4; padding: 8px; text-align: left; font-size: 12px; color: #555; }
+        #phase-rules-table th { background: #f1f3f4; padding: 8px; text-align: left; font-size: 11px; color: #555; }
         #phase-rules-table td { padding: 6px; border-bottom: 1px solid #eee; }
         #phase-rules-table input[type="text"], #phase-rules-table select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
         #phase-rules-table input[type="color"] { width: 35px; height: 28px; padding: 0; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; }
@@ -216,6 +216,7 @@
                     <div class="title-wrap"><span class="col-title" id="l2-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div>
                     <div class="expand-btn" data-target="l2-supp" onclick="window.toggleExpansion('l2')">+</div>
                 </div>
+                
                 <div class="phase-gap"></div>
                 
                 <div class="header-cell gate-cell l3-gate-col"><div class="title-wrap"><span class="col-title" id="l3-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span></div></div>
@@ -223,6 +224,7 @@
                     <div class="title-wrap"><span class="col-title" id="l3-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div>
                     <div class="expand-btn" data-target="l3-supp" onclick="window.toggleExpansion('l3')">+</div>
                 </div>
+
                 <div class="phase-gap"></div>
                 
                 <div class="header-cell gate-cell l4-gate-col"><div class="title-wrap"><span class="col-title" id="l4-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div></div>
@@ -230,13 +232,15 @@
                     <div class="title-wrap"><span class="col-title" id="l4-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span></div>
                     <div class="expand-btn" data-target="l4-supp" onclick="window.toggleExpansion('l4')">+</div>
                 </div>
+
                 <div class="phase-gap"></div>
 
                 <div class="header-cell summary-cell" id="global-iss-header">
                     <div class="title-wrap"><span class="col-title" id="iss-status-title" data-original="Open Issues">Open Issues</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div>
                     <div class="expand-btn" data-target="global-iss" onclick="window.toggleGlobalIssues()">+</div>
                 </div>
-                </div>
+
+            </div>
         </div>
         <div class="rows-container" id="tracker-rows"><div class="loading-text">Stitching and Parsing Relational Data Arrays... 🚀</div></div>
     </div>
@@ -369,6 +373,8 @@
                                 <th title="Max Support CL Open">Max Supp</th>
                                 <th title="Max Gating Issues Open">Max Gate Iss.</th>
                                 <th title="Max Non-Gating Issues Open">Max Non-Gate Iss.</th>
+                                <th title="Include Open CHKs Per Phase" style="text-align:center;">Inc. Open CHKs</th>
+                                <th title="Include Open Gating Issues" style="text-align:center;">Inc. Gate Iss.</th>
                                 <th>Result Status</th>
                                 <th>Color</th>
                                 <th></th>
@@ -817,6 +823,8 @@
             <td><input type="text" class="r-ms" value="${r.maxSupport !== undefined ? r.maxSupport : ''}" placeholder="e.g. >0"></td>
             <td><input type="text" class="r-mgi" value="${r.maxGatingIssues !== undefined ? r.maxGatingIssues : ''}" placeholder="=0"></td>
             <td><input type="text" class="r-mngi" value="${r.maxNonGatingIssues !== undefined ? r.maxNonGatingIssues : ''}" placeholder="<=5"></td>
+            <td style="text-align:center;"><input type="checkbox" class="r-inc-chk" ${r.includeOpenCHKs === true || String(r.includeOpenCHKs).toLowerCase() === 'true' ? 'checked' : ''}></td>
+            <td style="text-align:center;"><input type="checkbox" class="r-inc-gate-iss" ${r.includeOpenGatingIssues === true || String(r.includeOpenGatingIssues).toLowerCase() === 'true' ? 'checked' : ''}></td>
             <td><input type="text" class="r-res" value="${r.resultingStatus || ''}" placeholder="Result"></td>
             <td><input type="color" class="r-color" value="${r.color || '#e0e0e0'}"></td>
             <td><button class="btn btn-del" style="padding:4px 8px;" onclick="this.closest('tr').remove()">🗑</button></td>
@@ -843,6 +851,8 @@
             maxSupport: row.querySelector('.r-ms').value.trim(),
             maxGatingIssues: row.querySelector('.r-mgi').value.trim(),
             maxNonGatingIssues: row.querySelector('.r-mngi').value.trim(),
+            includeOpenCHKs: row.querySelector('.r-inc-chk').checked,
+            includeOpenGatingIssues: row.querySelector('.r-inc-gate-iss').checked,
             resultingStatus: row.querySelector('.r-res').value.trim(),
             color: row.querySelector('.r-color').value
         }));
