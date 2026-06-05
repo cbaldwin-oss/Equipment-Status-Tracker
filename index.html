@@ -61,14 +61,15 @@
             transition: all 0.2s ease;
         } 
 
-        .group-asset { flex: 0 0 190px !important; width: 190px !important; min-width: 190px !important; max-width: 190px !important; position: sticky; left: 0; z-index: 10; }
-        .frozen-group-bar .group-asset { background-color: #1b5e20; z-index: 12; border-right: 1px solid #0d3b10 !important; }
-        .frozen-col-bar .group-asset { background-color: #2e7d32; z-index: 12; border-right: 1px solid #1b5e20 !important; }
+        /* --- ASSET / AREA FROZEN COLUMNS --- */
+        .group-asset-details { flex: 0 0 240px !important; width: 240px !important; min-width: 240px !important; max-width: 240px !important; position: sticky; left: 0; z-index: 12; background-color: #1b5e20; border-right: 1px solid #0d3b10 !important; }
+        .group-asset { flex: 0 0 190px !important; width: 190px !important; min-width: 190px !important; max-width: 190px !important; position: sticky; left: 0; z-index: 12; background-color: #2e7d32; border-right: 1px solid #1b5e20 !important; }
+        .group-area  { flex: 0 0 100px !important; width: 100px !important; min-width: 100px !important; max-width: 100px !important; position: sticky; left: 190px; z-index: 12; background-color: #2e7d32; border-right: 3px solid #4caf50 !important; }
         
         .cell-row .group-asset { 
             background-color: #e8eaed !important; 
             z-index: 10; 
-            border-right: 2px solid #78909c !important; 
+            border-right: 1px solid #cfd8dc !important; 
             display: flex !important; 
             align-items: center !important; 
             justify-content: center !important; 
@@ -76,6 +77,19 @@
             font-weight: bold !important; 
             font-size: 13px !important; 
             color: #333 !important;
+        }
+
+        .cell-row .group-area { 
+            background-color: #f1f3f4 !important; 
+            z-index: 10; 
+            border-right: 2px solid #78909c !important; 
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: center !important; 
+            text-align: center !important; 
+            font-weight: bold !important; 
+            font-size: 12px !important; 
+            color: #555 !important;
         }
 
         .title-wrap { display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; }
@@ -196,7 +210,7 @@
     <div class="tracker-container">
         <div class="tracker-header-wrapper">
             <div class="frozen-group-bar">
-                <div class="header-cell group-asset" style="justify-content: center;">Asset Details</div>
+                <div class="header-cell group-asset-details" style="justify-content: center;">Asset Details</div>
                 <div class="phase-gap"></div>
                 <div class="header-cell group-header" id="group-l2">L2 Verification</div>
                 <div class="phase-gap"></div>
@@ -209,38 +223,35 @@
             
             <div class="frozen-col-bar" id="main-column-headers">
                 <div class="header-cell group-asset"><div class="title-wrap"><span class="col-title" data-original="Asset">Asset</span> <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span></div></div>
+                <div class="header-cell group-area"><div class="title-wrap"><span class="col-title" id="area-title" data-original="Area">Area</span> <span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span></div></div>
                 <div class="phase-gap"></div>
                 
-                <!-- L2 -->
-                <div class="header-cell gate-cell l2-gate-col"><div class="title-wrap"><span class="col-title" id="l2-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span></div></div>
+                <div class="header-cell gate-cell l2-gate-col"><div class="title-wrap"><span class="col-title" id="l2-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div></div>
                 <div class="header-cell summary-cell" id="l2-supp-header">
-                    <div class="title-wrap"><span class="col-title" id="l2-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div>
+                    <div class="title-wrap"><span class="col-title" id="l2-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span></div>
                     <div class="expand-btn" data-target="l2-supp" onclick="window.toggleExpansion('l2')">+</div>
                 </div>
                 
                 <div class="phase-gap"></div>
                 
-                <!-- L3 -->
-                <div class="header-cell gate-cell l3-gate-col"><div class="title-wrap"><span class="col-title" id="l3-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span></div></div>
+                <div class="header-cell gate-cell l3-gate-col"><div class="title-wrap"><span class="col-title" id="l3-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div></div>
                 <div class="header-cell summary-cell" id="l3-supp-header">
-                    <div class="title-wrap"><span class="col-title" id="l3-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div>
+                    <div class="title-wrap"><span class="col-title" id="l3-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div>
                     <div class="expand-btn" data-target="l3-supp" onclick="window.toggleExpansion('l3')">+</div>
                 </div>
 
                 <div class="phase-gap"></div>
                 
-                <!-- L4 -->
-                <div class="header-cell gate-cell l4-gate-col"><div class="title-wrap"><span class="col-title" id="l4-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div></div>
+                <div class="header-cell gate-cell l4-gate-col"><div class="title-wrap"><span class="col-title" id="l4-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span></div></div>
                 <div class="header-cell summary-cell" id="l4-supp-header">
-                    <div class="title-wrap"><span class="col-title" id="l4-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span></div>
+                    <div class="title-wrap"><span class="col-title" id="l4-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div>
                     <div class="expand-btn" data-target="l4-supp" onclick="window.toggleExpansion('l4')">+</div>
                 </div>
 
                 <div class="phase-gap"></div>
 
-                <!-- ISSUES SUMMARY -->
                 <div class="header-cell summary-cell" id="global-iss-header">
-                    <div class="title-wrap"><span class="col-title" id="iss-status-title" data-original="Open Issues">Open Issues</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div>
+                    <div class="title-wrap"><span class="col-title" id="iss-status-title" data-original="Open Issues">Open Issues</span><span class="filter-icon" data-col="8" onclick="toggleFilter(event, 8)">▼</span></div>
                     <div class="expand-btn" data-target="global-iss" onclick="window.toggleGlobalIssues()">+</div>
                 </div>
 
@@ -259,8 +270,14 @@
         <div class="modal-body">
             
             <div class="global-config-wrap">
-                <h3>Global Phase Fallback Color <span style="font-size:12px; font-weight:normal; color:#555;">(For empty Overall Statuses)</span></h3>
-                <input type="color" id="fallback-color-picker" value="#f5f5f5" style="width: 40px; height: 30px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px;">
+                <div style="flex: 1;">
+                    <h3>Global Phase Fallback Color <span style="font-size:12px; font-weight:normal; color:#555;">(For empty Overall Statuses)</span></h3>
+                    <input type="color" id="fallback-color-picker" value="#f5f5f5" style="width: 40px; height: 30px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;">
+                </div>
+                <div style="flex: 1; border-left: 2px solid #c8e6c9; padding-left: 15px;">
+                    <h3>Area Column Header Prefix</h3>
+                    <input type="text" id="cust-area-prefix" placeholder="e.g. Area" style="padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 80%; margin-top: 5px;">
+                </div>
             </div>
 
             <div class="rules-section">
@@ -485,6 +502,14 @@
         let exactOpen = openArr.find(s => s.name && lowerVal === String(s.name).toLowerCase().trim());
         if (exactOpen) return `background-color:${exactOpen.color}; color:${getContrastYIQ(exactOpen.color)};`;
 
+        if (type === 'issue') { 
+            let gateMatch = globalConfig.gatingIssues.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim()));
+            if (gateMatch) return `background-color:${gateMatch.color}; color:${getContrastYIQ(gateMatch.color)};`;
+            
+            let nonGateMatch = globalConfig.nonGatingIssues.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim()));
+            if (nonGateMatch) return `background-color:${nonGateMatch.color}; color:${getContrastYIQ(nonGateMatch.color)};`;
+        }
+
         let matchClosed = closedArr.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim()));
         if (matchClosed) return `background-color:${matchClosed.color}; color:${getContrastYIQ(matchClosed.color)};`;
         
@@ -682,6 +707,8 @@
             if (payload.config) globalConfig = { ...globalConfig, ...payload.config };
             
             if (globalConfig.customHeaders) {
+                updateHeaderElement('area-title', globalConfig.customHeaders.areaPrefix, true);
+                
                 updateHeaderElement('group-l2', globalConfig.customHeaders.l2Phase);
                 updateHeaderElement('l2-gate-title', globalConfig.customHeaders.l2Gate, true);
                 updateHeaderElement('l2-status-title', globalConfig.customHeaders.l2Status, true);
@@ -762,6 +789,8 @@
 
             rows.forEach(row => {
                 const assetId = row['Asset'] || 'N/A';
+                const areaVal = row['Area'] || 'N/A';
+                
                 const l2Open = combineOpenSupportCLs(row, 'L2', globalConfig.maxCols.l2);
                 const l3Open = combineOpenSupportCLs(row, 'L3', globalConfig.maxCols.l3);
                 const l4Open = combineOpenSupportCLs(row, 'L4', globalConfig.maxCols.l4);
@@ -770,6 +799,7 @@
                 const rowHTML = `
                 <div class="cell-row">
                     <div class="filter-target group-asset" data-val="${assetId}" title="${assetId}">${assetId}</div>
+                    <div class="filter-target group-area" data-val="${areaVal}" title="${areaVal}">${areaVal}</div>
                     <div class="phase-gap"></div>
                     
                     ${renderStackedCell(row['L2 Gate CL 1'], 'gate-cell l2-gate-col', 'checklist')}
@@ -805,6 +835,8 @@
         document.getElementById('fallback-color-picker').value = globalConfig.fallbackColor || '#f5f5f5';
 
         if (globalConfig.customHeaders) {
+            document.getElementById('cust-area-prefix').value = globalConfig.customHeaders.areaPrefix || 'Area';
+            
             document.getElementById('cust-l2-phase').value = globalConfig.customHeaders.l2Phase;
             document.getElementById('cust-l2-gate').value = globalConfig.customHeaders.l2Gate;
             document.getElementById('cust-l2-status').value = globalConfig.customHeaders.l2Status;
@@ -905,6 +937,7 @@
         }));
 
         let newCustomHeaders = {
+            areaPrefix: document.getElementById('cust-area-prefix').value.trim(),
             l2Phase: document.getElementById('cust-l2-phase').value.trim(), l2Gate: document.getElementById('cust-l2-gate').value.trim(), l2Status: document.getElementById('cust-l2-status').value.trim(),
             l3Phase: document.getElementById('cust-l3-phase').value.trim(), l3Gate: document.getElementById('cust-l3-gate').value.trim(), l3Status: document.getElementById('cust-l3-status').value.trim(),
             l4Phase: document.getElementById('cust-l4-phase').value.trim(), l4Gate: document.getElementById('cust-l4-gate').value.trim(), l4Status: document.getElementById('cust-l4-status').value.trim(),
