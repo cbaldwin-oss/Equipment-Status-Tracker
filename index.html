@@ -450,16 +450,33 @@
         let openArr = globalConfig.openStatuses || [];
         let closedArr = globalConfig.closedStatuses || [];
         
-        if (type === 'test') { openArr = globalConfig.testOpenStatuses || []; closedArr = globalConfig.testClosedStatuses || []; }
-        if (type === 'issue') { 
-            let gateExact = globalConfig.gatingIssues.find(s => s.name && lowerVal === String(s.name).toLowerCase().trim());
-            if (gateExact) return `background-color:${gateExact.color}; color:${getContrastYIQ(gateExact.color)};`;
-            
-            let nonGateExact = globalConfig.nonGatingIssues.find(s => s.name && lowerVal === String(s.name).toLowerCase().trim());
-            if (nonGateExact) return `background-color:${nonGateExact.color}; color:${getContrastYIQ(nonGateExact.color)};`;
-
+        if (type === 'test') { 
+            openArr = globalConfig.testOpenStatuses || []; 
+            closedArr = globalConfig.testClosedStatuses || []; 
+        } else if (type === 'issue') {
             openArr = globalConfig.issueOpenStatuses || []; 
             closedArr = globalConfig.issueClosedStatuses || []; 
+            
+            if (isNaN(lowerVal)) {
+                let priColor = null;
+                let statColor = null;
+
+                let priMatch = globalConfig.gatingIssues.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim())) || 
+                               globalConfig.nonGatingIssues.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim()));
+                if (priMatch) priColor = priMatch.color;
+
+                let statMatch = openArr.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim())) || 
+                                closedArr.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim()));
+                if (statMatch) statColor = statMatch.color;
+
+                if (priColor && statColor) {
+                    return `background: linear-gradient(135deg, ${priColor} 50%, ${statColor} 50%); color: #111; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;`;
+                } else if (priColor) {
+                    return `background-color:${priColor}; color:${getContrastYIQ(priColor)};`;
+                } else if (statColor) {
+                    return `background-color:${statColor}; color:${getContrastYIQ(statColor)};`;
+                }
+            }
         }
         
         let exactClosed = closedArr.find(s => s.name && lowerVal === String(s.name).toLowerCase().trim());
@@ -467,14 +484,6 @@
         
         let exactOpen = openArr.find(s => s.name && lowerVal === String(s.name).toLowerCase().trim());
         if (exactOpen) return `background-color:${exactOpen.color}; color:${getContrastYIQ(exactOpen.color)};`;
-
-        if (type === 'issue') { 
-            let gateMatch = globalConfig.gatingIssues.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim()));
-            if (gateMatch) return `background-color:${gateMatch.color}; color:${getContrastYIQ(gateMatch.color)};`;
-            
-            let nonGateMatch = globalConfig.nonGatingIssues.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim()));
-            if (nonGateMatch) return `background-color:${nonGateMatch.color}; color:${getContrastYIQ(nonGateMatch.color)};`;
-        }
 
         let matchClosed = closedArr.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim()));
         if (matchClosed) return `background-color:${matchClosed.color}; color:${getContrastYIQ(matchClosed.color)};`;
