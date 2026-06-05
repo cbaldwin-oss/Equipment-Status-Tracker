@@ -246,6 +246,7 @@
                 <div class="header-cell group-area"><div class="title-wrap"><span class="col-title" id="area-title" data-original="Area">Area</span> <span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span></div></div>
                 <div class="phase-gap"></div>
                 
+                <!-- L2 -->
                 <div class="header-cell gate-cell l2-gate-col"><div class="title-wrap"><span class="col-title" id="l2-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div></div>
                 <div class="header-cell summary-cell" id="l2-supp-header">
                     <div class="title-wrap"><span class="col-title" id="l2-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span></div>
@@ -254,6 +255,7 @@
                 
                 <div class="phase-gap"></div>
                 
+                <!-- L3 -->
                 <div class="header-cell gate-cell l3-gate-col"><div class="title-wrap"><span class="col-title" id="l3-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div></div>
                 <div class="header-cell summary-cell" id="l3-supp-header">
                     <div class="title-wrap"><span class="col-title" id="l3-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div>
@@ -262,6 +264,7 @@
 
                 <div class="phase-gap"></div>
                 
+                <!-- L4 -->
                 <div class="header-cell gate-cell l4-gate-col"><div class="title-wrap"><span class="col-title" id="l4-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span></div></div>
                 <div class="header-cell summary-cell" id="l4-supp-header">
                     <div class="title-wrap"><span class="col-title" id="l4-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div>
@@ -270,6 +273,7 @@
 
                 <div class="phase-gap"></div>
 
+                <!-- ISSUES SUMMARY -->
                 <div class="header-cell summary-cell" id="global-iss-header">
                     <div class="title-wrap"><span class="col-title" id="iss-status-title" data-original="Open Issues">Open Issues</span><span class="filter-icon" data-col="8" onclick="toggleFilter(event, 8)">▼</span></div>
                     <div class="expand-btn" data-target="global-iss" onclick="window.toggleGlobalIssues()">+</div>
@@ -281,6 +285,7 @@
     </div>
 </div>
 
+<!-- PDF EXPORT MODAL -->
 <div class="modal-overlay" id="pdf-modal">
     <div class="modal-box" style="width: 500px;">
         <div class="modal-header">
@@ -288,9 +293,10 @@
             <button class="close-btn" onclick="closePdfModal()">×</button>
         </div>
         <div class="modal-body">
-            <h3 style="margin-top: 0; color: #555; font-size: 14px; border-bottom: 2px solid #eee; padding-bottom: 8px;">Select columns to include in PDF:</h3>
+            <h3 style="margin-top: 0; color: #555; font-size: 14px; border-bottom: 2px solid #eee; padding-bottom: 8px;">Select grouped columns to include in PDF:</h3>
             <div id="pdf-column-list" style="display: flex; flex-direction: column; gap: 8px;">
-                </div>
+                <!-- Dynamically Populated List -->
+            </div>
         </div>
         <div class="modal-footer">
             <button class="btn btn-cancel" onclick="closePdfModal()">Cancel</button>
@@ -299,6 +305,7 @@
     </div>
 </div>
 
+<!-- SETTINGS MODAL -->
 <div class="modal-overlay" id="settings-modal">
     <div class="modal-box">
         <div class="modal-header">
@@ -471,6 +478,29 @@
 
     let expandedStates = { l2: false, l3: false, l4: false, iss: false };
 
+    // --- PDF CONFIGURATION ARRAY ---
+    window.PDF_OPTIONS = [
+        { id: 'asset', label: 'Asset Details', type: 'asset' },
+        { id: 'area', label: 'Area', type: 'area' },
+        { id: 'l2-gate', label: 'L2 Gate CL', type: 'gate', level: 'l2' },
+        { id: 'l2-status', label: 'L2 Overall Status', type: 'status', level: 'l2' },
+        { id: 'l2-open', label: 'Open L2 CHK', type: 'supp-open', level: 'l2' },
+        { id: 'l2-closed', label: 'Completed L2 CHK', type: 'supp-closed', level: 'l2' },
+        { id: 'l3-gate', label: 'L3 Gate CL', type: 'gate', level: 'l3' },
+        { id: 'l3-status', label: 'L3 Overall Status', type: 'status', level: 'l3' },
+        { id: 'l3-open', label: 'Open L3 CHK', type: 'supp-open', level: 'l3' },
+        { id: 'l3-closed', label: 'Completed L3 CHK', type: 'supp-closed', level: 'l3' },
+        { id: 'l4-gate', label: 'L4 Gate CL', type: 'gate', level: 'l4' },
+        { id: 'l4-status', label: 'L4 Overall Status', type: 'status', level: 'l4' },
+        { id: 'l4-open', label: 'Open L4 Tests', type: 'supp-open', level: 'l4' },
+        { id: 'l4-closed', label: 'Completed L4 Tests', type: 'supp-closed', level: 'l4' },
+        { id: 'iss-status', label: 'Open Issues Count', type: 'iss-count' },
+        { id: 'iss-open-gate', label: 'Open Gating Issues', type: 'iss-group', group: 'open-gate' },
+        { id: 'iss-open-non', label: 'Open Non-Gating Issues', type: 'iss-group', group: 'open-non' },
+        { id: 'iss-closed-gate', label: 'Closed Gating Issues', type: 'iss-group', group: 'closed-gate' },
+        { id: 'iss-closed-non', label: 'Closed Non-Gating Issues', type: 'iss-group', group: 'closed-non' }
+    ];
+
     function getContrastYIQ(hexcolor){
         if(!hexcolor) return '#000000';
         hexcolor = String(hexcolor).replace("#", "");
@@ -632,7 +662,7 @@
                 const match = rawVal.match(/(.+?)\s*\((.+)\)/);
                 if (match) {
                     let status = match[2];
-                    let isOpen = isStatusMatch(status, issueOpenArr);
+                    let isOpen = isStatusMatch(status, issueOpenArr) || !isStatusMatch(status, issueClosedArr);
                     let isClosed = isStatusMatch(status, issueClosedArr);
                     let isGating = isStatusMatch(status, gatingArr);
 
@@ -1136,22 +1166,25 @@
     function closeFilterMenu() { if (currentDropdown) { document.body.removeChild(currentDropdown); currentDropdown = null; } }
     document.addEventListener('click', (e) => { if (currentDropdown && !currentDropdown.contains(e.target) && !e.target.classList.contains('filter-icon')) closeFilterMenu(); });
 
-    // --- PDF EXPORT MODAL LOGIC ---
+    // --- SMART EXPORT ENGINE LOGIC ---
     window.openPdfModal = function() {
         const listContainer = document.getElementById('pdf-column-list');
         listContainer.innerHTML = '<label class="checkbox-row" style="border-bottom: 1px solid #ccc; padding-bottom: 8px; margin-bottom: 8px;"><input type="checkbox" id="pdf-select-all" checked onchange="toggleAllPdfCols(this)"> Select All</label>';
         
-        const headerChildren = Array.from(document.getElementById('main-column-headers').children).filter(el => !el.classList.contains('phase-gap'));
-        
         let html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">';
-        headerChildren.forEach((cell, index) => {
-            let isHidden = window.getComputedStyle(cell).display === 'none';
-            if (!isHidden) {
-                let titleNode = cell.querySelector('.col-title');
-                let title = titleNode ? titleNode.innerText.trim() : cell.innerText.trim();
-                title = title.replace('▼', '').trim();
-                html += `<label class="checkbox-row"><input type="checkbox" class="pdf-col-cb" value="${index}" checked> ${title}</label>`;
-            }
+        window.PDF_OPTIONS.forEach((opt, index) => {
+            let displayLabel = opt.label;
+            if(opt.id === 'asset') displayLabel = 'Asset Details';
+            if(opt.id === 'area') displayLabel = globalConfig.customHeaders.areaPrefix || 'Area';
+            if(opt.id === 'l2-gate') displayLabel = globalConfig.customHeaders.l2Phase + ' - ' + globalConfig.customHeaders.l2Gate;
+            if(opt.id === 'l2-status') displayLabel = globalConfig.customHeaders.l2Phase + ' - ' + globalConfig.customHeaders.l2Status;
+            if(opt.id === 'l3-gate') displayLabel = globalConfig.customHeaders.l3Phase + ' - ' + globalConfig.customHeaders.l3Gate;
+            if(opt.id === 'l3-status') displayLabel = globalConfig.customHeaders.l3Phase + ' - ' + globalConfig.customHeaders.l3Status;
+            if(opt.id === 'l4-gate') displayLabel = globalConfig.customHeaders.l4Phase + ' - ' + globalConfig.customHeaders.l4Gate;
+            if(opt.id === 'l4-status') displayLabel = globalConfig.customHeaders.l4Phase + ' - ' + globalConfig.customHeaders.l4Status;
+            if(opt.id === 'iss-status') displayLabel = globalConfig.customHeaders.issPhase + ' - ' + globalConfig.customHeaders.issStatus;
+            
+            html += `<label class="checkbox-row"><input type="checkbox" class="pdf-col-cb" value="${index}" checked> ${displayLabel}</label>`;
         });
         html += '</div>';
         listContainer.innerHTML += html;
@@ -1166,10 +1199,64 @@
         document.querySelectorAll('.pdf-col-cb').forEach(cb => cb.checked = source.checked);
     };
 
-    // --- PDF GENERATION ENGINE ---
+    function getGroupedSupp(row, level, state) {
+        let cells = row.querySelectorAll(`.${level}-supp-details`);
+        let items = [];
+        let openArr = (level === 'l4') ? (globalConfig.testOpenStatuses || []) : (globalConfig.openStatuses || []);
+        let closedArr = (level === 'l4') ? (globalConfig.testClosedStatuses || []) : (globalConfig.closedStatuses || []);
+        
+        cells.forEach(cell => {
+            let val = cell.dataset.val;
+            if (val && val !== 'N/A' && val !== 'Clear' && val !== '-') {
+                const match = val.match(/(.+?)\s*\((.+)\)/);
+                if (match) {
+                    let id = match[1].trim();
+                    let status = match[2].trim();
+                    let isOpen = isStatusMatch(status, openArr) || (!isStatusMatch(status, closedArr) && !status.toLowerCase().includes('no cl'));
+                    let isClosed = isStatusMatch(status, closedArr);
+                    
+                    if (state === 'open' && isOpen) items.push(id);
+                    if (state === 'closed' && isClosed) items.push(id);
+                }
+            }
+        });
+        return items.length > 0 ? items.join(', ') : '-';
+    }
+
+    function getGroupedIss(row, type) {
+        let cells = row.querySelectorAll(`.global-iss-details`);
+        let items = [];
+        let issueOpenArr = globalConfig.issueOpenStatuses || [];
+        let issueClosedArr = globalConfig.issueClosedStatuses || [];
+        let gatingArr = globalConfig.gatingIssues || [];
+        
+        cells.forEach(cell => {
+            let val = cell.dataset.val;
+            if (val && val !== 'N/A' && val !== 'Clear' && val !== '-') {
+                const match = val.match(/(.+?)\s*\((.+)\)/);
+                if (match) {
+                    let id = match[1].trim();
+                    let status = match[2].trim();
+                    
+                    let isOpen = isStatusMatch(status, issueOpenArr) || (!isStatusMatch(status, issueClosedArr));
+                    let isClosed = isStatusMatch(status, issueClosedArr);
+                    let isGating = isStatusMatch(status, gatingArr);
+                    
+                    if (type === 'open-gate' && isOpen && isGating) items.push(id);
+                    if (type === 'open-non' && isOpen && !isGating) items.push(id);
+                    if (type === 'closed-gate' && isClosed && isGating) items.push(id);
+                    if (type === 'closed-non' && isClosed && !isGating) items.push(id);
+                }
+            }
+        });
+        return items.length > 0 ? items.join(', ') : '-';
+    }
+
     window.generatePDF = function() {
         const selectedIndices = Array.from(document.querySelectorAll('.pdf-col-cb:checked')).map(cb => parseInt(cb.value));
         if (selectedIndices.length === 0) { alert('Please select at least one column.'); return; }
+        
+        const selectedOptions = selectedIndices.map(i => window.PDF_OPTIONS[i]);
         
         let printWin = window.open('', '_blank');
         let html = `<html><head><title>LaunchPad PDF Export</title><style>
@@ -1180,19 +1267,26 @@
             th, td { border: 1px solid #aeb6ba; padding: 6px 4px; text-align: center; vertical-align: middle; word-wrap: break-word; overflow: hidden; }
             th { background-color: #2e7d32 !important; color: white !important; font-size: 10px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .bg-gray { background-color: #f5f5f5 !important; color: #616161 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+            
+            /* Magic shrinking CSS for lists to fit on one line item */
+            .shrink-list { font-size: 8px; line-height: 1.2; font-weight: bold; color: #222; text-align: left; }
+            
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         </style></head><body><h2>Relational Asset Status Tracker Export</h2><table>`;
         
         html += '<thead><tr>';
-        const headerChildren = Array.from(document.getElementById('main-column-headers').children).filter(el => !el.classList.contains('phase-gap'));
-        
-        headerChildren.forEach((cell, index) => {
-            if (selectedIndices.includes(index)) {
-                let titleNode = cell.querySelector('.col-title');
-                let title = titleNode ? titleNode.innerText.trim() : cell.innerText.trim();
-                title = title.replace('▼', '').trim();
-                html += `<th>${title}</th>`;
-            }
+        selectedOptions.forEach(opt => {
+            let displayLabel = opt.label;
+            if(opt.id === 'asset') displayLabel = 'Asset';
+            if(opt.id === 'area') displayLabel = globalConfig.customHeaders.areaPrefix || 'Area';
+            if(opt.id === 'l2-gate') displayLabel = globalConfig.customHeaders.l2Gate;
+            if(opt.id === 'l2-status') displayLabel = globalConfig.customHeaders.l2Status;
+            if(opt.id === 'l3-gate') displayLabel = globalConfig.customHeaders.l3Gate;
+            if(opt.id === 'l3-status') displayLabel = globalConfig.customHeaders.l3Status;
+            if(opt.id === 'l4-gate') displayLabel = globalConfig.customHeaders.l4Gate;
+            if(opt.id === 'l4-status') displayLabel = globalConfig.customHeaders.l4Status;
+            if(opt.id === 'iss-status') displayLabel = globalConfig.customHeaders.issStatus;
+            html += `<th>${displayLabel}</th>`;
         });
         html += '</tr></thead><tbody>';
 
@@ -1200,39 +1294,37 @@
         rows.forEach(row => {
             if (window.getComputedStyle(row).display !== 'none') {
                 html += '<tr>';
-                const rowChildren = Array.from(row.children).filter(el => !el.classList.contains('phase-gap'));
                 
-                headerChildren.forEach((headCell, i) => {
-                    if (selectedIndices.includes(i)) {
-                        let cellHtml = '';
-                        let rowCell = rowChildren[i];
-                        if(rowCell) {
-                            if(rowCell.classList.contains('stacked-cell')) {
-                                let hdrNode = rowCell.querySelector('.checklist-header');
-                                let statNode = rowCell.querySelector('.checklist-status');
-                                let id = hdrNode ? hdrNode.innerText : '-';
-                                let stat = statNode ? statNode.innerText : '-';
-                                
-                                if(id === '-') {
-                                    cellHtml = `<td class="bg-gray">-</td>`;
-                                } else {
-                                    let bg = statNode.style.backgroundColor || '';
-                                    let bgImg = statNode.style.backgroundImage || '';
-                                    let txtColor = statNode.style.color || '#000';
-                                    let styleStr = bgImg ? `background-image: ${bgImg}; color: #111;` : `background-color: ${bg}; color: ${txtColor};`;
-                                    cellHtml = `<td style="${styleStr}"><b>${id}</b><br><span style="font-size:8px;">${stat}</span></td>`;
-                                }
-                            } else {
-                                let val = rowCell.innerText.trim();
-                                let bg = rowCell.style.backgroundColor || '#fff';
-                                let txtColor = rowCell.style.color || '#000';
-                                cellHtml = `<td style="background-color: ${bg}; color: ${txtColor};"><b>${val}</b></td>`;
-                            }
-                        } else {
-                            cellHtml = `<td></td>`;
-                        }
-                        html += cellHtml;
+                selectedOptions.forEach(opt => {
+                    let cellHtml = '<td>-</td>';
+                    
+                    if (opt.type === 'asset') {
+                        let val = row.querySelector('.group-asset').innerText;
+                        cellHtml = `<td><b>${val}</b></td>`;
+                    } else if (opt.type === 'area') {
+                        let val = row.querySelector('.group-area').innerText;
+                        cellHtml = `<td><b>${val}</b></td>`;
+                    } else if (opt.type === 'gate') {
+                        let cell = row.querySelector(`.${opt.level}-gate-col`);
+                        cellHtml = extractStackedCellForPdf(cell);
+                    } else if (opt.type === 'status') {
+                        let cell = row.querySelector(`.${opt.level}-supp-summary`);
+                        cellHtml = extractSummaryCellForPdf(cell);
+                    } else if (opt.type === 'iss-count') {
+                        let cell = row.querySelector(`.global-iss-summary`);
+                        cellHtml = extractSummaryCellForPdf(cell);
+                    } else if (opt.type === 'supp-open') {
+                        let val = getGroupedSupp(row, opt.level, 'open');
+                        cellHtml = `<td class="shrink-list">${val}</td>`;
+                    } else if (opt.type === 'supp-closed') {
+                        let val = getGroupedSupp(row, opt.level, 'closed');
+                        cellHtml = `<td class="shrink-list">${val}</td>`;
+                    } else if (opt.type === 'iss-group') {
+                        let val = getGroupedIss(row, opt.group);
+                        cellHtml = `<td class="shrink-list">${val}</td>`;
                     }
+                    
+                    html += cellHtml;
                 });
                 
                 html += '</tr>';
@@ -1244,8 +1336,33 @@
         printWin.document.close();
         printWin.focus();
         setTimeout(() => { printWin.print(); printWin.close(); }, 500);
-        
         closePdfModal();
+    };
+
+    function extractStackedCellForPdf(cell) {
+        if (!cell) return '<td>-</td>';
+        let hdrNode = cell.querySelector('.checklist-header');
+        let statNode = cell.querySelector('.checklist-status');
+        let id = hdrNode ? hdrNode.innerText : '-';
+        let stat = statNode ? statNode.innerText : '-';
+        
+        if(id === '-') {
+            return `<td class="bg-gray">-</td>`;
+        } else {
+            let bg = statNode.style.backgroundColor || '';
+            let bgImg = statNode.style.backgroundImage || '';
+            let txtColor = statNode.style.color || '#000';
+            let styleStr = bgImg ? `background-image: ${bgImg}; color: #111;` : `background-color: ${bg}; color: ${txtColor};`;
+            return `<td style="${styleStr}"><b>${id}</b><br><span style="font-size:8px;">${stat}</span></td>`;
+        }
+    }
+
+    function extractSummaryCellForPdf(cell) {
+        if (!cell) return '<td>-</td>';
+        let val = cell.innerText.trim();
+        let bg = cell.style.backgroundColor || '#fff';
+        let txtColor = cell.style.color || '#000';
+        return `<td style="background-color: ${bg}; color: ${txtColor};"><b>${val}</b></td>`;
     }
 </script>
 </body>
