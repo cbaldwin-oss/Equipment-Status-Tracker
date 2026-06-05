@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QCx LaunchPad - Live Relational Equipment Tracker</title>
+    <title>Equipment Status Tracker</title>
     <style>
         /* --- BASE STYLES --- */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; overflow: hidden; height: 100vh; }
@@ -41,10 +41,10 @@
         }
 
         .summary-cell { 
-            flex: 0 0 140px !important; 
-            width: 140px !important; 
-            min-width: 140px !important; 
-            max-width: 140px !important;
+            flex: 0 0 190px !important; 
+            width: 190px !important; 
+            min-width: 190px !important; 
+            max-width: 190px !important;
             border-right: 2px solid #78909c !important; 
             overflow: hidden; 
             padding: 0;
@@ -61,7 +61,7 @@
             transition: all 0.2s ease;
         } 
 
-        .group-asset { flex: 0 0 140px !important; width: 140px !important; min-width: 140px !important; max-width: 140px !important; position: sticky; left: 0; z-index: 10; }
+        .group-asset { flex: 0 0 190px !important; width: 190px !important; min-width: 190px !important; max-width: 190px !important; position: sticky; left: 0; z-index: 10; }
         .frozen-group-bar .group-asset { background-color: #1b5e20; z-index: 12; border-right: 1px solid #0d3b10 !important; }
         .frozen-col-bar .group-asset { background-color: #2e7d32; z-index: 12; border-right: 1px solid #1b5e20 !important; }
         
@@ -181,7 +181,7 @@
 <body>
 
 <div class="header">
-    <div class="header-center"><span>LaunchPad</span></div>
+    <div class="header-center"><span>Equipment Status Tracker</span></div>
     <div class="header-right">
         <button class="setup-btn" onclick="openSettingsModal()">⚙️ Setup Config</button>
     </div>
@@ -702,7 +702,7 @@
             let gateL2 = globalConfig.showL2Gate !== false ? 100 : 0;
             let gateL3 = globalConfig.showL3Gate !== false ? 100 : 0;
             let gateL4 = globalConfig.showL4Gate !== false ? 100 : 0;
-            let summaryW = 140; 
+            let summaryW = 190; 
             
             document.getElementById('group-l2').style.flex = `0 0 ${gateL2 + summaryW}px`;
             document.getElementById('group-l3').style.flex = `0 0 ${gateL3 + summaryW}px`;
@@ -925,7 +925,7 @@
             let isSuppShown = globalConfig[`show${level.toUpperCase()}Supp`] !== false;
 
             let gateWidth = isGateShown ? 100 : 0;
-            let summaryWidth = 140;
+            let summaryWidth = 190;
             let baseWidth = gateWidth + summaryWidth;
             let exactWidth = (state && isSuppShown) ? (baseWidth + (maxCols * 100)) : baseWidth;
             
@@ -955,7 +955,7 @@
                 btn.style.background = state ? "#b71c1c" : "#4caf50";
             }
 
-            let summaryWidth = 140;
+            let summaryWidth = 190;
             let maxIss = globalConfig.maxCols.iss || 0;
             let exactIssWidth = state ? (summaryWidth + (maxIss * 100)) : summaryWidth;
             
