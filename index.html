@@ -24,9 +24,9 @@
         .tracker-header-wrapper { position: sticky; top: 0; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 100%; width: max-content; background: #ffffff;}
         .rows-container { min-width: 100%; width: max-content; padding-top: 0; } 
         
-        .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 1px solid #0d3b10; width: max-content; }
-        .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 2px solid #1b5e20; width: max-content; }
-        .cell-row { display: flex; align-items: stretch; border-bottom: 1px solid #ccc; gap: 0; width: max-content; }
+        .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 1px solid #0d3b10; min-width: 100%; width: max-content; }
+        .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 2px solid #1b5e20; min-width: 100%; width: max-content; }
+        .cell-row { display: flex; align-items: stretch; border-bottom: 1px solid #ccc; gap: 0; min-width: 100%; width: max-content; }
         .cell-row:hover { background-color: rgba(0,0,0,0.02); }
 
         /* --- FLAWLESS COLUMN ALIGNMENT SYSTEM --- */
@@ -373,9 +373,9 @@
                                 <th title="Max Support CL Open">Max Supp</th>
                                 <th title="Max Gating Issues Open">Max Gate Iss.</th>
                                 <th title="Max Non-Gating Issues Open">Max Non-Gate Iss.</th>
+                                <th>Result Status</th>
                                 <th title="Include Open CHKs Per Phase" style="text-align:center;">Inc. Open CHKs</th>
                                 <th title="Include Open Gating Issues" style="text-align:center;">Inc. Gate Iss.</th>
-                                <th>Result Status</th>
                                 <th>Color</th>
                                 <th></th>
                             </tr>
@@ -823,9 +823,9 @@
             <td><input type="text" class="r-ms" value="${r.maxSupport !== undefined ? r.maxSupport : ''}" placeholder="e.g. >0"></td>
             <td><input type="text" class="r-mgi" value="${r.maxGatingIssues !== undefined ? r.maxGatingIssues : ''}" placeholder="=0"></td>
             <td><input type="text" class="r-mngi" value="${r.maxNonGatingIssues !== undefined ? r.maxNonGatingIssues : ''}" placeholder="<=5"></td>
+            <td><input type="text" class="r-res" value="${r.resultingStatus || ''}" placeholder="Result"></td>
             <td style="text-align:center;"><input type="checkbox" class="r-inc-chk" ${r.includeOpenCHKs === true || String(r.includeOpenCHKs).toLowerCase() === 'true' ? 'checked' : ''}></td>
             <td style="text-align:center;"><input type="checkbox" class="r-inc-gate-iss" ${r.includeOpenGatingIssues === true || String(r.includeOpenGatingIssues).toLowerCase() === 'true' ? 'checked' : ''}></td>
-            <td><input type="text" class="r-res" value="${r.resultingStatus || ''}" placeholder="Result"></td>
             <td><input type="color" class="r-color" value="${r.color || '#e0e0e0'}"></td>
             <td><button class="btn btn-del" style="padding:4px 8px;" onclick="this.closest('tr').remove()">🗑</button></td>
         `;
@@ -851,9 +851,9 @@
             maxSupport: row.querySelector('.r-ms').value.trim(),
             maxGatingIssues: row.querySelector('.r-mgi').value.trim(),
             maxNonGatingIssues: row.querySelector('.r-mngi').value.trim(),
+            resultingStatus: row.querySelector('.r-res').value.trim(),
             includeOpenCHKs: row.querySelector('.r-inc-chk').checked,
             includeOpenGatingIssues: row.querySelector('.r-inc-gate-iss').checked,
-            resultingStatus: row.querySelector('.r-res').value.trim(),
             color: row.querySelector('.r-color').value
         }));
 
