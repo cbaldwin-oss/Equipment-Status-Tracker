@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Equipment Status Tracker</title>
+    <title>QCx LaunchPad - Live Relational Equipment Tracker</title>
     <style>
         /* --- BASE STYLES --- */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; overflow: hidden; height: 100vh; }
@@ -24,9 +24,9 @@
         .tracker-header-wrapper { position: sticky; top: 0; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 100%; width: max-content; background: #ffffff;}
         .rows-container { min-width: 100%; width: max-content; padding-top: 0; } 
         
-        .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 1px solid #0d3b10; min-width: 100%; width: max-content; }
-        .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 2px solid #1b5e20; min-width: 100%; width: max-content; }
-        .cell-row { display: flex; align-items: stretch; border-bottom: 1px solid #ccc; gap: 0; min-width: 100%; width: max-content; }
+        .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 1px solid #0d3b10; width: max-content; }
+        .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 2px solid #1b5e20; width: max-content; }
+        .cell-row { display: flex; align-items: stretch; border-bottom: 1px solid #ccc; gap: 0; width: max-content; }
         .cell-row:hover { background-color: rgba(0,0,0,0.02); }
 
         /* --- FLAWLESS COLUMN ALIGNMENT SYSTEM --- */
@@ -181,7 +181,7 @@
 <body>
 
 <div class="header">
-    <div class="header-center"><span>Equipment Status Tracker</span></div>
+    <div class="header-center"><span>LaunchPad</span></div>
     <div class="header-right">
         <button class="setup-btn" onclick="openSettingsModal()">⚙️ Setup Config</button>
     </div>
@@ -211,6 +211,7 @@
                 <div class="header-cell group-asset"><div class="title-wrap"><span class="col-title" data-original="Asset">Asset</span> <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span></div></div>
                 <div class="phase-gap"></div>
                 
+                <!-- L2 -->
                 <div class="header-cell gate-cell l2-gate-col"><div class="title-wrap"><span class="col-title" id="l2-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span></div></div>
                 <div class="header-cell summary-cell" id="l2-supp-header">
                     <div class="title-wrap"><span class="col-title" id="l2-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div>
@@ -219,6 +220,7 @@
                 
                 <div class="phase-gap"></div>
                 
+                <!-- L3 -->
                 <div class="header-cell gate-cell l3-gate-col"><div class="title-wrap"><span class="col-title" id="l3-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span></div></div>
                 <div class="header-cell summary-cell" id="l3-supp-header">
                     <div class="title-wrap"><span class="col-title" id="l3-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div>
@@ -227,6 +229,7 @@
 
                 <div class="phase-gap"></div>
                 
+                <!-- L4 -->
                 <div class="header-cell gate-cell l4-gate-col"><div class="title-wrap"><span class="col-title" id="l4-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div></div>
                 <div class="header-cell summary-cell" id="l4-supp-header">
                     <div class="title-wrap"><span class="col-title" id="l4-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span></div>
@@ -235,6 +238,7 @@
 
                 <div class="phase-gap"></div>
 
+                <!-- ISSUES SUMMARY -->
                 <div class="header-cell summary-cell" id="global-iss-header">
                     <div class="title-wrap"><span class="col-title" id="iss-status-title" data-original="Open Issues">Open Issues</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div>
                     <div class="expand-btn" data-target="global-iss" onclick="window.toggleGlobalIssues()">+</div>
@@ -573,7 +577,6 @@
         return { display: openIds.join(', '), count: openIds.length };
     }
 
-    // Now actively filters to ensure ONLY open AND Gating issues are counted!
     function combineOpenIssues(row, maxCount) {
         let openIds = [];
         let issueClosedArr = globalConfig.issueClosedStatuses || [];
@@ -584,6 +587,7 @@
                 const match = String(val).match(/(.+?)\s*\((.+)\)/);
                 if (match) {
                     let status = match[2];
+                    // Filters the Issues Count to only include Open & Gating
                     if (!isStatusMatch(status, issueClosedArr) && isStatusMatch(status, gatingArr)) {
                         openIds.push(match[1].trim());
                     }
@@ -623,10 +627,7 @@
     async function fetchTrackerData() {
         document.getElementById('sync-status').innerText = 'Syncing... ⌛';
         try {
-            // Include frontend script changes logic as part of HTTP payload fetch
-            let script_url = API_URL + "?action=getTrackerData";
-            
-            const response = await fetch(script_url || API_URL);
+            const response = await fetch(API_URL);
             const payload = await response.json(); 
             
             if (payload.error) {
@@ -1000,12 +1001,11 @@
         selectAllCb.addEventListener('change', (e) => { allLabels.forEach(lbl => { if (lbl.style.display !== 'none') lbl.querySelector('.filter-val-cb').checked = e.target.checked; }); });
         valCbs.forEach(cb => { cb.addEventListener('change', () => { let allVisChk = true; allLabels.forEach(lbl => { if (lbl.style.display !== 'none' && !lbl.querySelector('.filter-val-cb').checked) allVisChk = false; }); selectAllCb.checked = allVisChk; }); });
     }
-    
     window.applyFilter = function(colIndex) {
         if (!currentDropdown) return; const valCbs = currentDropdown.querySelectorAll('.filter-val-cb'); const selected = new Set(); valCbs.forEach(cb => { if (cb.checked) selected.add(cb.value); });
         const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); const titleSpan = icon.closest('.header-cell').querySelector('.col-title');
-        if (selected.size === valCbs.length) { delete activeFilters[colIndex]; icon.classList.remove('active'); icon.closest('.header-cell').classList.remove('is-filtered'); } 
-        else { activeFilters[colIndex] = selected; icon.classList.add('active'); icon.closest('.header-cell').classList.add('is-filtered'); }
+        if (selected.size === valCbs.length) { delete activeFilters[colIndex]; icon.classList.remove('active'); icon.closest('.header-cell').classList.remove('is-filtered'); titleSpan.textContent = titleSpan.dataset.original; } 
+        else { activeFilters[colIndex] = selected; icon.classList.add('active'); icon.closest('.header-cell').classList.add('is-filtered'); titleSpan.textContent = titleSpan.dataset.original; }
         closeFilterMenu(); executeFilters();
     };
     window.clearFilter = function(colIndex) { delete activeFilters[colIndex]; const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); icon.classList.remove('active'); icon.closest('.header-cell').classList.remove('is-filtered'); const titleSpan = icon.closest('.header-cell').querySelector('.col-title'); titleSpan.textContent = titleSpan.dataset.original; closeFilterMenu(); executeFilters(); };
