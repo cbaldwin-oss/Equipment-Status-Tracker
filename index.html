@@ -396,7 +396,7 @@
 </div>
 
 <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbwcZdFdg90pf2LfQzbEsLf2WRIzMuC1gsB6hsaBMAx05PJmzkXESTGWPfPUa_8CiHcfiw/exec'; 
+    const API_URL = 'https://script.google.com/macros/s/AKfycbz-dXKX2ASq6J-lmkh9SU3FpGbb0s6tzWlPUeaIarshYo3pjko5kxs_gT9Eu6UAgbS4Vw/exec'; 
 
     let globalConfig = { 
         showL2Gate: true, showL3Gate: true, showL4Gate: true,
@@ -576,14 +576,16 @@
     function combineOpenIssues(row, maxCount) {
         let openIds = [];
         let issueClosedArr = globalConfig.issueClosedStatuses || [];
+        let gatingArr = globalConfig.gatingIssues || [];
         for (let i = 1; i <= maxCount; i++) {
             const val = row[`Issue ${i}`];
             if (val && val !== 'N/A' && val !== 'Clear' && String(val).trim() !== '') {
                 const match = String(val).match(/(.+?)\s*\((.+)\)/);
                 if (match) {
-                    if (!isStatusMatch(match[2], issueClosedArr)) openIds.push(match[1].trim());
-                } else if (String(val).toLowerCase() !== 'unknown') {
-                    openIds.push(String(val).trim());
+                    let status = match[2];
+                    if (!isStatusMatch(status, issueClosedArr) && isStatusMatch(status, gatingArr)) {
+                        openIds.push(match[1].trim());
+                    }
                 }
             }
         }
@@ -1000,7 +1002,7 @@
         if (!currentDropdown) return; const valCbs = currentDropdown.querySelectorAll('.filter-val-cb'); const selected = new Set(); valCbs.forEach(cb => { if (cb.checked) selected.add(cb.value); });
         const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); const titleSpan = icon.closest('.header-cell').querySelector('.col-title');
         if (selected.size === valCbs.length) { delete activeFilters[colIndex]; icon.classList.remove('active'); icon.closest('.header-cell').classList.remove('is-filtered'); titleSpan.textContent = titleSpan.dataset.original; } 
-        else { activeFilters[colIndex] = selected; icon.classList.add('active'); icon.closest('.header-cell').classList.add('is-filtered'); titleSpan.textContent = titleSpan.dataset.original + ' - Filtered'; }
+        else { activeFilters[colIndex] = selected; icon.classList.add('active'); icon.closest('.header-cell').classList.add('is-filtered'); titleSpan.textContent = titleSpan.dataset.original; }
         closeFilterMenu(); executeFilters();
     };
     window.clearFilter = function(colIndex) { delete activeFilters[colIndex]; const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); icon.classList.remove('active'); icon.closest('.header-cell').classList.remove('is-filtered'); const titleSpan = icon.closest('.header-cell').querySelector('.col-title'); titleSpan.textContent = titleSpan.dataset.original; closeFilterMenu(); executeFilters(); };
