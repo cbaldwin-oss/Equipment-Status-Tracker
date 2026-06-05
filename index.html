@@ -24,13 +24,13 @@
         .tracker-header-wrapper { position: sticky; top: 0; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 100%; width: max-content; background: #ffffff;}
         .rows-container { min-width: 100%; width: max-content; padding-top: 0; } 
         
-        .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 1px solid #0d3b10; min-width: 100%; width: max-content; }
-        .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 2px solid #1b5e20; min-width: 100%; width: max-content; }
-        .cell-row { display: flex; align-items: stretch; border-bottom: 1px solid #ccc; gap: 0; min-width: 100%; width: max-content; }
+        /* Removed min-width: 100% to prevent the green background bleeding past the columns */
+        .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 1px solid #0d3b10; width: max-content; }
+        .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 2px solid #1b5e20; width: max-content; }
+        .cell-row { display: flex; align-items: stretch; border-bottom: 1px solid #ccc; gap: 0; width: max-content; }
         .cell-row:hover { background-color: rgba(0,0,0,0.02); }
 
         /* --- FLAWLESS COLUMN ALIGNMENT SYSTEM --- */
-        /* Gate CL, Checklists, Issues = 100px */
         .gate-cell, .cl-cell, .iss-cell, .stacked-cell { 
             flex: 0 0 100px !important; 
             width: 100px !important; 
@@ -41,7 +41,6 @@
             padding: 0;
         }
 
-        /* Overall Status is Wider (180px) */
         .summary-cell { 
             flex: 0 0 180px !important; 
             width: 180px !important; 
@@ -109,7 +108,6 @@
         .checklist-header { flex: 1; background-color: #f1f3f4; color: #333; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; padding: 4px; border-bottom: none !important; text-align: center;}
         .checklist-status { flex: 1; font-size: 10px; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; padding: 4px; text-align: center; white-space: normal; word-break: break-word; line-height: 1.1; }
         
-        /* OVERRIDE FOR ISSUE HEADERS (Thinner to fit ID text properly) */
         .header-cell.iss-cell { font-size: 10px !important; justify-content: center; }
 
         .expand-btn { 
@@ -215,29 +213,29 @@
                 <div class="header-cell group-asset"><div class="title-wrap"><span class="col-title" data-original="Asset">Asset</span> <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span></div></div>
                 <div class="phase-gap"></div>
                 
-                <div class="header-cell gate-cell l2-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span></div></div>
+                <div class="header-cell gate-cell l2-gate-col"><div class="title-wrap"><span class="col-title" id="l2-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span></div></div>
                 <div class="header-cell summary-cell" id="l2-supp-header">
-                    <div class="title-wrap"><span class="col-title" data-original="Status">Status</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div>
+                    <div class="title-wrap"><span class="col-title" id="l2-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div>
                     <div class="expand-btn" data-target="l2-supp" onclick="window.toggleExpansion('l2')">+</div>
                 </div>
                 <div class="phase-gap"></div>
                 
-                <div class="header-cell gate-cell l3-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span></div></div>
+                <div class="header-cell gate-cell l3-gate-col"><div class="title-wrap"><span class="col-title" id="l3-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="3" onclick="toggleFilter(event, 3)">▼</span></div></div>
                 <div class="header-cell summary-cell" id="l3-supp-header">
-                    <div class="title-wrap"><span class="col-title" data-original="Status">Status</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div>
+                    <div class="title-wrap"><span class="col-title" id="l3-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="4" onclick="toggleFilter(event, 4)">▼</span></div>
                     <div class="expand-btn" data-target="l3-supp" onclick="window.toggleExpansion('l3')">+</div>
                 </div>
                 <div class="phase-gap"></div>
                 
-                <div class="header-cell gate-cell l4-gate-col"><div class="title-wrap"><span class="col-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div></div>
+                <div class="header-cell gate-cell l4-gate-col"><div class="title-wrap"><span class="col-title" id="l4-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="5" onclick="toggleFilter(event, 5)">▼</span></div></div>
                 <div class="header-cell summary-cell" id="l4-supp-header">
-                    <div class="title-wrap"><span class="col-title" data-original="Status">Status</span><span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span></div>
+                    <div class="title-wrap"><span class="col-title" id="l4-status-title" data-original="Status">Status</span><span class="filter-icon" data-col="6" onclick="toggleFilter(event, 6)">▼</span></div>
                     <div class="expand-btn" data-target="l4-supp" onclick="window.toggleExpansion('l4')">+</div>
                 </div>
                 <div class="phase-gap"></div>
 
                 <div class="header-cell summary-cell" id="global-iss-header">
-                    <div class="title-wrap"><span class="col-title" data-original="Open Issues">Open Issues</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div>
+                    <div class="title-wrap"><span class="col-title" id="iss-status-title" data-original="Open Issues">Open Issues</span><span class="filter-icon" data-col="7" onclick="toggleFilter(event, 7)">▼</span></div>
                     <div class="expand-btn" data-target="global-iss" onclick="window.toggleGlobalIssues()">+</div>
                 </div>
                 </div>
@@ -257,6 +255,36 @@
             <div class="global-config-wrap">
                 <h3>Global Phase Fallback Color <span style="font-size:12px; font-weight:normal; color:#555;">(For empty Overall Statuses)</span></h3>
                 <input type="color" id="fallback-color-picker" value="#f5f5f5" style="width: 40px; height: 30px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+
+            <div class="rules-section">
+                <h3>Header Customization</h3>
+                <div class="status-config-wrap">
+                    <div class="settings-col">
+                        <h4>Phase 1 (L2)</h4>
+                        <div class="status-row"><input type="text" id="cust-l2-phase" placeholder="Phase Name (e.g. L2 Verification)"></div>
+                        <div class="status-row"><input type="text" id="cust-l2-gate" placeholder="Gate Header (e.g. Gate CL)"></div>
+                        <div class="status-row"><input type="text" id="cust-l2-status" placeholder="Status Header (e.g. Status)"></div>
+                    </div>
+                    <div class="settings-col">
+                        <h4>Phase 2 (L3)</h4>
+                        <div class="status-row"><input type="text" id="cust-l3-phase" placeholder="Phase Name (e.g. L3 Functional)"></div>
+                        <div class="status-row"><input type="text" id="cust-l3-gate" placeholder="Gate Header (e.g. Gate CL)"></div>
+                        <div class="status-row"><input type="text" id="cust-l3-status" placeholder="Status Header (e.g. Status)"></div>
+                    </div>
+                    <div class="settings-col">
+                        <h4>Phase 3 (L4)</h4>
+                        <div class="status-row"><input type="text" id="cust-l4-phase" placeholder="Phase Name (e.g. L4 Integrated)"></div>
+                        <div class="status-row"><input type="text" id="cust-l4-gate" placeholder="Gate Header (e.g. Gate CL)"></div>
+                        <div class="status-row"><input type="text" id="cust-l4-status" placeholder="Status Header (e.g. Status)"></div>
+                    </div>
+                    <div class="settings-col">
+                        <h4>Global Issues</h4>
+                        <div class="status-row"><input type="text" id="cust-iss-phase" placeholder="Phase Name (e.g. Asset Issues)"></div>
+                        <div class="status-row" style="visibility:hidden;"><input type="text"></div>
+                        <div class="status-row"><input type="text" id="cust-iss-status" placeholder="Status Header (e.g. Open Issues)"></div>
+                    </div>
+                </div>
             </div>
 
             <div class="status-config-wrap">
@@ -337,7 +365,6 @@
 </div>
 
 <script>
-    // THE RESTORED, CORRECT URL
     const API_URL = 'https://script.google.com/macros/s/AKfycbwcZdFdg90pf2LfQzbEsLf2WRIzMuC1gsB6hsaBMAx05PJmzkXESTGWPfPUa_8CiHcfiw/exec'; 
 
     let globalConfig = { 
@@ -346,6 +373,7 @@
         testOpenStatuses: [], testClosedStatuses: [],
         issueOpenStatuses: [], issueClosedStatuses: [],
         phaseRules: [], fallbackColor: '#f5f5f5',
+        customHeaders: {},
         maxCols: { l2: 0, l3: 0, l4: 0, iss: 0 }
     };
 
@@ -531,6 +559,15 @@
         return html;
     }
 
+    // Helper to safely set inner text and update original attributes
+    function updateHeaderElement(id, text, isSpan=false) {
+        let el = document.getElementById(id);
+        if(el) {
+            el.innerText = text;
+            if(isSpan) el.setAttribute('data-original', text);
+        }
+    }
+
     async function fetchTrackerData() {
         document.getElementById('sync-status').innerText = 'Syncing... ⌛';
         try {
@@ -545,6 +582,24 @@
 
             const rows = payload.data || [];
             if (payload.config) globalConfig = { ...globalConfig, ...payload.config };
+            
+            // Apply Custom Headers from Backend Data
+            if (globalConfig.customHeaders) {
+                updateHeaderElement('group-l2', globalConfig.customHeaders.l2Phase);
+                updateHeaderElement('l2-gate-title', globalConfig.customHeaders.l2Gate, true);
+                updateHeaderElement('l2-status-title', globalConfig.customHeaders.l2Status, true);
+                
+                updateHeaderElement('group-l3', globalConfig.customHeaders.l3Phase);
+                updateHeaderElement('l3-gate-title', globalConfig.customHeaders.l3Gate, true);
+                updateHeaderElement('l3-status-title', globalConfig.customHeaders.l3Status, true);
+                
+                updateHeaderElement('group-l4', globalConfig.customHeaders.l4Phase);
+                updateHeaderElement('l4-gate-title', globalConfig.customHeaders.l4Gate, true);
+                updateHeaderElement('l4-status-title', globalConfig.customHeaders.l4Status, true);
+                
+                updateHeaderElement('group-iss', globalConfig.customHeaders.issPhase);
+                updateHeaderElement('iss-status-title', globalConfig.customHeaders.issStatus, true);
+            }
 
             // Dynamically calculate the highest populated column counts from the actual fetched data array
             let actualMaxCols = { l2: 0, l3: 0, l4: 0, iss: 0 };
@@ -581,14 +636,12 @@
             if (!globalConfig.showL4Gate) document.body.classList.add('hide-l4-gate');
             else document.body.classList.remove('hide-l4-gate');
 
-            // Remove hardcoded placeholders and inject perfect dynamic headers
             document.querySelectorAll('.dynamic-header').forEach(el => el.remove()); 
             if(globalConfig.maxCols.l2 > 0) document.getElementById('l2-supp-header').insertAdjacentHTML('afterend', generateHeaderHTML('L2', globalConfig.maxCols.l2));
             if(globalConfig.maxCols.l3 > 0) document.getElementById('l3-supp-header').insertAdjacentHTML('afterend', generateHeaderHTML('L3', globalConfig.maxCols.l3));
             if(globalConfig.maxCols.l4 > 0) document.getElementById('l4-supp-header').insertAdjacentHTML('afterend', generateHeaderHTML('L4', globalConfig.maxCols.l4));
             if(globalConfig.maxCols.iss > 0) document.getElementById('global-iss-header').insertAdjacentHTML('afterend', generateIssHeaderHTML(globalConfig.maxCols.iss));
 
-            // Hide [+] expand button if there are zero populated columns for that phase
             ['l2', 'l3', 'l4'].forEach(lvl => {
                 let btn = document.querySelector(`.expand-btn[data-target="${lvl}-supp"]`);
                 if(btn) btn.style.display = globalConfig.maxCols[lvl] > 0 ? 'flex' : 'none';
@@ -600,7 +653,7 @@
             let gateL2 = globalConfig.showL2Gate !== false ? 100 : 0;
             let gateL3 = globalConfig.showL3Gate !== false ? 100 : 0;
             let gateL4 = globalConfig.showL4Gate !== false ? 100 : 0;
-            let summaryW = 180; // The Overall Status width
+            let summaryW = 180; 
             
             document.getElementById('group-l2').style.flex = `0 0 ${gateL2 + summaryW}px`;
             document.getElementById('group-l3').style.flex = `0 0 ${gateL3 + summaryW}px`;
@@ -659,6 +712,24 @@
     function openSettingsModal() {
         document.getElementById('settings-modal').classList.add('active');
         document.getElementById('fallback-color-picker').value = globalConfig.fallbackColor || '#f5f5f5';
+
+        // Set Custom Header Inputs
+        if (globalConfig.customHeaders) {
+            document.getElementById('cust-l2-phase').value = globalConfig.customHeaders.l2Phase;
+            document.getElementById('cust-l2-gate').value = globalConfig.customHeaders.l2Gate;
+            document.getElementById('cust-l2-status').value = globalConfig.customHeaders.l2Status;
+            
+            document.getElementById('cust-l3-phase').value = globalConfig.customHeaders.l3Phase;
+            document.getElementById('cust-l3-gate').value = globalConfig.customHeaders.l3Gate;
+            document.getElementById('cust-l3-status').value = globalConfig.customHeaders.l3Status;
+            
+            document.getElementById('cust-l4-phase').value = globalConfig.customHeaders.l4Phase;
+            document.getElementById('cust-l4-gate').value = globalConfig.customHeaders.l4Gate;
+            document.getElementById('cust-l4-status').value = globalConfig.customHeaders.l4Status;
+            
+            document.getElementById('cust-iss-phase').value = globalConfig.customHeaders.issPhase;
+            document.getElementById('cust-iss-status').value = globalConfig.customHeaders.issStatus;
+        }
 
         const map = {
             'cl-open-list': globalConfig.openStatuses, 'cl-closed-list': globalConfig.closedStatuses,
@@ -730,12 +801,20 @@
             color: row.querySelector('.r-color').value
         }));
 
+        let newCustomHeaders = {
+            l2Phase: document.getElementById('cust-l2-phase').value.trim(), l2Gate: document.getElementById('cust-l2-gate').value.trim(), l2Status: document.getElementById('cust-l2-status').value.trim(),
+            l3Phase: document.getElementById('cust-l3-phase').value.trim(), l3Gate: document.getElementById('cust-l3-gate').value.trim(), l3Status: document.getElementById('cust-l3-status').value.trim(),
+            l4Phase: document.getElementById('cust-l4-phase').value.trim(), l4Gate: document.getElementById('cust-l4-gate').value.trim(), l4Status: document.getElementById('cust-l4-status').value.trim(),
+            issPhase: document.getElementById('cust-iss-phase').value.trim(), issStatus: document.getElementById('cust-iss-status').value.trim()
+        };
+
         const payload = { 
             openStatuses: getListValues('cl-open-list'), closedStatuses: getListValues('cl-closed-list'),
             testOpenStatuses: getListValues('test-open-list'), testClosedStatuses: getListValues('test-closed-list'),
             issueOpenStatuses: getListValues('iss-open-list'), issueClosedStatuses: getListValues('iss-closed-list'),
             phaseRules: newPhaseRules,
-            fallbackColor: document.getElementById('fallback-color-picker').value
+            fallbackColor: document.getElementById('fallback-color-picker').value,
+            customHeaders: newCustomHeaders
         };
 
         try {
@@ -745,6 +824,7 @@
             globalConfig.issueOpenStatuses = payload.issueOpenStatuses; globalConfig.issueClosedStatuses = payload.issueClosedStatuses;
             globalConfig.phaseRules = payload.phaseRules;
             globalConfig.fallbackColor = payload.fallbackColor;
+            globalConfig.customHeaders = payload.customHeaders;
             
             closeSettingsModal(); fetchTrackerData(); 
         } catch(e) {
@@ -753,7 +833,7 @@
         btn.innerText = 'Save & Sync to Sheet'; btn.disabled = false;
     }
 
-    // --- MATH-BASED DYNAMIC EXPANSION LOGIC ---
+    // --- MATHEMATICAL EXPANSION LOGIC ---
     window.toggleExpansion = function(level) {
         try {
             let lvl = level.toLowerCase();
@@ -771,13 +851,10 @@
                 btn.style.background = state ? "#b71c1c" : "#4caf50";
             }
             
-            // Dynamic Math based on backend scanned totals
             let maxCols = globalConfig.maxCols[lvl] || 0;
             let gateWidth = globalConfig[`show${level.toUpperCase()}Gate`] !== false ? 100 : 0;
             let summaryWidth = 180;
             let baseWidth = gateWidth + summaryWidth;
-            
-            // Math: Base + (Number of Real Supp columns * 100px)
             let exactWidth = state ? (baseWidth + (maxCols * 100)) : baseWidth;
             
             let headerGroup = document.getElementById(`group-${lvl}`);
@@ -808,8 +885,6 @@
 
             let summaryWidth = 180;
             let maxIss = globalConfig.maxCols.iss || 0;
-            
-            // Math: Summary Cell (180px) + (Number of Real Issues * 100px)
             let exactIssWidth = state ? (summaryWidth + (maxIss * 100)) : summaryWidth;
             
             let issGroup = document.getElementById(`group-iss`);
