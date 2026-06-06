@@ -15,17 +15,17 @@
         /* --- BASE STYLES --- */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; overflow: hidden; height: 100vh; }
         * { box-sizing: border-box; } 
-        .header { height: 80px; background-color: #ffffff; border-bottom: 1px solid #dcdcdc; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .header { height: 90px; background-color: #ffffff; border-bottom: 1px solid #dcdcdc; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
         .header-center { white-space: nowrap; }
         .header-center span { color: #2e7d32; font-weight: 800; font-size: 36px; letter-spacing: -1px; }
         .header-right { display: flex; align-items: center; gap: 20px; }
         
         .app-logo { height: 70px; object-fit: contain; }
 
-        .setup-btn { background: #f1f3f4; border: 1px solid #dcdcdc; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; color: #555; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .setup-btn { background: #f1f3f4; border: 1px solid #dcdcdc; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; color: #555; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
         .setup-btn:hover { background: #e0e0e0; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
 
-        #app-body { display: flex; flex-direction: column; height: calc(100vh - 80px); width: 100%; background: #f8f9fa;}
+        #app-body { display: flex; flex-direction: column; height: calc(100vh - 90px); width: 100%; background: #f8f9fa;}
         .subheader { flex: 0 0 50px; background-color: #f1f3f4; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; z-index: 1000;}
         
         .pdf-btn { background: #2e7d32; color: white; border: 1px solid #1b5e20; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s; }
@@ -224,8 +224,8 @@
 <div class="header">
     <div class="header-center"><span>LaunchPad</span></div>
     <div class="header-right">
-        <img src="" alt="Logo 1" id="app-logo-1" class="app-logo" style="display: none;">
-        <img src="" alt="Logo 2" id="app-logo-2" class="app-logo" style="display: none;">
+        <img src="https://lh3.googleusercontent.com/u/0/d/1Wy_ftXtce-UG5jV-5vwS80lV1yt7QTbG" alt="Logo 1" id="app-logo-1" class="app-logo">
+        <img src="https://lh3.googleusercontent.com/u/0/d/1fMpcw-FakocblifW0882Fl3MCAlOiDta" alt="Logo 2" id="app-logo-2" class="app-logo">
     </div>
 </div>
 
@@ -329,34 +329,13 @@
                     <h3 style="margin: 0;">Fallback Color</h3>
                     <input type="color" id="fallback-color-picker" value="#f5f5f5" style="width: 40px; height: 30px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
-                <div style="flex: 1 1 25%; border-left: 2px solid #c8e6c9; padding-left: 15px; display: flex; flex-direction: column; gap: 8px;">
+                <div style="flex: 1 1 30%; border-left: 2px solid #c8e6c9; padding-left: 15px; display: flex; flex-direction: column; gap: 8px;">
                     <h3 style="margin: 0;">Zone Title Prefix</h3>
                     <input type="text" id="cust-zone-title" placeholder="e.g. Zone 1" style="padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 90%;">
                 </div>
-                <div style="flex: 1 1 25%; border-left: 2px solid #c8e6c9; padding-left: 15px; display: flex; flex-direction: column; gap: 8px;">
+                <div style="flex: 1 1 30%; border-left: 2px solid #c8e6c9; padding-left: 15px; display: flex; flex-direction: column; gap: 8px;">
                     <h3 style="margin: 0;">Area Header Prefix</h3>
                     <input type="text" id="cust-area-prefix" placeholder="e.g. Area" style="padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 90%;">
-                </div>
-            </div>
-
-            <div class="global-config-wrap" style="margin-top: 15px;">
-                <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
-                    <h3 style="margin: 0;">Logo 1 (Top Right)</h3>
-                    <input type="file" id="logo-1-file" accept="image/*" onchange="window.processImage(this, 'cust-logo-1')" style="font-size: 11px;">
-                    <input type="hidden" id="cust-logo-1" value="">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <img id="cust-logo-1-preview" style="max-height: 40px; display: none; border: 1px solid #ccc; padding: 2px; border-radius: 4px; background: #fff;">
-                        <button class="btn-del" style="padding: 4px 8px; font-size: 11px;" onclick="window.clearLogo('1')">Clear</button>
-                    </div>
-                </div>
-                <div style="flex: 1; border-left: 2px solid #c8e6c9; padding-left: 15px; display: flex; flex-direction: column; gap: 8px;">
-                    <h3 style="margin: 0;">Logo 2 (Far Right)</h3>
-                    <input type="file" id="logo-2-file" accept="image/*" onchange="window.processImage(this, 'cust-logo-2')" style="font-size: 11px;">
-                    <input type="hidden" id="cust-logo-2" value="">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <img id="cust-logo-2-preview" style="max-height: 40px; display: none; border: 1px solid #ccc; padding: 2px; border-radius: 4px; background: #fff;">
-                        <button class="btn-del" style="padding: 4px 8px; font-size: 11px;" onclick="window.clearLogo('2')">Clear</button>
-                    </div>
                 </div>
             </div>
 
@@ -507,7 +486,7 @@
         issueOpenStatuses: [], issueClosedStatuses: [],
         gatingIssues: [], nonGatingIssues: [],
         phaseRules: [], fallbackColor: '#f5f5f5',
-        customHeaders: { zoneTitle: 'Zone 1', logo1Url: '', logo2Url: '' },
+        customHeaders: { zoneTitle: 'Zone 1' },
         maxCols: { l2: 0, l3: 0, l4: 0, iss: 0 }
     };
 
@@ -644,52 +623,6 @@
         if (statusArray.some(item => item.name && s === String(item.name).toLowerCase().trim())) return true;
         return statusArray.some(item => item.name && s.includes(String(item.name).toLowerCase().trim()));
     }
-
-    // BASE64 IMAGE PROCESSOR
-    window.processImage = function(input, targetId) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var img = new Image();
-                img.onload = function() {
-                    var canvas = document.createElement('canvas');
-                    var ctx = canvas.getContext('2d');
-                    
-                    // Compress to max height 60px so it fits well within the 50,000 char cell limit
-                    var maxH = 60; 
-                    var scale = maxH / img.height;
-                    var width = img.width * scale;
-                    var height = maxH;
-                    
-                    if (scale > 1) { width = img.width; height = img.height; }
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    var dataUrl = canvas.toDataURL('image/png');
-                    
-                    if(dataUrl.length > 49000) {
-                        alert("Image file is too complex even after resizing. Please try a simpler image or flat JPEG.");
-                        return;
-                    }
-                    
-                    document.getElementById(targetId).value = dataUrl;
-                    document.getElementById(targetId + '-preview').src = dataUrl;
-                    document.getElementById(targetId + '-preview').style.display = 'block';
-                }
-                img.src = e.target.result;
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
-    };
-
-    window.clearLogo = function(num) {
-        document.getElementById('cust-logo-' + num).value = '';
-        document.getElementById('cust-logo-' + num + '-preview').src = '';
-        document.getElementById('cust-logo-' + num + '-preview').style.display = 'none';
-        document.getElementById('logo-' + num + '-file').value = '';
-    };
 
     function renderStackedCell(val, extraClasses = '', type = 'checklist', link = '') {
         let id = '', status = '', styleStr = '', rawVal = '';
@@ -867,15 +800,6 @@
             if (globalConfig.customHeaders) {
                 document.getElementById('zone-title-display').innerText = globalConfig.customHeaders.zoneTitle || 'Zone 1';
                 
-                let logo1 = globalConfig.customHeaders.logo1Url || '';
-                let logo2 = globalConfig.customHeaders.logo2Url || '';
-                
-                let el1 = document.getElementById('app-logo-1');
-                if(logo1) { el1.src = logo1; el1.style.display = 'inline-block'; } else { el1.style.display = 'none'; }
-                
-                let el2 = document.getElementById('app-logo-2');
-                if(logo2) { el2.src = logo2; el2.style.display = 'inline-block'; } else { el2.style.display = 'none'; }
-
                 updateHeaderElement('area-title', globalConfig.customHeaders.areaPrefix, true);
                 updateHeaderElement('group-l2', globalConfig.customHeaders.l2Phase);
                 updateHeaderElement('l2-gate-title', globalConfig.customHeaders.l2Gate, true);
@@ -1004,28 +928,8 @@
 
         if (globalConfig.customHeaders) {
             document.getElementById('cust-zone-title').value = globalConfig.customHeaders.zoneTitle || 'Zone 1';
-            
-            let logo1 = globalConfig.customHeaders.logo1Url || '';
-            document.getElementById('cust-logo-1').value = logo1;
-            if(logo1) {
-                document.getElementById('cust-logo-1-preview').src = logo1;
-                document.getElementById('cust-logo-1-preview').style.display = 'block';
-            } else {
-                document.getElementById('cust-logo-1-preview').style.display = 'none';
-            }
-            document.getElementById('logo-1-file').value = '';
-            
-            let logo2 = globalConfig.customHeaders.logo2Url || '';
-            document.getElementById('cust-logo-2').value = logo2;
-            if(logo2) {
-                document.getElementById('cust-logo-2-preview').src = logo2;
-                document.getElementById('cust-logo-2-preview').style.display = 'block';
-            } else {
-                document.getElementById('cust-logo-2-preview').style.display = 'none';
-            }
-            document.getElementById('logo-2-file').value = '';
-            
             document.getElementById('cust-area-prefix').value = globalConfig.customHeaders.areaPrefix || 'Area';
+            
             document.getElementById('cust-l2-phase').value = globalConfig.customHeaders.l2Phase;
             document.getElementById('cust-l2-gate').value = globalConfig.customHeaders.l2Gate;
             document.getElementById('cust-l2-status').value = globalConfig.customHeaders.l2Status;
@@ -1127,8 +1031,6 @@
 
         let newCustomHeaders = {
             zoneTitle: document.getElementById('cust-zone-title').value.trim(),
-            logo1Url: document.getElementById('cust-logo-1').value.trim(),
-            logo2Url: document.getElementById('cust-logo-2').value.trim(),
             areaPrefix: document.getElementById('cust-area-prefix').value.trim(),
             l2Phase: document.getElementById('cust-l2-phase').value.trim(), l2Gate: document.getElementById('cust-l2-gate').value.trim(), l2Status: document.getElementById('cust-l2-status').value.trim(),
             l3Phase: document.getElementById('cust-l3-phase').value.trim(), l3Gate: document.getElementById('cust-l3-gate').value.trim(), l3Status: document.getElementById('cust-l3-status').value.trim(),
@@ -1309,6 +1211,7 @@
         
         let html = '<div style="display: flex; flex-direction: column; gap: 8px;">';
         window.PDF_OPTIONS.forEach((opt, index) => {
+            // Intelligently skip the option if the user turned it off in Settings!
             if (opt.id === 'l2-gate' && globalConfig.showL2Gate === false) return;
             if (opt.id === 'l3-gate' && globalConfig.showL3Gate === false) return;
             if (opt.id === 'l4-gate' && globalConfig.showL4Gate === false) return;
@@ -1408,8 +1311,8 @@
         
         const selectedOptions = selectedIndices.map(i => window.PDF_OPTIONS[i]);
         
-        let logo1 = globalConfig.customHeaders.logo1Url || '';
-        let logo2 = globalConfig.customHeaders.logo2Url || '';
+        let logo1 = document.getElementById('app-logo-1').src;
+        let logo2 = document.getElementById('app-logo-2').src;
         let zTitle = globalConfig.customHeaders.zoneTitle || 'Zone 1';
         
         let printWin = window.open('', '_blank');
@@ -1418,7 +1321,7 @@
             body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; font-size: 10px; }
             .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #2e7d32; padding-bottom: 10px; }
             h2 { color: #2e7d32; margin: 0; font-size: 18px; text-transform: uppercase; }
-            img.logo { height: 40px; object-fit: contain; }
+            img.logo { height: 70px; object-fit: contain; }
             table { width: 100%; border-collapse: collapse; table-layout: fixed; }
             th, td { border: 1px solid #aeb6ba; padding: 6px 4px; text-align: center; vertical-align: middle; word-wrap: break-word; overflow: hidden; }
             th { background-color: #2e7d32 !important; color: white !important; font-size: 10px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -1435,8 +1338,8 @@
         <div class="header-container">
             <h2>${zTitle} • Relational Asset Status Tracker Export</h2>
             <div style="display:flex; gap:15px; align-items:center;">
-                ${logo1 ? `<img class="logo" src="${logo1}" alt="Logo 1" />` : ''}
-                ${logo2 ? `<img class="logo" src="${logo2}" alt="Logo 2" />` : ''}
+                ${logo1 && !logo1.includes('empty') ? `<img class="logo" src="${logo1}" alt="Logo 1" />` : ''}
+                ${logo2 && !logo2.includes('empty') ? `<img class="logo" src="${logo2}" alt="Logo 2" />` : ''}
             </div>
         </div>
         
