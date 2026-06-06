@@ -19,7 +19,7 @@
         .header-center { white-space: nowrap; }
         .header-center span { color: #2e7d32; font-weight: 800; font-size: 36px; letter-spacing: -1px; }
         .header-right { display: flex; align-items: center; }
-        .setup-btn { background: #f1f3f4; border: 1px solid #dcdcdc; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; color: #555; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .setup-btn { background: #f1f3f4; border: 1px solid #dcdcdc; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; color: #555; display: flex; align-items: gap: 8px; transition: all 0.2s; }
         .setup-btn:hover { background: #e0e0e0; }
 
         #app-body { display: flex; flex-direction: column; height: calc(100vh - 80px); width: 100%; background: #f8f9fa;}
@@ -153,7 +153,7 @@
         body.hide-l3-gate .l3-gate-col { display: none !important; }
         body.hide-l4-gate .l4-gate-col { display: none !important; }
 
-        /* --- MODALS --- */
+        /* --- SETTINGS MODAL --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; display: none; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: white; border-radius: 8px; width: 1350px; max-width: 98%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
@@ -1166,6 +1166,15 @@
         
         let html = '<div style="display: flex; flex-direction: column; gap: 8px;">';
         window.PDF_OPTIONS.forEach((opt, index) => {
+            // Intelligently skip the option if the user turned it off in Settings!
+            if (opt.id === 'l2-gate' && globalConfig.showL2Gate === false) return;
+            if (opt.id === 'l3-gate' && globalConfig.showL3Gate === false) return;
+            if (opt.id === 'l4-gate' && globalConfig.showL4Gate === false) return;
+            
+            if ((opt.id === 'l2-open' || opt.id === 'l2-closed') && globalConfig.showL2Supp === false) return;
+            if ((opt.id === 'l3-open' || opt.id === 'l3-closed') && globalConfig.showL3Supp === false) return;
+            if ((opt.id === 'l4-open' || opt.id === 'l4-closed') && globalConfig.showL4Supp === false) return;
+
             let displayLabel = opt.label;
             if(opt.id === 'asset') displayLabel = 'Asset Details';
             if(opt.id === 'area') displayLabel = globalConfig.customHeaders.areaPrefix || 'Area';
@@ -1329,6 +1338,7 @@
         printWin.document.close();
         printWin.focus();
         setTimeout(() => { printWin.print(); printWin.close(); }, 500);
+        closePdfModal();
     };
 
     function extractStackedCellForPdf(cell) {
