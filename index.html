@@ -27,6 +27,9 @@
         
         .pdf-btn { background: #2e7d32; color: white; border: 1px solid #1b5e20; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s; }
         .pdf-btn:hover { background: #1b5e20; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        
+        .clear-filters-btn { background: #ffffff; color: #555; border: 1px solid #ccc; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: all 0.2s; }
+        .clear-filters-btn:hover { background: #f1f3f4; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
 
         /* --- EQUIPMENT TRACKER GRID --- */
         .tracker-container { flex: 1; margin: 0; width: 100%; border: none; border-top: 1px solid #dcdcdc; background: #ffffff; overflow: auto; min-height: 0; }
@@ -153,7 +156,7 @@
         body.hide-l3-gate .l3-gate-col { display: none !important; }
         body.hide-l4-gate .l4-gate-col { display: none !important; }
 
-        /* --- MODALS --- */
+        /* --- SETTINGS MODAL --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; display: none; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: white; border-radius: 8px; width: 1350px; max-width: 98%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
@@ -221,6 +224,9 @@
         <div style="font-weight: bold; color: #555;">Zone 1 • Relational Asset Status Tracker</div>
         <div style="display: flex; align-items: center; gap: 15px;">
             <div style="font-size: 13px; color: #2e7d32; font-weight: bold;" id="sync-status">Connecting Backend...</div>
+            <button onclick="clearAllFilters()" class="clear-filters-btn">
+                <span style="font-size: 14px;">🧹</span> Remove Filters
+            </button>
             <button onclick="openPdfModal()" class="pdf-btn">
                 <span style="font-size: 14px;">📄</span> Export PDF
             </button>
@@ -1147,6 +1153,18 @@
     
     window.clearFilter = function(colIndex) { delete activeFilters[colIndex]; const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); icon.classList.remove('active'); icon.closest('.header-cell').classList.remove('is-filtered'); const titleSpan = icon.closest('.header-cell').querySelector('.col-title'); titleSpan.textContent = titleSpan.dataset.original; closeFilterMenu(); executeFilters(); };
     
+    window.clearAllFilters = function() {
+        activeFilters = {};
+        document.querySelectorAll('.header-cell.is-filtered').forEach(cell => {
+            cell.classList.remove('is-filtered');
+            let icon = cell.querySelector('.filter-icon');
+            if (icon) icon.classList.remove('active');
+            let titleSpan = cell.querySelector('.col-title');
+            if (titleSpan) titleSpan.textContent = titleSpan.dataset.original;
+        });
+        executeFilters();
+    };
+    
     function executeFilters() {
         document.querySelectorAll('.cell-row').forEach(row => { 
             const inputs = row.querySelectorAll('.filter-target'); let isVisible = true; 
@@ -1269,7 +1287,7 @@
             th { background-color: #2e7d32 !important; color: white !important; font-size: 10px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .bg-gray { background-color: #f5f5f5 !important; color: #616161 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
             
-            .shrink-list { font-size: 10px; line-height: 1.2; font-weight: bold; color: #222; text-align: left; }
+            .shrink-list { font-size: 10px; line-height: 1.2; color: #222; text-align: left; }
             
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         </style></head><body><h2>Relational Asset Status Tracker Export</h2><table>`;
@@ -1300,10 +1318,10 @@
                     
                     if (opt.type === 'asset') {
                         let val = row.querySelector('.group-asset').innerText;
-                        cellHtml = `<td><b>${val}</b></td>`;
+                        cellHtml = `<td class="shrink-list"><b>${val}</b></td>`;
                     } else if (opt.type === 'area') {
                         let val = row.querySelector('.group-area').innerText;
-                        cellHtml = `<td><b>${val}</b></td>`;
+                        cellHtml = `<td class="shrink-list">${val}</td>`;
                     } else if (opt.type === 'gate') {
                         let cell = row.querySelector(`.${opt.level}-gate-col`);
                         cellHtml = extractStackedCellForPdf(cell);
@@ -1347,22 +1365,16 @@
         let stat = statNode ? statNode.innerText : '-';
         
         if(id === '-') {
-            return `<td class="bg-gray">-</td>`;
+            return `<td>-</td>`;
         } else {
-            let bg = statNode.style.backgroundColor || '';
-            let bgImg = statNode.style.backgroundImage || '';
-            let txtColor = statNode.style.color || '#000';
-            let styleStr = bgImg ? `background-image: ${bgImg}; color: #111;` : `background-color: ${bg}; color: ${txtColor};`;
-            return `<td style="${styleStr}"><b>${id}</b><br><span>${stat}</span></td>`;
+            return `<td class="shrink-list"><b>${id}</b><br><span>${stat}</span></td>`;
         }
     }
 
     function extractSummaryCellForPdf(cell) {
         if (!cell) return '<td>-</td>';
         let val = cell.innerText.trim();
-        let bg = cell.style.backgroundColor || '#fff';
-        let txtColor = cell.style.color || '#000';
-        return `<td style="background-color: ${bg}; color: ${txtColor};"><b>${val}</b></td>`;
+        return `<td class="shrink-list">${val}</td>`;
     }
 </script>
 </body>
