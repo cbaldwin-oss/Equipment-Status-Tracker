@@ -18,13 +18,12 @@
         .header { height: 80px; background-color: #ffffff; border-bottom: 1px solid #dcdcdc; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
         .header-center { white-space: nowrap; }
         .header-center span { color: #2e7d32; font-weight: 800; font-size: 36px; letter-spacing: -1px; }
-        .header-right { display: flex; align-items: center; gap: 20px; }
+        .header-right { display: flex; align-items: center; gap: 15px; }
         
-        /* APP LOGO */
         .app-logo { height: 45px; object-fit: contain; }
 
-        .setup-btn { background: #f1f3f4; border: 1px solid #dcdcdc; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; color: #555; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
-        .setup-btn:hover { background: #e0e0e0; }
+        .setup-btn { background: #f1f3f4; border: 1px solid #dcdcdc; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; color: #555; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: all 0.2s; }
+        .setup-btn:hover { background: #e0e0e0; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
 
         #app-body { display: flex; flex-direction: column; height: calc(100vh - 80px); width: 100%; background: #f8f9fa;}
         .subheader { flex: 0 0 50px; background-color: #f1f3f4; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; z-index: 1000;}
@@ -166,7 +165,7 @@
         body.hide-l3-gate .l3-gate-col { display: none !important; }
         body.hide-l4-gate .l4-gate-col { display: none !important; }
 
-        /* --- SETTINGS MODAL --- */
+        /* --- MODALS --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; display: none; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: white; border-radius: 8px; width: 1350px; max-width: 98%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
@@ -175,7 +174,7 @@
         .close-btn { cursor: pointer; font-size: 20px; color: #999; border: none; background: none; }
         .modal-body { padding: 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; }
         
-        .global-config-wrap { padding: 15px; background: #e8f5e9; border-radius: 6px; border: 1px solid #c8e6c9; display: flex; align-items: flex-start; gap: 15px; }
+        .global-config-wrap { padding: 15px; background: #e8f5e9; border-radius: 6px; border: 1px solid #c8e6c9; display: flex; align-items: flex-start; gap: 15px; flex-wrap: wrap; }
         .global-config-wrap h3 { margin: 0; color: #1b5e20; font-size: 16px; }
 
         .status-config-wrap { display: flex; gap: 20px; }
@@ -225,16 +224,17 @@
 <div class="header">
     <div class="header-center"><span>LaunchPad</span></div>
     <div class="header-right">
-        <img src="https://lh3.googleusercontent.com/u/0/d/1Wy_ftXtce-UG5jV-5vwS80lV1yt7QTbG" alt="App Logo" id="app-logo" class="app-logo">
-        <button class="setup-btn" onclick="openSettingsModal()">⚙️ Setup Config</button>
+        <img src="https://via.placeholder.com/200x50?text=Logo+1" alt="Logo 1" id="app-logo-1" class="app-logo">
+        <img src="" alt="Logo 2" id="app-logo-2" class="app-logo" style="display: none;">
     </div>
 </div>
 
 <div id="app-body">
     <div class="subheader">
-        <div style="font-weight: bold; color: #555;">Zone 1 • Relational Asset Status Tracker</div>
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <div style="font-size: 13px; color: #2e7d32; font-weight: bold;" id="sync-status">Connecting Backend...</div>
+        <div style="font-weight: bold; color: #555;"><span id="zone-title-display">Zone 1</span> • Relational Asset Status Tracker</div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="font-size: 13px; color: #2e7d32; font-weight: bold; margin-right: 5px;" id="sync-status">Connecting Backend...</div>
+            <button class="setup-btn" onclick="openSettingsModal()">⚙️ Setup Config</button>
             <button onclick="clearAllFilters()" class="clear-filters-btn">
                 <span style="font-size: 14px;">🧹</span> Remove Filters
             </button>
@@ -325,18 +325,33 @@
         <div class="modal-body">
             
             <div class="global-config-wrap">
-                <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
-                    <h3 style="margin: 0;">Global Phase Fallback Color <span style="font-size:12px; font-weight:normal; color:#555;">(For empty Overall Statuses)</span></h3>
+                <div style="flex: 1 1 20%; display: flex; flex-direction: column; gap: 8px;">
+                    <h3 style="margin: 0;">Fallback Color</h3>
                     <input type="color" id="fallback-color-picker" value="#f5f5f5" style="width: 40px; height: 30px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
+                <div style="flex: 1 1 25%; border-left: 2px solid #c8e6c9; padding-left: 15px; display: flex; flex-direction: column; gap: 8px;">
+                    <h3 style="margin: 0;">Zone Title Prefix</h3>
+                    <input type="text" id="cust-zone-title" placeholder="e.g. Zone 1" style="padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 90%;">
+                </div>
+                <div style="flex: 1 1 25%; border-left: 2px solid #c8e6c9; padding-left: 15px; display: flex; flex-direction: column; gap: 8px;">
+                    <h3 style="margin: 0;">Area Header Prefix</h3>
+                    <input type="text" id="cust-area-prefix" placeholder="e.g. Area" style="padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 90%;">
+                </div>
+            </div>
+
+            <div class="global-config-wrap" style="margin-top: 15px;">
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                    <h3 style="margin: 0;">Logo 1 URL (Top Right)</h3>
+                    <input type="text" id="cust-logo-1" placeholder="https://..." style="padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 95%;">
+                </div>
                 <div style="flex: 1; border-left: 2px solid #c8e6c9; padding-left: 15px; display: flex; flex-direction: column; gap: 8px;">
-                    <h3 style="margin: 0;">Area Column Header Prefix</h3>
-                    <input type="text" id="cust-area-prefix" placeholder="e.g. Area" style="padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 80%;">
+                    <h3 style="margin: 0;">Logo 2 URL (Far Right)</h3>
+                    <input type="text" id="cust-logo-2" placeholder="Optional 2nd Logo URL" style="padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 95%;">
                 </div>
             </div>
 
             <div class="rules-section">
-                <h3>Header Customization & Toggles</h3>
+                <h3>Phase Setup & Toggles</h3>
                 <div class="status-config-wrap">
                     <div class="settings-col">
                         <h4>Phase 1 (L2)</h4>
@@ -482,7 +497,7 @@
         issueOpenStatuses: [], issueClosedStatuses: [],
         gatingIssues: [], nonGatingIssues: [],
         phaseRules: [], fallbackColor: '#f5f5f5',
-        customHeaders: {},
+        customHeaders: { zoneTitle: 'Zone 1', logo1Url: 'https://via.placeholder.com/200x50?text=Logo+1', logo2Url: '' },
         maxCols: { l2: 0, l3: 0, l4: 0, iss: 0 }
     };
 
@@ -620,7 +635,6 @@
         return statusArray.some(item => item.name && s.includes(String(item.name).toLowerCase().trim()));
     }
 
-    // Appended dataset-link to properly retrieve the link for PDF generation
     function renderStackedCell(val, extraClasses = '', type = 'checklist', link = '') {
         let id = '', status = '', styleStr = '', rawVal = '';
         
@@ -795,20 +809,27 @@
             if (payload.config) globalConfig = { ...globalConfig, ...payload.config };
             
             if (globalConfig.customHeaders) {
-                updateHeaderElement('area-title', globalConfig.customHeaders.areaPrefix, true);
+                document.getElementById('zone-title-display').innerText = globalConfig.customHeaders.zoneTitle || 'Zone 1';
                 
+                let logo1 = globalConfig.customHeaders.logo1Url || '';
+                let logo2 = globalConfig.customHeaders.logo2Url || '';
+                
+                let el1 = document.getElementById('app-logo-1');
+                if(logo1) { el1.src = logo1; el1.style.display = 'inline-block'; } else { el1.style.display = 'none'; }
+                
+                let el2 = document.getElementById('app-logo-2');
+                if(logo2) { el2.src = logo2; el2.style.display = 'inline-block'; } else { el2.style.display = 'none'; }
+
+                updateHeaderElement('area-title', globalConfig.customHeaders.areaPrefix, true);
                 updateHeaderElement('group-l2', globalConfig.customHeaders.l2Phase);
                 updateHeaderElement('l2-gate-title', globalConfig.customHeaders.l2Gate, true);
                 updateHeaderElement('l2-status-title', globalConfig.customHeaders.l2Status, true);
-                
                 updateHeaderElement('group-l3', globalConfig.customHeaders.l3Phase);
                 updateHeaderElement('l3-gate-title', globalConfig.customHeaders.l3Gate, true);
                 updateHeaderElement('l3-status-title', globalConfig.customHeaders.l3Status, true);
-                
                 updateHeaderElement('group-l4', globalConfig.customHeaders.l4Phase);
                 updateHeaderElement('l4-gate-title', globalConfig.customHeaders.l4Gate, true);
                 updateHeaderElement('l4-status-title', globalConfig.customHeaders.l4Status, true);
-                
                 updateHeaderElement('group-iss', globalConfig.customHeaders.issPhase);
                 updateHeaderElement('iss-status-title', globalConfig.customHeaders.issStatus, true);
             }
@@ -926,8 +947,11 @@
         document.getElementById('fallback-color-picker').value = globalConfig.fallbackColor || '#f5f5f5';
 
         if (globalConfig.customHeaders) {
-            document.getElementById('cust-area-prefix').value = globalConfig.customHeaders.areaPrefix || 'Area';
+            document.getElementById('cust-zone-title').value = globalConfig.customHeaders.zoneTitle || 'Zone 1';
+            document.getElementById('cust-logo-1').value = globalConfig.customHeaders.logo1Url || '';
+            document.getElementById('cust-logo-2').value = globalConfig.customHeaders.logo2Url || '';
             
+            document.getElementById('cust-area-prefix').value = globalConfig.customHeaders.areaPrefix || 'Area';
             document.getElementById('cust-l2-phase').value = globalConfig.customHeaders.l2Phase;
             document.getElementById('cust-l2-gate').value = globalConfig.customHeaders.l2Gate;
             document.getElementById('cust-l2-status').value = globalConfig.customHeaders.l2Status;
@@ -1028,6 +1052,9 @@
         }));
 
         let newCustomHeaders = {
+            zoneTitle: document.getElementById('cust-zone-title').value.trim(),
+            logo1Url: document.getElementById('cust-logo-1').value.trim(),
+            logo2Url: document.getElementById('cust-logo-2').value.trim(),
             areaPrefix: document.getElementById('cust-area-prefix').value.trim(),
             l2Phase: document.getElementById('cust-l2-phase').value.trim(), l2Gate: document.getElementById('cust-l2-gate').value.trim(), l2Status: document.getElementById('cust-l2-status').value.trim(),
             l3Phase: document.getElementById('cust-l3-phase').value.trim(), l3Gate: document.getElementById('cust-l3-gate').value.trim(), l3Status: document.getElementById('cust-l3-status').value.trim(),
@@ -1208,6 +1235,7 @@
         
         let html = '<div style="display: flex; flex-direction: column; gap: 8px;">';
         window.PDF_OPTIONS.forEach((opt, index) => {
+            // Intelligently skip the option if the user turned it off in Settings!
             if (opt.id === 'l2-gate' && globalConfig.showL2Gate === false) return;
             if (opt.id === 'l3-gate' && globalConfig.showL3Gate === false) return;
             if (opt.id === 'l4-gate' && globalConfig.showL4Gate === false) return;
@@ -1306,7 +1334,10 @@
         if (selectedIndices.length === 0) { alert('Please select at least one column.'); return; }
         
         const selectedOptions = selectedIndices.map(i => window.PDF_OPTIONS[i]);
-        const logoUrl = document.getElementById('app-logo').src;
+        
+        let logo1 = globalConfig.customHeaders.logo1Url || '';
+        let logo2 = globalConfig.customHeaders.logo2Url || '';
+        let zTitle = globalConfig.customHeaders.zoneTitle || 'Zone 1';
         
         let printWin = window.open('', '_blank');
         let html = `<html><head><title>LaunchPad PDF Export</title><style>
@@ -1329,8 +1360,11 @@
         </style></head><body>
         
         <div class="header-container">
-            <h2>Relational Asset Status Tracker Export</h2>
-            <img class="logo" src="${logoUrl}" alt="Logo" />
+            <h2>${zTitle} • Relational Asset Status Tracker Export</h2>
+            <div style="display:flex; gap:15px; align-items:center;">
+                ${logo1 ? `<img class="logo" src="${logo1}" alt="Logo 1" />` : ''}
+                ${logo2 ? `<img class="logo" src="${logo2}" alt="Logo 2" />` : ''}
+            </div>
         </div>
         
         <table>`;
