@@ -31,6 +31,12 @@
         .clear-filters-btn { background: #ffffff; color: #555; border: 1px solid #ccc; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: all 0.2s; }
         .clear-filters-btn:hover { background: #f1f3f4; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
 
+        /* --- HYPERLINK STYLES --- */
+        .asset-link { color: #1b5e20; text-decoration: none; border-bottom: 1px dotted #1b5e20; }
+        .asset-link:hover { color: #0d3b10; text-decoration: underline; border-bottom: none; }
+        .chk-link { color: inherit; text-decoration: none; padding-bottom: 1px; border-bottom: 1px dotted rgba(0,0,0,0.5); pointer-events: auto; }
+        .chk-link:hover { text-decoration: underline; }
+
         /* --- EQUIPMENT TRACKER GRID --- */
         .tracker-container { flex: 1; margin: 0; width: 100%; border: none; border-top: 1px solid #dcdcdc; background: #ffffff; overflow: auto; min-height: 0; }
         
@@ -156,7 +162,7 @@
         body.hide-l3-gate .l3-gate-col { display: none !important; }
         body.hide-l4-gate .l4-gate-col { display: none !important; }
 
-        /* --- SETTINGS MODAL --- */
+        /* --- MODALS --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; display: none; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: white; border-radius: 8px; width: 1350px; max-width: 98%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
@@ -609,7 +615,7 @@
         return statusArray.some(item => item.name && s.includes(String(item.name).toLowerCase().trim()));
     }
 
-    function renderStackedCell(val, extraClasses = '', type = 'checklist') {
+    function renderStackedCell(val, extraClasses = '', type = 'checklist', link = '') {
         let id = '', status = '', styleStr = '', rawVal = '';
         
         if (val && val !== 'N/A' && val !== 'Clear' && val !== '-') {
@@ -624,6 +630,11 @@
             }
         }
         
+        let idDisplay = id;
+        if (id !== '' && link) {
+            idDisplay = `<a href="${link}" target="_blank" class="chk-link">${id}</a>`;
+        }
+        
         if (id === '') {
             return `<div class="filter-target stacked-cell ${extraClasses}" data-val="">
                         <div class="checklist-header">-</div>
@@ -631,7 +642,7 @@
                     </div>`;
         } else {
             return `<div class="filter-target stacked-cell ${extraClasses}" data-val="${rawVal}">
-                        <div class="checklist-header">${id}</div>
+                        <div class="checklist-header">${idDisplay}</div>
                         <div class="checklist-status" style="${styleStr}">${status}</div>
                     </div>`;
         }
@@ -642,7 +653,9 @@
         let type = (level === 'L4') ? 'test' : 'checklist';
         for (let i = 1; i <= maxCount; i++) {
             const isLast = (i === maxCount) ? 'divider-right' : '';
-            html += renderStackedCell(row[`${level} Support CL ${i}`], `cell-row-detail col-details ${level.toLowerCase()}-supp-details cl-cell ${isLast}`, type).replace('filter-target', ''); 
+            let cellVal = row[`${level} Support CL ${i}`];
+            let cellLink = row[`${level} Support CL ${i}_Link`];
+            html += renderStackedCell(cellVal, `cell-row-detail col-details ${level.toLowerCase()}-supp-details cl-cell ${isLast}`, type, cellLink).replace('filter-target', ''); 
         }
         return html;
     }
@@ -655,6 +668,9 @@
 
         for (let i = 1; i <= maxCount; i++) {
             let val = row[`Issue ${i}`];
+            let link = row[`Issue ${i}_Link`];
+            let item = { val: val, link: link };
+            
             if (val && val !== 'N/A' && val !== 'Clear' && val !== '-') {
                 let rawVal = String(val).trim();
                 const match = rawVal.match(/(.+?)\s*\((.+)\)/);
@@ -665,19 +681,19 @@
                     let isGating = isStatusMatch(status, gatingArr);
 
                     if (isOpen) {
-                        if (isGating) gatingOpen.push(val);
-                        else nonGatingOpen.push(val);
+                        if (isGating) gatingOpen.push(item);
+                        else nonGatingOpen.push(item);
                     } else if (isClosed) {
-                        if (isGating) gatingClosed.push(val);
-                        else nonGatingClosed.push(val);
+                        if (isGating) gatingClosed.push(item);
+                        else nonGatingClosed.push(item);
                     } else {
-                        emptyOrOther.push(val);
+                        emptyOrOther.push(item);
                     }
                 } else {
-                    emptyOrOther.push(val);
+                    emptyOrOther.push(item);
                 }
             } else {
-                emptyOrOther.push(val);
+                emptyOrOther.push(item);
             }
         }
 
@@ -686,7 +702,7 @@
 
         for (let i = 0; i < sortedIssues.length; i++) {
             const isLast = (i === maxCount - 1) ? 'divider-right' : '';
-            html += renderStackedCell(sortedIssues[i], `cell-row-detail col-details global-iss-details iss-cell ${isLast}`, 'issue').replace('filter-target', ''); 
+            html += renderStackedCell(sortedIssues[i].val, `cell-row-detail col-details global-iss-details iss-cell ${isLast}`, 'issue', sortedIssues[i].link).replace('filter-target', ''); 
         }
         return html;
     }
@@ -855,6 +871,9 @@
 
             rows.forEach(row => {
                 const assetId = row['Asset'] || 'N/A';
+                const assetLink = row['Asset_Link'];
+                const assetDisplay = assetLink ? `<a href="${assetLink}" target="_blank" class="asset-link">${assetId}</a>` : assetId;
+                
                 const areaVal = row['Area'] || 'N/A';
                 
                 const l2Open = combineOpenSupportCLs(row, 'L2', globalConfig.maxCols.l2);
@@ -864,21 +883,21 @@
                 
                 const rowHTML = `
                 <div class="cell-row">
-                    <div class="filter-target group-asset" data-val="${assetId}" title="${assetId}">${assetId}</div>
+                    <div class="filter-target group-asset" data-val="${assetId}" title="${assetId}">${assetDisplay}</div>
                     <div class="filter-target group-area" data-val="${areaVal}" title="${areaVal}">${areaVal}</div>
                     <div class="phase-gap"></div>
                     
-                    ${renderStackedCell(row['L2 Gate CL 1'], 'gate-cell l2-gate-col', 'checklist')}
+                    ${renderStackedCell(row['L2 Gate CL 1'], 'gate-cell l2-gate-col', 'checklist', row['L2 Gate CL 1_Link'])}
                     <div class="filter-target summary-cell l2-supp-summary divider-right" style="${getDynamicStyle(row['L2 Overall Status'], 'checklist', true)}" data-val="${row['L2 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l2Open.display}">${row['L2 Overall Status'] || 'N/A'}</div>
                     ${renderSupportCells(row, 'L2', globalConfig.maxCols.l2)}
                     <div class="phase-gap"></div>
                     
-                    ${renderStackedCell(row['L3 Gate CL 1'], 'gate-cell l3-gate-col', 'checklist')}
+                    ${renderStackedCell(row['L3 Gate CL 1'], 'gate-cell l3-gate-col', 'checklist', row['L3 Gate CL 1_Link'])}
                     <div class="filter-target summary-cell l3-supp-summary divider-right" style="${getDynamicStyle(row['L3 Overall Status'], 'checklist', true)}" data-val="${row['L3 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l3Open.display}">${row['L3 Overall Status'] || 'N/A'}</div>
                     ${renderSupportCells(row, 'L3', globalConfig.maxCols.l3)}
                     <div class="phase-gap"></div>
                     
-                    ${renderStackedCell(row['L4 Gate CL 1'], 'gate-cell l4-gate-col', 'test')}
+                    ${renderStackedCell(row['L4 Gate CL 1'], 'gate-cell l4-gate-col', 'test', row['L4 Gate CL 1_Link'])}
                     <div class="filter-target summary-cell l4-supp-summary divider-right" style="${getDynamicStyle(row['L4 Overall Status'], 'test', true)}" data-val="${row['L4 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l4Open.display}">${row['L4 Overall Status'] || 'N/A'}</div>
                     ${renderSupportCells(row, 'L4', globalConfig.maxCols.l4)}
                     <div class="phase-gap"></div>
@@ -1183,7 +1202,6 @@
         
         let html = '<div style="display: flex; flex-direction: column; gap: 8px;">';
         window.PDF_OPTIONS.forEach((opt, index) => {
-            // Intelligently skip the option if the user turned it off in Settings!
             if (opt.id === 'l2-gate' && globalConfig.showL2Gate === false) return;
             if (opt.id === 'l3-gate' && globalConfig.showL3Gate === false) return;
             if (opt.id === 'l4-gate' && globalConfig.showL4Gate === false) return;
@@ -1285,9 +1303,9 @@
             table { width: 100%; border-collapse: collapse; table-layout: fixed; }
             th, td { border: 1px solid #aeb6ba; padding: 6px 4px; text-align: center; vertical-align: middle; word-wrap: break-word; overflow: hidden; }
             th { background-color: #2e7d32 !important; color: white !important; font-size: 10px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .bg-gray { background-color: #f5f5f5 !important; color: #616161 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
             
-            .shrink-list { font-size: 10px; line-height: 1.2; color: #222; text-align: left; }
+            /* Forces all generated cells to be uncolored, size 10 text */
+            .uncolored-cell { background-color: #ffffff !important; color: #222 !important; font-size: 10px !important; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
             
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         </style></head><body><h2>Relational Asset Status Tracker Export</h2><table>`;
@@ -1318,10 +1336,10 @@
                     
                     if (opt.type === 'asset') {
                         let val = row.querySelector('.group-asset').innerText;
-                        cellHtml = `<td class="shrink-list"><b>${val}</b></td>`;
+                        cellHtml = `<td class="uncolored-cell">${val}</td>`;
                     } else if (opt.type === 'area') {
                         let val = row.querySelector('.group-area').innerText;
-                        cellHtml = `<td class="shrink-list">${val}</td>`;
+                        cellHtml = `<td class="uncolored-cell">${val}</td>`;
                     } else if (opt.type === 'gate') {
                         let cell = row.querySelector(`.${opt.level}-gate-col`);
                         cellHtml = extractStackedCellForPdf(cell);
@@ -1333,13 +1351,13 @@
                         cellHtml = extractSummaryCellForPdf(cell);
                     } else if (opt.type === 'supp-open') {
                         let val = getGroupedSupp(row, opt.level, 'open');
-                        cellHtml = `<td class="shrink-list">${val}</td>`;
+                        cellHtml = `<td class="uncolored-cell">${val}</td>`;
                     } else if (opt.type === 'supp-closed') {
                         let val = getGroupedSupp(row, opt.level, 'closed');
-                        cellHtml = `<td class="shrink-list">${val}</td>`;
+                        cellHtml = `<td class="uncolored-cell">${val}</td>`;
                     } else if (opt.type === 'iss-group') {
                         let val = getGroupedIss(row, opt.group);
-                        cellHtml = `<td class="shrink-list">${val}</td>`;
+                        cellHtml = `<td class="uncolored-cell">${val}</td>`;
                     }
                     
                     html += cellHtml;
@@ -1360,21 +1378,18 @@
     function extractStackedCellForPdf(cell) {
         if (!cell) return '<td>-</td>';
         let hdrNode = cell.querySelector('.checklist-header');
-        let statNode = cell.querySelector('.checklist-status');
         let id = hdrNode ? hdrNode.innerText : '-';
-        let stat = statNode ? statNode.innerText : '-';
-        
         if(id === '-') {
             return `<td>-</td>`;
         } else {
-            return `<td class="shrink-list"><b>${id}</b><br><span>${stat}</span></td>`;
+            return `<td class="uncolored-cell">${id}</td>`;
         }
     }
 
     function extractSummaryCellForPdf(cell) {
         if (!cell) return '<td>-</td>';
         let val = cell.innerText.trim();
-        return `<td class="shrink-list">${val}</td>`;
+        return `<td class="uncolored-cell">${val}</td>`;
     }
 </script>
 </body>
