@@ -19,7 +19,7 @@
         .header-center { white-space: nowrap; }
         .header-center span { color: #2e7d32; font-weight: 800; font-size: 36px; letter-spacing: -1px; }
         .header-right { display: flex; align-items: center; }
-        .setup-btn { background: #f1f3f4; border: 1px solid #dcdcdc; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; color: #555; display: flex; align-items: gap: 8px; transition: all 0.2s; }
+        .setup-btn { background: #f1f3f4; border: 1px solid #dcdcdc; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; color: #555; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
         .setup-btn:hover { background: #e0e0e0; }
 
         #app-body { display: flex; flex-direction: column; height: calc(100vh - 80px); width: 100%; background: #f8f9fa;}
@@ -51,10 +51,10 @@
         }
 
         .summary-cell { 
-            flex: 0 0 140px !important; 
-            width: 140px !important; 
-            min-width: 140px !important; 
-            max-width: 140px !important;
+            flex: 0 0 190px !important; 
+            width: 190px !important; 
+            min-width: 190px !important; 
+            max-width: 190px !important;
             border-right: 2px solid #78909c !important; 
             overflow: hidden; 
             padding: 0;
@@ -153,7 +153,7 @@
         body.hide-l3-gate .l3-gate-col { display: none !important; }
         body.hide-l4-gate .l4-gate-col { display: none !important; }
 
-        /* --- SETTINGS MODAL --- */
+        /* --- MODALS --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; display: none; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: white; border-radius: 8px; width: 1350px; max-width: 98%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
@@ -471,7 +471,6 @@
 
     let expandedStates = { l2: false, l3: false, l4: false, iss: false };
 
-    // --- PDF CONFIGURATION ARRAY ---
     window.PDF_OPTIONS = [
         { id: 'asset', label: 'Asset Details', type: 'asset' },
         { id: 'area', label: 'Area', type: 'area' },
@@ -833,7 +832,7 @@
             let gateL2 = globalConfig.showL2Gate !== false ? 100 : 0;
             let gateL3 = globalConfig.showL3Gate !== false ? 100 : 0;
             let gateL4 = globalConfig.showL4Gate !== false ? 100 : 0;
-            let summaryW = 140; 
+            let summaryW = 190; 
             
             document.getElementById('group-l2').style.flex = `0 0 ${gateL2 + summaryW}px`;
             document.getElementById('group-l3').style.flex = `0 0 ${gateL3 + summaryW}px`;
@@ -1062,7 +1061,7 @@
             let isSuppShown = globalConfig[`show${level.toUpperCase()}Supp`] !== false;
 
             let gateWidth = isGateShown ? 100 : 0;
-            let summaryWidth = 140;
+            let summaryWidth = 190;
             let baseWidth = gateWidth + summaryWidth;
             let exactWidth = (state && isSuppShown) ? (baseWidth + (maxCols * 100)) : baseWidth;
             
@@ -1092,7 +1091,7 @@
                 btn.style.background = state ? "#b71c1c" : "#4caf50";
             }
 
-            let summaryWidth = 140;
+            let summaryWidth = 190;
             let maxIss = globalConfig.maxCols.iss || 0;
             let exactIssWidth = state ? (summaryWidth + (maxIss * 100)) : summaryWidth;
             
@@ -1263,15 +1262,14 @@
         let printWin = window.open('', '_blank');
         let html = `<html><head><title>LaunchPad PDF Export</title><style>
             @page { size: landscape; margin: 10mm; }
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; font-size: 9px; }
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; font-size: 10px; }
             h2 { color: #2e7d32; text-align: center; margin-bottom: 10px; font-size: 16px; text-transform: uppercase; }
             table { width: 100%; border-collapse: collapse; table-layout: fixed; }
             th, td { border: 1px solid #aeb6ba; padding: 6px 4px; text-align: center; vertical-align: middle; word-wrap: break-word; overflow: hidden; }
             th { background-color: #2e7d32 !important; color: white !important; font-size: 10px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .bg-gray { background-color: #f5f5f5 !important; color: #616161 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
             
-            /* Magic shrinking CSS for lists to fit on one line item */
-            .shrink-list { font-size: 8px; line-height: 1.2; font-weight: bold; color: #222; text-align: left; }
+            .shrink-list { font-size: 10px; line-height: 1.2; font-weight: bold; color: #222; text-align: left; }
             
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         </style></head><body><h2>Relational Asset Status Tracker Export</h2><table>`;
@@ -1355,7 +1353,7 @@
             let bgImg = statNode.style.backgroundImage || '';
             let txtColor = statNode.style.color || '#000';
             let styleStr = bgImg ? `background-image: ${bgImg}; color: #111;` : `background-color: ${bg}; color: ${txtColor};`;
-            return `<td style="${styleStr}"><b>${id}</b><br><span style="font-size:8px;">${stat}</span></td>`;
+            return `<td style="${styleStr}"><b>${id}</b><br><span>${stat}</span></td>`;
         }
     }
 
