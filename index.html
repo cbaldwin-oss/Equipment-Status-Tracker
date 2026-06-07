@@ -886,7 +886,8 @@
     async function fetchTrackerData() {
         document.getElementById('sync-status').innerText = 'Syncing... ⌛';
         try {
-            const response = await fetch(API_URL);
+            let fetchOptions = { method: 'GET', mode: 'cors', cache: 'no-cache' };
+            const response = await fetch(API_URL, fetchOptions);
             const payload = await response.json(); 
             
             if (payload.error) {
@@ -914,33 +915,6 @@
                 updateHeaderElement('group-iss', globalConfig.customHeaders.issPhase);
                 updateHeaderElement('iss-status-title', globalConfig.customHeaders.issStatus, true);
             }
-
-            let actualMaxCols = { l2: 0, l3: 0, l4: 0, iss: 0 };
-            rows.forEach(row => {
-                ['L2', 'L3', 'L4'].forEach(level => {
-                    let key = level.toLowerCase();
-                    for(let i=1; i<=100; i++) {
-                        let val = row[`${level} Support CL ${i}`];
-                        if(val !== undefined && val !== null) {
-                            let clean = String(val).replace(/\(Unknown\)/ig, '').trim();
-                            if(clean !== '' && clean !== 'N/A' && clean !== 'Clear' && clean !== '-') {
-                                actualMaxCols[key] = Math.max(actualMaxCols[key], i);
-                            }
-                        }
-                    }
-                });
-                
-                for(let i=1; i<=200; i++) { 
-                    let val = row[`Issue ${i}`];
-                    if(val !== undefined && val !== null) {
-                        let clean = String(val).replace(/\(Unknown\)/ig, '').trim();
-                        if(clean !== '' && clean !== 'N/A' && clean !== 'Clear' && clean !== '-') {
-                            actualMaxCols.iss = Math.max(actualMaxCols.iss, i);
-                        }
-                    }
-                }
-            });
-            globalConfig.maxCols = actualMaxCols;
 
             document.body.classList.toggle('hide-l2-gate', globalConfig.showL2Gate === false);
             document.body.classList.toggle('hide-l3-gate', globalConfig.showL3Gate === false);
@@ -975,7 +949,7 @@
             document.getElementById('group-iss').style.width = summaryW + 'px';
 
             const container = document.getElementById('tracker-rows');
-            container.innerHTML = ''; 
+            let htmlChunks = []; 
 
             rows.forEach(row => {
                 const assetId = row['Asset'] || 'N/A';
@@ -1013,8 +987,11 @@
                     <div class="filter-target summary-cell global-iss-summary divider-right" style="${getDynamicStyle(issuesOpen.count, 'issue', false)}" data-val="${issuesOpen.display}">${issuesOpen.display}</div>
                     ${renderIssuesBlock(row, globalConfig.maxCols.iss)}
                 </div>`;
-                container.insertAdjacentHTML('beforeend', rowHTML);
+                htmlChunks.push(rowHTML);
             });
+            
+            // Mass injection for massive performance boost
+            container.innerHTML = htmlChunks.join('');
             document.getElementById('sync-status').innerText = 'Live Relational Sync Active 🟢';
         } catch (error) {
             console.error("Fetch Exception: ", error);
