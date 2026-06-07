@@ -530,26 +530,39 @@
             return;
         }
 
+        let columnsToExpand = new Set();
         const rows = document.querySelectorAll('.cell-row');
+        
         rows.forEach(row => {
             if (window.getComputedStyle(row).display !== 'none') {
                 let matchFound = false;
                 
-                if (row.textContent.toLowerCase().includes(query)) {
-                    matchFound = true;
-                }
-                
-                if (!matchFound) {
-                    row.querySelectorAll('.filter-target').forEach(cell => {
-                        if (cell.dataset.val && cell.dataset.val.toLowerCase().includes(query)) {
-                            matchFound = true;
-                        }
-                    });
-                }
+                row.querySelectorAll('.filter-target').forEach(cell => {
+                    let cellVal = cell.dataset.val ? String(cell.dataset.val).toLowerCase() : '';
+                    let cellText = cell.innerText ? String(cell.innerText).toLowerCase() : '';
+                    
+                    if (cellVal.includes(query) || cellText.includes(query)) {
+                        matchFound = true;
+                        
+                        if (cell.classList.contains('l2-supp-details')) columnsToExpand.add('l2');
+                        if (cell.classList.contains('l3-supp-details')) columnsToExpand.add('l3');
+                        if (cell.classList.contains('l4-supp-details')) columnsToExpand.add('l4');
+                        if (cell.classList.contains('global-iss-details')) columnsToExpand.add('iss');
+                    }
+                });
 
                 if (matchFound) {
                     searchMatches.push(row);
                 }
+            }
+        });
+
+        // Automatically expand any hidden column that contains a search match
+        columnsToExpand.forEach(col => {
+            if (col === 'iss') {
+                if (!expandedStates.iss) window.toggleGlobalIssues();
+            } else {
+                if (!expandedStates[col]) window.toggleExpansion(col);
             }
         });
 
