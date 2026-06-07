@@ -559,7 +559,8 @@
                 let matchFound = false;
                 let matchedCells = [];
                 
-                row.querySelectorAll('.filter-target').forEach(cell => {
+                // Deep scan using [data-val] so we grab EVERY cell, including the dynamically hidden ones.
+                row.querySelectorAll('[data-val]').forEach(cell => {
                     let cellVal = cell.dataset.val ? String(cell.dataset.val).toLowerCase() : '';
                     let cellText = cell.textContent ? String(cell.textContent).toLowerCase() : '';
                     
@@ -591,7 +592,7 @@
 
         if (searchMatches.length > 0) {
             currentSearchIndex = 0;
-            // Delay UI update slightly so expansion has time to apply CSS
+            // Delay UI update slightly so expansion has time to apply CSS before scrolling
             setTimeout(updateSearchUI, 100); 
         } else {
             counter.innerText = '0/0';
@@ -615,10 +616,8 @@
             const row = matchObj.row;
             row.classList.add('highlight-search');
             
-            // Highlight specific cells
             matchObj.cells.forEach(c => c.classList.add('highlight-cell'));
 
-            // Allow the DOM to reflow, then scroll the specific cell perfectly into center view
             setTimeout(() => {
                 let firstCell = matchObj.cells[0];
                 if (firstCell) {
@@ -1059,7 +1058,6 @@
                 htmlChunks.push(rowHTML);
             });
             
-            // Mass injection for massive performance boost
             container.innerHTML = htmlChunks.join('');
             document.getElementById('sync-status').innerText = 'Live Relational Sync Active 🟢';
             
