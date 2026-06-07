@@ -47,6 +47,7 @@
         
         .cell-row.highlight-search { background-color: #fffde7 !important; outline: 2px solid #fbc02d; outline-offset: -2px; z-index: 9; position: relative; }
         .cell-row.highlight-search .group-asset, .cell-row.highlight-search .group-area { background-color: #fff9c4 !important; color: #d32f2f !important; }
+        .highlight-cell { box-shadow: inset 0 0 0 4px #d32f2f, inset 0 0 15px rgba(211,47,47,0.2) !important; z-index: 50 !important; position: relative; }
 
         .pdf-btn { background: #2e7d32; color: white; border: 1px solid #1b5e20; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s; }
         .pdf-btn:hover { background: #1b5e20; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
@@ -540,6 +541,8 @@
         const counter = document.getElementById('search-counter');
         
         document.querySelectorAll('.cell-row.highlight-search').forEach(el => el.classList.remove('highlight-search'));
+        document.querySelectorAll('.highlight-cell').forEach(el => el.classList.remove('highlight-cell'));
+        
         searchMatches = [];
         currentSearchIndex = -1;
 
@@ -554,13 +557,15 @@
         rows.forEach(row => {
             if (window.getComputedStyle(row).display !== 'none') {
                 let matchFound = false;
+                let matchedCells = [];
                 
                 row.querySelectorAll('.filter-target').forEach(cell => {
                     let cellVal = cell.dataset.val ? String(cell.dataset.val).toLowerCase() : '';
-                    let cellText = cell.innerText ? String(cell.innerText).toLowerCase() : '';
+                    let cellText = cell.textContent ? String(cell.textContent).toLowerCase() : '';
                     
-                    if (cellVal.includes(query) || cellText.includes(query)) {
+                    if ((cellVal !== '' && cellVal.includes(query)) || (cellText !== '' && cellText.includes(query))) {
                         matchFound = true;
+                        matchedCells.push(cell);
                         
                         if (cell.classList.contains('l2-supp-details')) columnsToExpand.add('l2');
                         if (cell.classList.contains('l3-supp-details')) columnsToExpand.add('l3');
@@ -570,11 +575,12 @@
                 });
 
                 if (matchFound) {
-                    searchMatches.push(row);
+                    searchMatches.push({ row: row, cells: matchedCells });
                 }
             }
         });
 
+        // Automatically expand any hidden column that contains a search match
         columnsToExpand.forEach(col => {
             if (col === 'iss') {
                 if (!expandedStates.iss) window.toggleGlobalIssues();
@@ -585,7 +591,8 @@
 
         if (searchMatches.length > 0) {
             currentSearchIndex = 0;
-            updateSearchUI();
+            // Delay UI update slightly so expansion has time to apply CSS
+            setTimeout(updateSearchUI, 100); 
         } else {
             counter.innerText = '0/0';
         }
@@ -601,10 +608,26 @@
 
     function updateSearchUI() {
         document.querySelectorAll('.cell-row.highlight-search').forEach(el => el.classList.remove('highlight-search'));
+        document.querySelectorAll('.highlight-cell').forEach(el => el.classList.remove('highlight-cell'));
+        
         if (searchMatches.length > 0 && currentSearchIndex > -1) {
-            const row = searchMatches[currentSearchIndex];
+            const matchObj = searchMatches[currentSearchIndex];
+            const row = matchObj.row;
             row.classList.add('highlight-search');
-            row.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+            
+            // Highlight specific cells
+            matchObj.cells.forEach(c => c.classList.add('highlight-cell'));
+
+            // Allow the DOM to reflow, then scroll the specific cell perfectly into center view
+            setTimeout(() => {
+                let firstCell = matchObj.cells[0];
+                if (firstCell) {
+                    firstCell.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                } else {
+                    row.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+                }
+            }, 50);
+            
             document.getElementById('search-counter').innerText = `${currentSearchIndex + 1}/${searchMatches.length}`;
         }
     }
@@ -935,6 +958,33 @@
                 updateHeaderElement('iss-status-title', globalConfig.customHeaders.issStatus, true);
             }
 
+            let actualMaxCols = { l2: 0, l3: 0, l4: 0, iss: 0 };
+            rows.forEach(row => {
+                ['L2', 'L3', 'L4'].forEach(level => {
+                    let key = level.toLowerCase();
+                    for(let i=1; i<=100; i++) {
+                        let val = row[`${level} Support CL ${i}`];
+                        if(val !== undefined && val !== null) {
+                            let clean = String(val).replace(/\(Unknown\)/ig, '').trim();
+                            if(clean !== '' && clean !== 'N/A' && clean !== 'Clear' && clean !== '-') {
+                                actualMaxCols[key] = Math.max(actualMaxCols[key], i);
+                            }
+                        }
+                    }
+                });
+                
+                for(let i=1; i<=200; i++) { 
+                    let val = row[`Issue ${i}`];
+                    if(val !== undefined && val !== null) {
+                        let clean = String(val).replace(/\(Unknown\)/ig, '').trim();
+                        if(clean !== '' && clean !== 'N/A' && clean !== 'Clear' && clean !== '-') {
+                            actualMaxCols.iss = Math.max(actualMaxCols.iss, i);
+                        }
+                    }
+                }
+            });
+            globalConfig.maxCols = actualMaxCols;
+
             document.body.classList.toggle('hide-l2-gate', globalConfig.showL2Gate === false);
             document.body.classList.toggle('hide-l3-gate', globalConfig.showL3Gate === false);
             document.body.classList.toggle('hide-l4-gate', globalConfig.showL4Gate === false);
@@ -1009,6 +1059,7 @@
                 htmlChunks.push(rowHTML);
             });
             
+            // Mass injection for massive performance boost
             container.innerHTML = htmlChunks.join('');
             document.getElementById('sync-status').innerText = 'Live Relational Sync Active 🟢';
             
@@ -1327,7 +1378,7 @@
             if ((opt.id === 'l4-open' || opt.id === 'l4-closed') && globalConfig.showL4Supp === false) return;
 
             let displayLabel = opt.label;
-            if(opt.id === 'asset') displayLabel = 'Asset';
+            if(opt.id === 'asset') displayLabel = 'Asset Details';
             if(opt.id === 'area') displayLabel = globalConfig.customHeaders.areaPrefix || 'Area';
             if(opt.id === 'l2-gate') displayLabel = 'L2 ' + globalConfig.customHeaders.l2Gate;
             if(opt.id === 'l2-status') displayLabel = 'L2 ' + globalConfig.customHeaders.l2Status;
