@@ -533,7 +533,21 @@
         const rows = document.querySelectorAll('.cell-row');
         rows.forEach(row => {
             if (window.getComputedStyle(row).display !== 'none') {
-                if (row.innerText.toLowerCase().includes(query)) {
+                let matchFound = false;
+                
+                if (row.textContent.toLowerCase().includes(query)) {
+                    matchFound = true;
+                }
+                
+                if (!matchFound) {
+                    row.querySelectorAll('.filter-target').forEach(cell => {
+                        if (cell.dataset.val && cell.dataset.val.toLowerCase().includes(query)) {
+                            matchFound = true;
+                        }
+                    });
+                }
+
+                if (matchFound) {
                     searchMatches.push(row);
                 }
             }
