@@ -1508,11 +1508,11 @@
             let displayLabel = opt.label;
             if(opt.id === 'asset') displayLabel = 'Asset';
             if(opt.id === 'area') displayLabel = globalConfig.customHeaders.areaPrefix || 'Area';
-            if(opt.id === 'l2-gate') displayLabel = 'L2 ' + globalConfig.customHeaders.l2Gate;
-            if(opt.id === 'l2-status') displayLabel = 'L2 ' + globalConfig.customHeaders.l2Status;
-            if(opt.id === 'l3-gate') displayLabel = 'L3 ' + globalConfig.customHeaders.l3Gate;
-            if(opt.id === 'l3-status') displayLabel = 'L3 ' + globalConfig.customHeaders.l3Status;
-            if(opt.id === 'l4-gate') displayLabel = 'L4 ' + globalConfig.customHeaders.l4Gate;
+            if(opt.id === 'l2-gate') displayLabel = '' + globalConfig.customHeaders.l2Gate;
+            if(opt.id === 'l2-status') displayLabel = '' + globalConfig.customHeaders.l2Status;
+            if(opt.id === 'l3-gate') displayLabel = '' + globalConfig.customHeaders.l3Gate;
+            if(opt.id === 'l3-status') displayLabel = '' + globalConfig.customHeaders.l3Status;
+            if(opt.id === 'l4-gate') displayLabel = '' + globalConfig.customHeaders.l4Gate;
             if(opt.id === 'l4-status') displayLabel = 'L4 ' + globalConfig.customHeaders.l4Status;
             if(opt.id === 'iss-status') displayLabel = globalConfig.customHeaders.issStatus;
             html += `<th>${displayLabel}</th>`;
