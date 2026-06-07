@@ -8,7 +8,7 @@
         /* --- EASY SIZING CONFIGURATION --- */
         :root {
             --asset-col-width: 150px;  
-            --area-col-width: 110px;   
+            --area-col-width: 70px;   
             --frozen-total-width: calc(var(--asset-col-width) + var(--area-col-width));
         }
 
@@ -633,7 +633,7 @@
 
     // --- PDF CONFIGURATION ARRAY ---
     window.PDF_OPTIONS = [
-        { id: 'asset', label: 'Asset Details', type: 'asset' },
+        { id: 'asset', label: 'Assets', type: 'asset' },
         { id: 'area', label: 'Area', type: 'area' },
         { id: 'l2-gate', label: 'L2 Gate CL', type: 'gate', level: 'l2' },
         { id: 'l2-status', label: 'L2 Overall Status', type: 'status', level: 'l2' },
@@ -647,7 +647,6 @@
         { id: 'l4-status', label: 'L4 Overall Status', type: 'status', level: 'l4' },
         { id: 'l4-open', label: 'Open L4 Tests', type: 'supp-open', level: 'l4' },
         { id: 'l4-closed', label: 'Completed L4 Tests', type: 'supp-closed', level: 'l4' },
-        { id: 'iss-status', label: 'Open Issues Count', type: 'iss-count' },
         { id: 'iss-open-gate', label: 'Open Gating Issues', type: 'iss-group', group: 'open-gate' },
         { id: 'iss-open-non', label: 'Open Non-Gating Issues', type: 'iss-group', group: 'open-non' },
         { id: 'iss-closed-gate', label: 'Closed Gating Issues', type: 'iss-group', group: 'closed-gate' },
@@ -892,7 +891,7 @@
                 }
             }
         }
-        if (openIds.length === 0) return { display: "0", count: 0 };
+        if (openIds.length === 0) return { display: "-", count: 0 };
         return { display: openIds.join(', '), count: openIds.length };
     }
 
