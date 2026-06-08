@@ -8,9 +8,8 @@
     <style>
         /* --- EASY SIZING CONFIGURATION --- */
         :root {
-            --asset-col-width: 150px;  
-            --area-col-width: 70px;   
-            --frozen-total-width: calc(var(--asset-col-width) + var(--area-col-width));
+            /* Combined Asset and Area into one frozen column for iPad optimization */
+            --frozen-total-width: 180px;
         }
 
         /* --- BASE STYLES --- */
@@ -27,8 +26,12 @@
         .setup-btn:hover { background: #e0e0e0; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
 
         #app-body { display: flex; flex-direction: column; height: calc(100vh - 90px); width: 100%; background: #f8f9fa;}
-        .subheader { flex: 0 0 50px; background-color: #f1f3f4; display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; z-index: 1000;}
         
+        /* RESPONSIVE SUBHEADER */
+        .subheader { flex: 0 0 auto; min-height: 50px; background-color: #f1f3f4; display: flex; align-items: center; padding: 10px 30px; border-bottom: 1px solid #dcdcdc; justify-content: space-between; z-index: 1000; flex-wrap: wrap; gap: 10px; }
+        .subheader-left { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .subheader-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
         /* --- FULL SCREEN LOADING OVERLAY --- */
         #loading-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #eef2f5; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease, visibility 0.5s ease; }
         .gears-wrapper { display: flex; align-items: center; justify-content: center; position: relative; width: 120px; height: 100px; margin-bottom: 15px; }
@@ -40,14 +43,15 @@
         @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
 
         /* --- SEARCH BAR STYLES --- */
-        .global-search-wrapper { display: flex; align-items: center; background: white; border: 1px solid #ccc; border-radius: 4px; overflow: hidden; height: 30px; margin-left: 20px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); }
-        .global-search-wrapper input { border: none; outline: none; padding: 0 10px; font-size: 13px; width: 180px; }
+        .global-search-wrapper { display: flex; align-items: center; background: white; border: 1px solid #ccc; border-radius: 4px; overflow: hidden; height: 30px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); }
+        .global-search-wrapper input { border: none; outline: none; padding: 0 10px; font-size: 13px; width: 160px; }
         #search-counter { font-size: 11px; color: #777; padding: 0 8px; background: #fff; display: flex; align-items: center; border-left: 1px solid #eee; height: 100%; font-weight: bold; }
         .search-nav-btn { background: #f1f3f4; border: none; border-left: 1px solid #ccc; padding: 0 10px; cursor: pointer; color: #555; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11px; }
         .search-nav-btn:hover { background: #e0e0e0; }
         
         .cell-row.highlight-search { background-color: #fffde7 !important; outline: 2px solid #fbc02d; outline-offset: -2px; z-index: 9; position: relative; }
-        .cell-row.highlight-search .group-asset, .cell-row.highlight-search .group-area { background-color: #fff9c4 !important; color: #d32f2f !important; }
+        .cell-row.highlight-search .group-asset-details { background-color: #fff9c4 !important; }
+        .cell-row.highlight-search .asset-part { color: #d32f2f !important; }
         .highlight-cell { box-shadow: inset 0 0 0 4px #d32f2f, inset 0 0 15px rgba(211,47,47,0.2) !important; z-index: 50 !important; position: relative; }
 
         .pdf-btn { background: #2e7d32; color: white; border: 1px solid #1b5e20; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s; }
@@ -66,10 +70,10 @@
         .tracker-container { flex: 1; margin: 0; width: 100%; border: none; border-top: 1px solid #dcdcdc; background: #ffffff; overflow: auto; min-height: 0; }
         
         .tracker-header-wrapper { position: sticky; top: 0; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 100%; width: max-content; background: #ffffff;}
-        .rows-container { min-width: 100%; width: max-content; padding-top: 0; } 
+        .rows-container { min-width: 100%; width: max-content; padding-top: 0; padding-bottom: 50px; } 
         
         .frozen-group-bar { background-color: #1b5e20; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 1px solid #0d3b10; width: max-content; }
-        .frozen-col-bar { background-color: #2e7d32; color: white; height: 30px; display: flex; align-items: stretch; border-bottom: 2px solid #1b5e20; width: max-content; }
+        .frozen-col-bar { background-color: #2e7d32; color: white; height: 38px; display: flex; align-items: stretch; border-bottom: 2px solid #1b5e20; width: max-content; }
         .cell-row { display: flex; align-items: stretch; border-bottom: 1px solid #ccc; gap: 0; width: max-content; }
         .cell-row:hover { background-color: rgba(0,0,0,0.02); }
 
@@ -105,42 +109,54 @@
             transition: all 0.2s ease;
         } 
 
-        /* --- ASSET / AREA FROZEN COLUMNS --- */
-        .group-asset-details { flex: 0 0 var(--frozen-total-width) !important; width: var(--frozen-total-width) !important; min-width: var(--frozen-total-width) !important; max-width: var(--frozen-total-width) !important; position: sticky; left: 0; z-index: 12; background-color: #1b5e20; border-right: 1px solid #0d3b10 !important; }
-        .group-asset { flex: 0 0 var(--asset-col-width) !important; width: var(--asset-col-width) !important; min-width: var(--asset-col-width) !important; max-width: var(--asset-col-width) !important; position: sticky; left: 0; z-index: 12; background-color: #2e7d32; border-right: 1px solid #1b5e20 !important; }
-        .group-area  { flex: 0 0 var(--area-col-width) !important; width: var(--area-col-width) !important; min-width: var(--area-col-width) !important; max-width: var(--area-col-width) !important; position: sticky; left: var(--asset-col-width); z-index: 12; background-color: #2e7d32; border-right: 3px solid #4caf50 !important; }
-        
-        .cell-row .group-asset { 
-            background-color: #e8eaed !important; 
-            z-index: 10; 
-            border-right: 2px solid #cfd8dc !important; 
-            display: flex !important; 
-            align-items: center !important; 
-            justify-content: center !important; 
-            text-align: center !important; 
-            font-weight: bold !important; 
-            font-size: 13px !important; 
-            color: #333 !important;
-            padding: 0 6px;
-            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        /* --- STACKED ASSET / AREA FROZEN COLUMN --- */
+        .group-asset-details { 
+            flex: 0 0 var(--frozen-total-width) !important; 
+            width: var(--frozen-total-width) !important; 
+            min-width: var(--frozen-total-width) !important; 
+            max-width: var(--frozen-total-width) !important; 
+            position: sticky; 
+            left: 0; 
+            z-index: 12; 
         }
 
-        .cell-row .group-area { 
-            background-color: #f1f3f4 !important; 
-            z-index: 10; 
+        .frozen-group-bar .group-asset-details {
+            background-color: #1b5e20; 
+            border-right: 1px solid #0d3b10 !important;
+            justify-content: center;
+        }
+
+        .frozen-col-bar .group-asset-details {
+            background-color: #2e7d32; 
+            border-right: 2px solid #1b5e20 !important;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: center;
+            padding: 4px 8px;
+            gap: 2px;
+        }
+
+        .cell-row .group-asset-details {
+            background-color: #e8eaed !important; 
             border-right: 2px solid #78909c !important; 
             display: flex !important; 
-            align-items: center !important; 
-            justify-content: center !important; 
-            text-align: center !important; 
-            font-weight: bold !important; 
-            font-size: 12px !important; 
-            color: #555 !important;
-            padding: 0 6px;
-            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            flex-direction: column;
+            justify-content: center;
+            padding: 6px 8px;
+            gap: 4px;
         }
 
-        .title-wrap { display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; }
+        .asset-part {
+            font-weight: bold; font-size: 13px; color: #333;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%;
+        }
+        
+        .area-part {
+            font-weight: bold; font-size: 10px; color: #777;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%;
+        }
+
+        .title-wrap { display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; width: 100%; justify-content: space-between; }
         
         .phase-gap { 
             flex: 0 0 24px !important; 
@@ -238,6 +254,17 @@
         .filter-actions { margin-top: 10px; display: flex; justify-content: space-between; border-top: 1px solid #eee; padding-top: 10px; }
         .filter-btn { background: #2e7d32; color: white; border: none; padding: 6px 10px; cursor: pointer; border-radius: 4px; font-weight: bold; flex: 1; margin-left: 5px;}
         .filter-btn.clear { background: #f5f5f5; color: #333; border: 1px solid #ccc; margin-left: 0; margin-right: 5px;}
+
+        /* --- MEDIA QUERIES FOR IPAD / TABLET --- */
+        @media (max-width: 1024px) {
+            .header { height: 75px; padding: 0 15px; }
+            .app-logo { height: 50px; }
+            .app-logo2 { height: 60px; }
+            .subheader { padding: 10px 15px; flex-wrap: wrap; height: auto; min-height: 50px;}
+            .global-search-wrapper { margin-left: 0; margin-top: 5px; width: 100%; }
+            .global-search-wrapper input { flex: 1; }
+            .btn, .pdf-btn, .clear-filters-btn, .setup-btn { padding: 6px 10px; font-size: 12px; }
+        }
     </style>
 </head>
 <body>
@@ -248,7 +275,7 @@
         <div class="gear-small">⚙️</div>
     </div>
     <div class="loading-status" id="loading-status-text">Fetching Relational Data...</div>
-    <div class="loading-subtext">Connecting to Database</div>
+    <div class="loading-subtext">Connecting to Google Sheets Backend</div>
 </div>
 
 <div class="header">
@@ -262,8 +289,8 @@
 
 <div id="app-body">
     <div class="subheader">
-        <div style="display: flex; align-items: center;">
-            <div style="font-weight: bold; color: #555;"><span id="zone-title-display">Site</span> • Equipment Status Tracker</div>
+        <div class="subheader-left">
+            <div style="font-weight: bold; color: #555; white-space: nowrap;"><span id="zone-title-display">Zone 1</span> • Relational Asset Status Tracker</div>
             <div class="global-search-wrapper">
                 <span style="padding-left: 8px; color: #999;">🔍</span>
                 <input type="text" id="global-search-input" placeholder="Find instance..." oninput="performGlobalSearch()">
@@ -273,8 +300,8 @@
             </div>
         </div>
         
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="font-size: 13px; color: #2e7d32; font-weight: bold; margin-right: 5px;" id="sync-status">Connecting Backend...</div>
+        <div class="subheader-right">
+            <div style="font-size: 13px; color: #2e7d32; font-weight: bold; margin-right: 5px; white-space: nowrap;" id="sync-status">Connecting Backend...</div>
             <button class="setup-btn" onclick="openSettingsModal()">⚙️ Setup Config</button>
             <button onclick="clearAllFilters()" class="clear-filters-btn">
                 <span style="font-size: 14px;">🧹</span> Remove Filters
@@ -300,8 +327,18 @@
             </div>
             
             <div class="frozen-col-bar" id="main-column-headers">
-                <div class="header-cell group-asset"><div class="title-wrap"><span class="col-title" data-original="Asset">Asset</span> <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span></div></div>
-                <div class="header-cell group-area"><div class="title-wrap"><span class="col-title" id="area-title" data-original="Area">Area</span> <span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span></div></div>
+                
+                <div class="header-cell group-asset-details">
+                    <div class="title-wrap">
+                        <span class="col-title" data-original="Asset">Asset</span> 
+                        <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span>
+                    </div>
+                    <div class="title-wrap" style="color: #a5d6a7; font-size: 10px; margin-top: 2px;">
+                        <span class="col-title" id="area-title" data-original="Area">Area</span> 
+                        <span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span>
+                    </div>
+                </div>
+
                 <div class="phase-gap"></div>
                 
                 <div class="header-cell gate-cell l2-gate-col"><div class="title-wrap"><span class="col-title" id="l2-gate-title" data-original="Gate CL">Gate CL</span><span class="filter-icon" data-col="2" onclick="toggleFilter(event, 2)">▼</span></div></div>
@@ -560,7 +597,6 @@
                 let matchFound = false;
                 let matchedCells = [];
                 
-                // Deep scan using [data-val] so we grab EVERY cell, including the dynamically hidden ones.
                 row.querySelectorAll('[data-val]').forEach(cell => {
                     let cellVal = cell.dataset.val ? String(cell.dataset.val).toLowerCase() : '';
                     let cellText = cell.textContent ? String(cell.textContent).toLowerCase() : '';
@@ -582,7 +618,6 @@
             }
         });
 
-        // Automatically expand any hidden column that contains a search match
         columnsToExpand.forEach(col => {
             if (col === 'iss') {
                 if (!expandedStates.iss) window.toggleGlobalIssues();
@@ -593,7 +628,6 @@
 
         if (searchMatches.length > 0) {
             currentSearchIndex = 0;
-            // Delay UI update slightly so expansion has time to apply CSS before scrolling
             setTimeout(updateSearchUI, 100); 
         } else {
             counter.innerText = '0/0';
@@ -648,6 +682,7 @@
         { id: 'l4-status', label: 'L4 Overall Status', type: 'status', level: 'l4' },
         { id: 'l4-open', label: 'Open L4 Tests', type: 'supp-open', level: 'l4' },
         { id: 'l4-closed', label: 'Completed L4 Tests', type: 'supp-closed', level: 'l4' },
+        { id: 'iss-status', label: 'Open Issues Count', type: 'iss-count' },
         { id: 'iss-open-gate', label: 'Open Gating Issues', type: 'iss-group', group: 'open-gate' },
         { id: 'iss-open-non', label: 'Open Non-Gating Issues', type: 'iss-group', group: 'open-non' },
         { id: 'iss-closed-gate', label: 'Closed Gating Issues', type: 'iss-group', group: 'closed-gate' },
@@ -1033,8 +1068,10 @@
                 
                 const rowHTML = `
                 <div class="cell-row">
-                    <div class="filter-target group-asset" data-val="${assetId}" title="${assetId}">${assetDisplay}</div>
-                    <div class="filter-target group-area" data-val="${areaVal}" title="${areaVal}">${areaVal}</div>
+                    <div class="frozen-combined group-asset-details">
+                        <div class="filter-target asset-part" data-col="0" data-val="${assetId}" title="${assetId}">${assetDisplay}</div>
+                        <div class="filter-target area-part" data-col="1" data-val="${areaVal}" title="${areaVal}">${areaVal}</div>
+                    </div>
                     <div class="phase-gap"></div>
                     
                     ${renderStackedCell(row['L2 Gate CL 1'], 'gate-cell l2-gate-col', 'checklist', row['L2 Gate CL 1_Link'])}
@@ -1376,14 +1413,14 @@
             if ((opt.id === 'l4-open' || opt.id === 'l4-closed') && globalConfig.showL4Supp === false) return;
 
             let displayLabel = opt.label;
-            if(opt.id === 'asset') displayLabel = 'Assets';
+            if(opt.id === 'asset') displayLabel = 'Asset';
             if(opt.id === 'area') displayLabel = globalConfig.customHeaders.areaPrefix || 'Area';
-            if(opt.id === 'l2-gate') displayLabel = '' + globalConfig.customHeaders.l2Gate;
-            if(opt.id === 'l2-status') displayLabel = '' + globalConfig.customHeaders.l2Status;
-            if(opt.id === 'l3-gate') displayLabel = '' + globalConfig.customHeaders.l3Gate;
-            if(opt.id === 'l3-status') displayLabel = '' + globalConfig.customHeaders.l3Status;
-            if(opt.id === 'l4-gate') displayLabel = '' + globalConfig.customHeaders.l4Gate;
-            if(opt.id === 'l4-status') displayLabel = '' + globalConfig.customHeaders.l4Status;
+            if(opt.id === 'l2-gate') displayLabel = 'L2 ' + globalConfig.customHeaders.l2Gate;
+            if(opt.id === 'l2-status') displayLabel = 'L2 ' + globalConfig.customHeaders.l2Status;
+            if(opt.id === 'l3-gate') displayLabel = 'L3 ' + globalConfig.customHeaders.l3Gate;
+            if(opt.id === 'l3-status') displayLabel = 'L3 ' + globalConfig.customHeaders.l3Status;
+            if(opt.id === 'l4-gate') displayLabel = 'L4 ' + globalConfig.customHeaders.l4Gate;
+            if(opt.id === 'l4-status') displayLabel = 'L4 ' + globalConfig.customHeaders.l4Status;
             if(opt.id === 'iss-status') displayLabel = globalConfig.customHeaders.issStatus;
             
             html += `<label class="checkbox-row"><input type="checkbox" class="pdf-col-cb" value="${index}" checked> ${displayLabel}</label>`;
@@ -1529,13 +1566,14 @@
                     let cellHtml = '<td>-</td>';
                     
                     if (opt.type === 'asset') {
-                        let assetNode = row.querySelector('.group-asset');
-                        let aTag = assetNode.querySelector('a');
-                        let text = assetNode.innerText.trim();
+                        let assetNode = row.querySelector('.asset-part');
+                        let aTag = assetNode ? assetNode.querySelector('a') : null;
+                        let text = assetNode ? assetNode.innerText.trim() : '';
                         let display = aTag ? `<a href="${aTag.href}" target="_blank" style="color: inherit; text-decoration: none;">${text}</a>` : text;
                         cellHtml = `<td class="uncolored-cell">${display}</td>`;
                     } else if (opt.type === 'area') {
-                        let val = row.querySelector('.group-area').innerText;
+                        let areaNode = row.querySelector('.area-part');
+                        let val = areaNode ? areaNode.innerText : '';
                         cellHtml = `<td class="shrink-list">${val}</td>`;
                     } else if (opt.type === 'gate') {
                         let cell = row.querySelector(`.${opt.level}-gate-col`);
