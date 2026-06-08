@@ -100,10 +100,10 @@
         }
 
         .summary-cell { 
-            flex: 0 0 140px !important; 
-            width: 140px !important; 
-            min-width: 140px !important; 
-            max-width: 140px !important;
+            flex: 0 0 190px !important; 
+            width: 190px !important; 
+            min-width: 190px !important; 
+            max-width: 190px !important;
             border-right: 2px solid #78909c !important; 
             overflow: hidden; 
             padding: 0;
@@ -714,7 +714,7 @@
         }
     }
 
-    // --- PDF CONFIGURATION ARRAY ---
+    // --- EXPORT CONFIGURATION ARRAY ---
     window.PDF_OPTIONS = [
         { id: 'asset', label: 'Assets', type: 'asset' },
         { id: 'area', label: 'Area', type: 'area' },
@@ -864,7 +864,7 @@
         
         let idDisplay = id;
         if (id !== '' && link) {
-            idDisplay = `<a href="${link}" class="chk-link">${id}</a>`;
+            idDisplay = `<a href="${link}" target="_blank" class="chk-link">${id}</a>`;
         }
         
         if (id === '') {
@@ -1092,7 +1092,7 @@
             let gateL2 = globalConfig.showL2Gate !== false ? 100 : 0;
             let gateL3 = globalConfig.showL3Gate !== false ? 100 : 0;
             let gateL4 = globalConfig.showL4Gate !== false ? 100 : 0;
-            let summaryW = 140; 
+            let summaryW = 190; 
             
             document.getElementById('group-l2').style.flex = `0 0 ${gateL2 + summaryW}px`;
             document.getElementById('group-l3').style.flex = `0 0 ${gateL3 + summaryW}px`;
@@ -1114,7 +1114,6 @@
                 const assetId = row['Asset'] || 'N/A';
                 const assetLink = row['Asset_Link'];
                 
-                // --- GLOBALLY EXPLICIT TARGET=_BLANK FOR PDF READERS ---
                 const assetDisplay = assetLink ? `<a href="${assetLink}" target="_blank" class="asset-link">${assetId}</a>` : assetId;
                 
                 const areaVal = row['Area'] || 'N/A';
@@ -1367,7 +1366,7 @@
             let isSuppShown = globalConfig[`show${level.toUpperCase()}Supp`] !== false;
 
             let gateWidth = isGateShown ? 100 : 0;
-            let summaryWidth = 140;
+            let summaryWidth = 190;
             let baseWidth = gateWidth + summaryWidth;
             let exactWidth = (state && isSuppShown) ? (baseWidth + (maxCols * 100)) : baseWidth;
             
@@ -1397,7 +1396,7 @@
                 btn.style.background = state ? "#b71c1c" : "#4caf50";
             }
 
-            let summaryWidth = 140;
+            let summaryWidth = 190;
             let maxIss = globalConfig.maxCols.iss || 0;
             let exactIssWidth = state ? (summaryWidth + (maxIss * 100)) : summaryWidth;
             
@@ -1429,10 +1428,12 @@
         if (dropLeft + 200 > window.innerWidth) dropLeft = window.innerWidth - 200;
 
         dropdown.style.top = dropTop + 'px'; dropdown.style.left = dropLeft + 'px';
+        
+        // Setup dropdown structure with a loading text placeholder
         dropdown.innerHTML = `
             <input type="text" id="filter-search" class="filter-search-input" placeholder="Search values..." autocomplete="off">
             <label style="font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:8px; margin-bottom:8px;">
-                <input type="checkbox" id="filter-select-all" checked> (Select All)
+                <input type="checkbox" id="filter-select-all" checked> <span style="cursor:pointer;">(Select All)</span>
             </label>
             <div id="filter-loading" style="padding: 10px; font-size: 12px; color: #777; text-align: center;">Loading...</div>
             <div id="val-container" style="overflow-y: auto; flex: 1; display: none;"></div>
@@ -1444,37 +1445,72 @@
         document.body.appendChild(dropdown); 
         currentDropdown = dropdown;
         
-        // Use timeout to let the dropdown physically appear, freeing the mouse thread
+        // --- ASYNCHRONOUS RENDERING (Unfreezes the mouse) ---
+        // We use setTimeout to yield the main thread so the dropdown outline renders instantly
         setTimeout(() => {
             const valContainer = dropdown.querySelector('#val-container');
-            let valHTML = '';
+            
+            // Build the HTML strictly as a string array for maximum browser efficiency
+            let valHTML = [];
             Array.from(uniqueValues).sort().forEach(val => { 
                 const isChecked = activeFilters[colIndex] ? activeFilters[colIndex].has(val) : true; 
                 const safeVal = val.replace(/"/g, '&quot;');
-                valHTML += `<label class="filter-val-label"><input type="checkbox" class="filter-val-cb" value="${safeVal}" ${isChecked ? 'checked' : ''}> <span class="val-text">${val || '(Blank)'}</span></label>`; 
+                valHTML.push(`<label class="filter-val-label" style="display:block; margin-bottom: 6px; cursor: pointer;"><input type="checkbox" class="filter-val-cb" value="${safeVal}" style="margin-right:8px; cursor:pointer;" ${isChecked ? 'checked' : ''}><span class="val-text">${val || '(Blank)'}</span></label>`); 
             });
-            valContainer.innerHTML = valHTML;
+            valContainer.innerHTML = valHTML.join('');
+            
+            // Swap out loading state
             dropdown.querySelector('#filter-loading').style.display = 'none';
             valContainer.style.display = 'block';
             
             const searchInput = dropdown.querySelector('#filter-search'); 
             const selectAllCb = dropdown.querySelector('#filter-select-all'); 
-            const allLabels = dropdown.querySelectorAll('.filter-val-label'); 
-            const valCbs = dropdown.querySelectorAll('.filter-val-cb');
+            
             if (activeFilters[colIndex] && activeFilters[colIndex].size < uniqueValues.size) selectAllCb.checked = false;
             
+            // --- EVENT DELEGATION (Attaches 1 listener instead of 1000) ---
             searchInput.addEventListener('input', (e) => { 
-                const term = e.target.value.toLowerCase(); let vis = 0, chkVis = 0; 
-                allLabels.forEach(lbl => { 
-                    if (lbl.querySelector('.val-text').textContent.toLowerCase().includes(term)) { 
-                        lbl.style.display = 'block'; vis++; 
-                        if (lbl.querySelector('.filter-val-cb').checked) chkVis++; 
-                    } else lbl.style.display = 'none'; 
-                }); 
+                const term = e.target.value.toLowerCase(); 
+                let vis = 0, chkVis = 0; 
+                const labels = valContainer.children;
+                for(let i=0; i<labels.length; i++) {
+                    let lbl = labels[i];
+                    if (lbl.textContent.toLowerCase().includes(term)) { 
+                        lbl.style.display = 'block'; 
+                        vis++; 
+                        if (lbl.querySelector('input').checked) chkVis++; 
+                    } else {
+                        lbl.style.display = 'none'; 
+                    }
+                }
                 selectAllCb.checked = (vis > 0 && vis === chkVis); 
             });
-            selectAllCb.addEventListener('change', (e) => { allLabels.forEach(lbl => { if (lbl.style.display !== 'none') lbl.querySelector('.filter-val-cb').checked = e.target.checked; }); });
-            valCbs.forEach(cb => { cb.addEventListener('change', () => { let allVisChk = true; allLabels.forEach(lbl => { if (lbl.style.display !== 'none' && !lbl.querySelector('.filter-val-cb').checked) allVisChk = false; }); selectAllCb.checked = allVisChk; }); });
+            
+            selectAllCb.addEventListener('change', (e) => { 
+                const isChecked = e.target.checked;
+                const labels = valContainer.children;
+                for(let i=0; i<labels.length; i++) {
+                    let lbl = labels[i];
+                    if (lbl.style.display !== 'none') {
+                        lbl.querySelector('input').checked = isChecked;
+                    }
+                }
+            });
+            
+            valContainer.addEventListener('change', (e) => {
+                if (e.target.tagName === 'INPUT') {
+                    let allVisChk = true; 
+                    const labels = valContainer.children;
+                    for(let i=0; i<labels.length; i++) {
+                        let lbl = labels[i];
+                        if (lbl.style.display !== 'none' && !lbl.querySelector('input').checked) { 
+                            allVisChk = false; 
+                            break;
+                        }
+                    }
+                    selectAllCb.checked = allVisChk;
+                }
+            });
             
             searchInput.focus();
         }, 10);
