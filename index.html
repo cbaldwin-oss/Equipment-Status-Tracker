@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Equipment Status Tracker</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
-    
-    <base target="_blank">
-
     <style>
         /* --- EASY SIZING CONFIGURATION --- */
         :root {
@@ -640,7 +637,6 @@
                 let matchFound = false;
                 let matchedCells = [];
                 
-                // Deep scan using [data-val] so we grab EVERY cell, including the dynamically hidden ones.
                 row.querySelectorAll('[data-val]').forEach(cell => {
                     let cellVal = cell.dataset.val ? String(cell.dataset.val).toLowerCase() : '';
                     let cellText = cell.textContent ? String(cell.textContent).toLowerCase() : '';
@@ -860,7 +856,7 @@
         
         let idDisplay = id;
         if (id !== '' && link) {
-            idDisplay = `<a href="${link}" class="chk-link">${id}</a>`;
+            idDisplay = `<a href="${link}" target="_blank" class="chk-link">${id}</a>`;
         }
         
         if (id === '') {
@@ -1101,7 +1097,9 @@
             rows.forEach(row => {
                 const assetId = row['Asset'] || 'N/A';
                 const assetLink = row['Asset_Link'];
-                const assetDisplay = assetLink ? `<a href="${assetLink}" class="asset-link">${assetId}</a>` : assetId;
+                
+                // --- EXPLICITLY HARDCODED TARGET="_BLANK" ---
+                const assetDisplay = assetLink ? `<a href="${assetLink}" target="_blank" class="asset-link">${assetId}</a>` : assetId;
                 
                 const areaVal = row['Area'] || 'N/A';
                 
