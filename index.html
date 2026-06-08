@@ -74,8 +74,8 @@
         /* --- HYPERLINK STYLES --- */
         .asset-link { color: #1b5e20; text-decoration: none; border-bottom: 1px dotted #1b5e20; }
         .asset-link:hover { color: #0d3b10; text-decoration: underline; border-bottom: none; }
-        .chk-link { color: #1b5e20; text-decoration: none; padding-bottom: 1px; border-bottom: 1px dotted rgba(0,0,0,0.5); pointer-events: auto; }
-        .chk-link:hover { text-decoration: underline; }
+        .chk-link { color: inherit; text-decoration: underline; font-weight: bold; padding-bottom: 1px; pointer-events: auto; cursor: pointer;}
+        .chk-link:hover { opacity: 0.7; }
 
         /* --- EQUIPMENT TRACKER GRID --- */
         .tracker-container { flex: 1; margin: 0; width: 100%; border: none; border-top: 1px solid #dcdcdc; background: #ffffff; overflow: auto; min-height: 0; }
@@ -100,10 +100,10 @@
         }
 
         .summary-cell { 
-            flex: 0 0 190px !important; 
-            width: 190px !important; 
-            min-width: 190px !important; 
-            max-width: 190px !important;
+            flex: 0 0 140px !important; 
+            width: 140px !important; 
+            min-width: 140px !important; 
+            max-width: 140px !important;
             border-right: 2px solid #78909c !important; 
             overflow: hidden; 
             padding: 0;
@@ -638,6 +638,9 @@
 
         let columnsToExpand = new Set();
         
+        const container = document.getElementById('tracker-rows');
+        container.style.display = 'none'; // DETACH FOR INSTANT REFLOW
+
         window.rowNodes.forEach(row => {
             if (window.getComputedStyle(row).display !== 'none') {
                 let matchFound = false;
@@ -664,6 +667,8 @@
                 }
             }
         });
+
+        container.style.display = 'block'; // REATTACH
 
         columnsToExpand.forEach(col => {
             if (col === 'iss') {
@@ -713,7 +718,6 @@
         }
     }
 
-    // --- PDF CONFIGURATION ARRAY ---
     window.PDF_OPTIONS = [
         { id: 'asset', label: 'Assets', type: 'asset' },
         { id: 'area', label: 'Area', type: 'area' },
@@ -801,41 +805,31 @@
         
         let exactClosed = closedArr.find(s => s.name && lowerVal === String(s.name).toLowerCase().trim());
         if (exactClosed) return `background-color:${exactClosed.color}; color:${getContrastYIQ(exactClosed.color)};`;
-        
         let exactOpen = openArr.find(s => s.name && lowerVal === String(s.name).toLowerCase().trim());
         if (exactOpen) return `background-color:${exactOpen.color}; color:${getContrastYIQ(exactOpen.color)};`;
 
         if (type === 'issue') { 
             let gateMatch = globalConfig.gatingIssues.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim()));
             if (gateMatch) return `background-color:${gateMatch.color}; color:${getContrastYIQ(gateMatch.color)};`;
-            
             let nonGateMatch = globalConfig.nonGatingIssues.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim()));
             if (nonGateMatch) return `background-color:${nonGateMatch.color}; color:${getContrastYIQ(nonGateMatch.color)};`;
         }
 
         let matchClosed = closedArr.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim()));
         if (matchClosed) return `background-color:${matchClosed.color}; color:${getContrastYIQ(matchClosed.color)};`;
-        
         let matchOpen = openArr.find(s => s.name && lowerVal.includes(String(s.name).toLowerCase().trim()));
         if (matchOpen) return `background-color:${matchOpen.color}; color:${getContrastYIQ(matchOpen.color)};`;
         
-        if (lowerVal.includes('no cl') || lowerVal.includes('no l4') || lowerVal.includes('no l3')) {
-            return emptyStyle;
-        }
+        if (lowerVal.includes('no cl') || lowerVal.includes('no l4') || lowerVal.includes('no l3')) return emptyStyle;
 
         if (!isNaN(lowerVal) && lowerVal !== '') {
             let num = parseFloat(lowerVal);
-            if (num === 0) {
-                return 'background-color:#e1f5fe; color:#01579b;'; 
-            }
+            if (num === 0) return 'background-color:#e1f5fe; color:#01579b;'; 
             if (num > 0) {
-                if (openArr.length > 0 && openArr[0].color) {
-                    return `background-color:${openArr[0].color}; color:${getContrastYIQ(openArr[0].color)};`;
-                }
+                if (openArr.length > 0 && openArr[0].color) return `background-color:${openArr[0].color}; color:${getContrastYIQ(openArr[0].color)};`;
                 return 'background-color:#ffcdd2; color:#b71c1c;'; 
             }
         }
-
         return isOverallStatus ? fbStyle : emptyStyle;
     }
 
@@ -846,10 +840,8 @@
         return statusArray.some(item => item.name && s.includes(String(item.name).toLowerCase().trim()));
     }
 
-    // --- STRICT LINK ENFORCEMENT ENGINE ---
     function renderStackedCell(val, extraClasses = '', type = 'checklist', link = '') {
         let id = '', status = '', styleStr = '', rawVal = '';
-        
         if (val && val !== 'N/A' && val !== 'Clear' && val !== '-') {
             rawVal = String(val).trim();
             const match = rawVal.match(/(.+?)\s*\((.+)\)/);
@@ -864,8 +856,6 @@
         
         let idDisplay = id;
         let safeLink = String(link || '').trim();
-        
-        // Ensure link exists and is actually a string before building the <a> tag
         if (id !== '' && safeLink && safeLink !== 'undefined' && safeLink !== 'null' && safeLink !== '') {
             idDisplay = `<a href="${safeLink}" target="_blank" class="chk-link">${id}</a>`;
         }
@@ -889,7 +879,7 @@
         for (let i = 1; i <= maxCount; i++) {
             const isLast = (i === maxCount) ? 'divider-right' : '';
             let cellVal = row[`${level} Support CL ${i}`];
-            let cellLink = row[`${level} Support CL ${i}_Link`];
+            let cellLink = row[`${level} Support CL ${i}_Link`] || row[`${level} Support CL ${i} Link`];
             html += renderStackedCell(cellVal, `cell-row-detail col-details ${level.toLowerCase()}-supp-details cl-cell ${isLast}`, type, cellLink).replace('filter-target', ''); 
         }
         return html;
@@ -903,7 +893,7 @@
 
         for (let i = 1; i <= maxCount; i++) {
             let val = row[`Issue ${i}`];
-            let link = row[`Issue ${i}_Link`];
+            let link = row[`Issue ${i}_Link`] || row[`Issue ${i} Link`];
             let item = { val: val, link: link };
             
             if (val && val !== 'N/A' && val !== 'Clear' && val !== '-') {
@@ -942,44 +932,60 @@
         return html;
     }
 
+    // --- FIX FOR FILTER BUG: Now returns rawText properly for parsing ---
     function combineOpenSupportCLs(row, level, maxCount) {
         let openIds = [];
+        let rawIds = [];
         let closedArr = (level === 'L4') ? (globalConfig.testClosedStatuses || []) : (globalConfig.closedStatuses || []);
         for (let i = 1; i <= maxCount; i++) {
             const val = row[`${level} Support CL ${i}`];
+            const link = row[`${level} Support CL ${i}_Link`] || row[`${level} Support CL ${i} Link`];
             if (val && val !== 'N/A' && val !== 'Clear' && String(val).trim() !== '') {
                 const match = String(val).match(/(.+?)\s*\((.+)\)/);
+                let id = ""; let include = false;
                 if (match) {
                     if (!isStatusMatch(match[2], closedArr) && !String(match[2]).toLowerCase().includes('no cl')) {
-                        openIds.push(match[1].trim());
+                        id = match[1].trim(); include = true;
                     }
                 } else if (String(val).toLowerCase() !== 'no cl' && String(val).toLowerCase() !== 'unknown') {
-                    openIds.push(String(val).trim());
+                    id = String(val).trim(); include = true;
+                }
+                if (include) {
+                    let safeLink = String(link || '').trim();
+                    let idDisplay = (safeLink && safeLink !== 'undefined' && safeLink !== 'null' && safeLink !== '') ? `<a href="${safeLink}" target="_blank" class="chk-link">${id}</a>` : id;
+                    openIds.push(idDisplay);
+                    rawIds.push(id);
                 }
             }
         }
-        if (openIds.length === 0) return { display: "0", count: 0 };
-        return { display: openIds.join(', '), count: openIds.length };
+        if (openIds.length === 0) return { display: "-", rawText: "-", count: 0 };
+        return { display: openIds.join(', '), rawText: rawIds.join(', '), count: openIds.length };
     }
 
     function combineOpenIssues(row, maxCount) {
         let openIds = [];
+        let rawIds = [];
         let issueClosedArr = globalConfig.issueClosedStatuses || [];
         let gatingArr = globalConfig.gatingIssues || [];
         for (let i = 1; i <= maxCount; i++) {
             const val = row[`Issue ${i}`];
+            const link = row[`Issue ${i}_Link`] || row[`Issue ${i} Link`];
             if (val && val !== 'N/A' && val !== 'Clear' && String(val).trim() !== '') {
                 const match = String(val).match(/(.+?)\s*\((.+)\)/);
                 if (match) {
                     let status = match[2];
                     if (!isStatusMatch(status, issueClosedArr) && isStatusMatch(status, gatingArr)) {
-                        openIds.push(match[1].trim());
+                        let id = match[1].trim();
+                        let safeLink = String(link || '').trim();
+                        let idDisplay = (safeLink && safeLink !== 'undefined' && safeLink !== 'null' && safeLink !== '') ? `<a href="${safeLink}" target="_blank" class="chk-link">${id}</a>` : id;
+                        openIds.push(idDisplay);
+                        rawIds.push(id);
                     }
                 }
             }
         }
-        if (openIds.length === 0) return { display: "-", count: 0 };
-        return { display: openIds.join(', '), count: openIds.length };
+        if (openIds.length === 0) return { display: "-", rawText: "-", count: 0 };
+        return { display: openIds.join(', '), rawText: rawIds.join(', '), count: openIds.length };
     }
 
     const getGateVal = (val) => {
@@ -1019,6 +1025,12 @@
             const response = await fetch(API_URL, fetchOptions);
             const payload = await response.json(); 
             
+            if (payload.debug) {
+                console.warn("=== BACKEND DIAGNOSTICS ===");
+                payload.debug.forEach(msg => console.warn(msg));
+                console.warn("===========================");
+            }
+            
             if (payload.error) {
                 console.error("Backend Error:", payload.error);
                 document.getElementById('sync-status').innerText = 'Sync Error: Check Backend 🔴';
@@ -1033,7 +1045,6 @@
             
             if (globalConfig.customHeaders) {
                 document.getElementById('zone-title-display').innerText = globalConfig.customHeaders.zoneTitle || 'Zone 1';
-                
                 updateHeaderElement('area-title', globalConfig.customHeaders.areaPrefix, true);
                 updateHeaderElement('group-l2', globalConfig.customHeaders.l2Phase);
                 updateHeaderElement('l2-gate-title', globalConfig.customHeaders.l2Gate, true);
@@ -1062,7 +1073,6 @@
                         }
                     }
                 });
-                
                 for(let i=1; i<=200; i++) { 
                     let val = row[`Issue ${i}`];
                     if(val !== undefined && val !== null) {
@@ -1095,7 +1105,7 @@
             let gateL2 = globalConfig.showL2Gate !== false ? 100 : 0;
             let gateL3 = globalConfig.showL3Gate !== false ? 100 : 0;
             let gateL4 = globalConfig.showL4Gate !== false ? 100 : 0;
-            let summaryW = 190; 
+            let summaryW = 140; 
             
             document.getElementById('group-l2').style.flex = `0 0 ${gateL2 + summaryW}px`;
             document.getElementById('group-l3').style.flex = `0 0 ${gateL3 + summaryW}px`;
@@ -1118,7 +1128,6 @@
                 const assetLink = row['Asset_Link'];
                 
                 const assetDisplay = assetLink ? `<a href="${assetLink}" target="_blank" class="asset-link">${assetId}</a>` : assetId;
-                
                 const areaVal = row['Area'] || 'N/A';
                 
                 const l2Open = combineOpenSupportCLs(row, 'L2', globalConfig.maxCols.l2);
@@ -1126,7 +1135,6 @@
                 const l4Open = combineOpenSupportCLs(row, 'L4', globalConfig.maxCols.l4);
                 const issuesOpen = combineOpenIssues(row, globalConfig.maxCols.iss);
 
-                // --- BUILD INSTANT FILTER CACHE ---
                 let fVal0 = String(assetId).trim();
                 let fVal1 = String(areaVal).trim();
                 let fVal2 = getGateVal(row['L2 Gate CL 1']);
@@ -1135,22 +1143,15 @@
                 let fVal5 = String(row['L3 Overall Status'] || 'N/A').trim();
                 let fVal6 = getGateVal(row['L4 Gate CL 1']);
                 let fVal7 = String(row['L4 Overall Status'] || 'N/A').trim();
-                let fVal8 = String(issuesOpen.display).trim();
+                
+                // Uses the fixed rawText parameter to successfully register Issues for filtering
+                let fVal8 = String(issuesOpen.rawText).trim();
 
-                window.filterCache[0].add(fVal0);
-                window.filterCache[1].add(fVal1);
-                window.filterCache[2].add(fVal2);
-                window.filterCache[3].add(fVal3);
-                window.filterCache[4].add(fVal4);
-                window.filterCache[5].add(fVal5);
-                window.filterCache[6].add(fVal6);
-                window.filterCache[7].add(fVal7);
-                window.filterCache[8].add(fVal8);
+                window.filterCache[0].add(fVal0); window.filterCache[1].add(fVal1); window.filterCache[2].add(fVal2);
+                window.filterCache[3].add(fVal3); window.filterCache[4].add(fVal4); window.filterCache[5].add(fVal5);
+                window.filterCache[6].add(fVal6); window.filterCache[7].add(fVal7); window.filterCache[8].add(fVal8);
 
-                window.rowFilterData.push({
-                    0: fVal0, 1: fVal1, 2: fVal2, 3: fVal3, 4: fVal4, 5: fVal5, 6: fVal6, 7: fVal7, 8: fVal8
-                });
-                // ----------------------------------
+                window.rowFilterData.push({ 0: fVal0, 1: fVal1, 2: fVal2, 3: fVal3, 4: fVal4, 5: fVal5, 6: fVal6, 7: fVal7, 8: fVal8 });
                 
                 const rowHTML = `
                 <div class="cell-row">
@@ -1160,32 +1161,29 @@
                     </div>
                     <div class="phase-gap"></div>
                     
-                    ${renderStackedCell(row['L2 Gate CL 1'], 'gate-cell l2-gate-col', 'checklist', row['L2 Gate CL 1_Link'])}
-                    <div class="filter-target summary-cell l2-supp-summary divider-right" style="${getDynamicStyle(row['L2 Overall Status'], 'checklist', true)}" data-val="${row['L2 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l2Open.display}">${row['L2 Overall Status'] || 'N/A'}</div>
+                    ${renderStackedCell(row['L2 Gate CL 1'], 'gate-cell l2-gate-col', 'checklist', row['L2 Gate CL 1_Link'] || row['L2 Gate CL 1 Link'])}
+                    <div class="filter-target summary-cell l2-supp-summary divider-right" style="${getDynamicStyle(row['L2 Overall Status'], 'checklist', true)}" data-val="${row['L2 Overall Status'] || 'N/A'}">${row['L2 Overall Status'] || 'N/A'}</div>
                     ${renderSupportCells(row, 'L2', globalConfig.maxCols.l2)}
                     <div class="phase-gap"></div>
                     
-                    ${renderStackedCell(row['L3 Gate CL 1'], 'gate-cell l3-gate-col', 'checklist', row['L3 Gate CL 1_Link'])}
-                    <div class="filter-target summary-cell l3-supp-summary divider-right" style="${getDynamicStyle(row['L3 Overall Status'], 'checklist', true)}" data-val="${row['L3 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l3Open.display}">${row['L3 Overall Status'] || 'N/A'}</div>
+                    ${renderStackedCell(row['L3 Gate CL 1'], 'gate-cell l3-gate-col', 'checklist', row['L3 Gate CL 1_Link'] || row['L3 Gate CL 1 Link'])}
+                    <div class="filter-target summary-cell l3-supp-summary divider-right" style="${getDynamicStyle(row['L3 Overall Status'], 'checklist', true)}" data-val="${row['L3 Overall Status'] || 'N/A'}">${row['L3 Overall Status'] || 'N/A'}</div>
                     ${renderSupportCells(row, 'L3', globalConfig.maxCols.l3)}
                     <div class="phase-gap"></div>
                     
-                    ${renderStackedCell(row['L4 Gate CL 1'], 'gate-cell l4-gate-col', 'test', row['L4 Gate CL 1_Link'])}
-                    <div class="filter-target summary-cell l4-supp-summary divider-right" style="${getDynamicStyle(row['L4 Overall Status'], 'test', true)}" data-val="${row['L4 Overall Status'] || 'N/A'}" title="Open Support CLs: ${l4Open.display}">${row['L4 Overall Status'] || 'N/A'}</div>
+                    ${renderStackedCell(row['L4 Gate CL 1'], 'gate-cell l4-gate-col', 'test', row['L4 Gate CL 1_Link'] || row['L4 Gate CL 1 Link'])}
+                    <div class="filter-target summary-cell l4-supp-summary divider-right" style="${getDynamicStyle(row['L4 Overall Status'], 'test', true)}" data-val="${row['L4 Overall Status'] || 'N/A'}">${row['L4 Overall Status'] || 'N/A'}</div>
                     ${renderSupportCells(row, 'L4', globalConfig.maxCols.l4)}
                     <div class="phase-gap"></div>
                     
-                    <div class="filter-target summary-cell global-iss-summary divider-right" style="${getDynamicStyle(issuesOpen.count, 'issue', false)}" data-val="${issuesOpen.display}">${issuesOpen.display}</div>
+                    <div class="filter-target summary-cell global-iss-summary divider-right" style="${getDynamicStyle(issuesOpen.count, 'issue', false)}" data-val="${fVal8}">${issuesOpen.display}</div>
                     ${renderIssuesBlock(row, globalConfig.maxCols.iss)}
                 </div>`;
                 htmlChunks.push(rowHTML);
             });
             
             container.innerHTML = htmlChunks.join('');
-            
-            // Map the DOM rows globally so executeFilters can access them instantly
             window.rowNodes = Array.from(document.querySelectorAll('.cell-row'));
-
             document.getElementById('sync-status').innerText = 'Live Relational Sync Active 🟢';
             
             const overlay = document.getElementById('loading-overlay');
@@ -1207,31 +1205,24 @@
     function openSettingsModal() {
         document.getElementById('settings-modal').classList.add('active');
         document.getElementById('fallback-color-picker').value = globalConfig.fallbackColor || '#f5f5f5';
-
         if (globalConfig.customHeaders) {
             document.getElementById('cust-zone-title').value = globalConfig.customHeaders.zoneTitle || 'Zone 1';
             document.getElementById('cust-area-prefix').value = globalConfig.customHeaders.areaPrefix || 'Area';
-            
             document.getElementById('cust-l2-phase').value = globalConfig.customHeaders.l2Phase;
             document.getElementById('cust-l2-gate').value = globalConfig.customHeaders.l2Gate;
             document.getElementById('cust-l2-status').value = globalConfig.customHeaders.l2Status;
-            
             document.getElementById('cust-l3-phase').value = globalConfig.customHeaders.l3Phase;
             document.getElementById('cust-l3-gate').value = globalConfig.customHeaders.l3Gate;
             document.getElementById('cust-l3-status').value = globalConfig.customHeaders.l3Status;
-            
             document.getElementById('cust-l4-phase').value = globalConfig.customHeaders.l4Phase;
             document.getElementById('cust-l4-gate').value = globalConfig.customHeaders.l4Gate;
             document.getElementById('cust-l4-status').value = globalConfig.customHeaders.l4Status;
-            
             document.getElementById('cust-iss-phase').value = globalConfig.customHeaders.issPhase;
             document.getElementById('cust-iss-status').value = globalConfig.customHeaders.issStatus;
         }
-
         document.getElementById('show-l2-gate').checked = globalConfig.showL2Gate !== false;
         document.getElementById('show-l3-gate').checked = globalConfig.showL3Gate !== false;
         document.getElementById('show-l4-gate').checked = globalConfig.showL4Gate !== false;
-
         document.getElementById('show-l2-supp').checked = globalConfig.showL2Supp !== false;
         document.getElementById('show-l3-supp').checked = globalConfig.showL3Supp !== false;
         document.getElementById('show-l4-supp').checked = globalConfig.showL4Supp !== false;
@@ -1338,8 +1329,6 @@
 
         try {
             await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-            
-            // Reload the page to reflect all changes cleanly
             window.location.reload(); 
         } catch(e) {
             console.error("Save failed", e); alert("Failed to save to Google Sheets.");
@@ -1369,7 +1358,7 @@
             let isSuppShown = globalConfig[`show${level.toUpperCase()}Supp`] !== false;
 
             let gateWidth = isGateShown ? 100 : 0;
-            let summaryWidth = 190;
+            let summaryWidth = 140;
             let baseWidth = gateWidth + summaryWidth;
             let exactWidth = (state && isSuppShown) ? (baseWidth + (maxCols * 100)) : baseWidth;
             
@@ -1399,7 +1388,7 @@
                 btn.style.background = state ? "#b71c1c" : "#4caf50";
             }
 
-            let summaryWidth = 190;
+            let summaryWidth = 140;
             let maxIss = globalConfig.maxCols.iss || 0;
             let exactIssWidth = state ? (summaryWidth + (maxIss * 100)) : summaryWidth;
             
@@ -1432,7 +1421,6 @@
 
         dropdown.style.top = dropTop + 'px'; dropdown.style.left = dropLeft + 'px';
         
-        // Setup dropdown structure with a loading text placeholder
         dropdown.innerHTML = `
             <input type="text" id="filter-search" class="filter-search-input" placeholder="Search values..." autocomplete="off">
             <label style="font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:8px; margin-bottom:8px; cursor:pointer; display:block;">
@@ -1449,20 +1437,17 @@
         currentDropdown = dropdown;
         
         // --- ASYNCHRONOUS RENDERING (Unfreezes the mouse) ---
-        // We use setTimeout to yield the main thread so the dropdown outline renders instantly
         setTimeout(() => {
             const valContainer = dropdown.querySelector('#val-container');
             
-            // Build the HTML strictly as a string array for maximum browser efficiency
             let valHTML = [];
             Array.from(uniqueValues).sort().forEach(val => { 
                 const isChecked = activeFilters[colIndex] ? activeFilters[colIndex].has(val) : true; 
-                const safeVal = val.replace(/"/g, '&quot;');
+                const safeVal = val.replace(/"/g, '"');
                 valHTML.push(`<label class="filter-val-label" style="display:block; margin-bottom: 6px; cursor: pointer;"><input type="checkbox" value="${safeVal}" style="margin-right:8px; cursor:pointer;" ${isChecked ? 'checked' : ''}><span class="val-text">${val || '(Blank)'}</span></label>`); 
             });
             valContainer.innerHTML = valHTML.join('');
             
-            // Swap out loading state
             dropdown.querySelector('#filter-loading').style.display = 'none';
             valContainer.style.display = 'block';
             
@@ -1471,11 +1456,11 @@
             
             if (activeFilters[colIndex] && activeFilters[colIndex].size < uniqueValues.size) selectAllCb.checked = false;
             
-            // --- EVENT DELEGATION (Attaches 1 listener instead of 1000) ---
+            // --- EVENT DELEGATION ---
             searchInput.addEventListener('input', (e) => { 
                 const term = e.target.value.toLowerCase(); 
                 let vis = 0, chkVis = 0; 
-                valContainer.style.display = 'none'; // Prevent layout thrashing
+                valContainer.style.display = 'none'; 
                 const labels = valContainer.children;
                 for(let i=0; i<labels.length; i++) {
                     let lbl = labels[i];
@@ -1487,7 +1472,7 @@
                         lbl.style.display = 'none'; 
                     }
                 }
-                valContainer.style.display = 'block'; // Restore visibility
+                valContainer.style.display = 'block'; 
                 selectAllCb.checked = (vis > 0 && vis === chkVis); 
             });
             
@@ -1524,7 +1509,6 @@
     window.applyFilter = function(colIndex) {
         if (!currentDropdown) return; 
         
-        // Grab values directly using querySelectorAll on the checkboxes
         const valCbs = currentDropdown.querySelectorAll('#val-container input[type="checkbox"]'); 
         const selected = new Set(); 
         valCbs.forEach(cb => { if (cb.checked) selected.add(cb.value); });
@@ -1545,7 +1529,7 @@
         }
         
         closeFilterMenu(); 
-        // Execute the heavy DOM hiding asynchronously to keep mouse unfrozen
+        // INSTANT DOM REFLOW BYPASS
         setTimeout(executeFilters, 10);
     };
     
@@ -1575,20 +1559,22 @@
     function executeFilters() {
         if (!window.rowNodes || window.rowNodes.length === 0) return;
         
-        // --- ⚡ INSTANT MEMORY CACHE LOOKUP ---
+        const container = document.getElementById('tracker-rows');
+        container.style.display = 'none'; // DETACH TO PREVENT LAG
+        
         for (let i = 0; i < window.rowFilterData.length; i++) {
             let rData = window.rowFilterData[i];
             let isVisible = true;
-            
             for (let col in activeFilters) { 
                 if (!activeFilters[col].has(rData[col])) { 
-                    isVisible = false; 
-                    break; 
+                    isVisible = false; break; 
                 } 
             } 
-            
             window.rowNodes[i].style.display = isVisible ? 'flex' : 'none'; 
         }
+        
+        container.style.display = 'block'; // REATTACH
+        
         if (typeof performGlobalSearch === 'function') performGlobalSearch();
     }
     
@@ -1605,7 +1591,6 @@
             if (opt.id === 'l2-gate' && globalConfig.showL2Gate === false) return;
             if (opt.id === 'l3-gate' && globalConfig.showL3Gate === false) return;
             if (opt.id === 'l4-gate' && globalConfig.showL4Gate === false) return;
-            
             if ((opt.id === 'l2-open' || opt.id === 'l2-closed') && globalConfig.showL2Supp === false) return;
             if ((opt.id === 'l3-open' || opt.id === 'l3-closed') && globalConfig.showL3Supp === false) return;
             if ((opt.id === 'l4-open' || opt.id === 'l4-closed') && globalConfig.showL4Supp === false) return;
@@ -1654,7 +1639,7 @@
                     let isClosed = isStatusMatch(status, closedArr);
                     
                     let safeLink = String(link || '').trim();
-                    let idDisplay = (safeLink && safeLink !== 'undefined' && safeLink !== 'null') ? `<a href="${safeLink}" target="_blank">${id}</a>` : id;
+                    let idDisplay = (safeLink && safeLink !== 'undefined' && safeLink !== 'null' && safeLink !== '') ? `<a href="${safeLink}" target="_blank">${id}</a>` : id;
 
                     if (state === 'open' && isOpen) items.push(idDisplay);
                     if (state === 'closed' && isClosed) items.push(idDisplay);
@@ -1685,7 +1670,7 @@
                     let isGating = isStatusMatch(status, gatingArr);
                     
                     let safeLink = String(link || '').trim();
-                    let idDisplay = (safeLink && safeLink !== 'undefined' && safeLink !== 'null') ? `<a href="${safeLink}" target="_blank">${id}</a>` : id;
+                    let idDisplay = (safeLink && safeLink !== 'undefined' && safeLink !== 'null' && safeLink !== '') ? `<a href="${safeLink}" target="_blank">${id}</a>` : id;
 
                     if (type === 'open-gate' && isOpen && isGating) items.push(idDisplay);
                     if (type === 'open-non' && isOpen && !isGating) items.push(idDisplay);
@@ -1782,10 +1767,12 @@
                         cellHtml = extractStackedCellForPdf(cell);
                     } else if (opt.type === 'status') {
                         let cell = row.querySelector(`.${opt.level}-supp-summary`);
-                        cellHtml = extractSummaryCellForPdf(cell);
+                        let val = cell ? cell.innerHTML : '-'; 
+                        cellHtml = `<td class="shrink-list">${val}</td>`;
                     } else if (opt.type === 'iss-count') {
                         let cell = row.querySelector(`.global-iss-summary`);
-                        cellHtml = extractSummaryCellForPdf(cell);
+                        let val = cell ? cell.innerHTML : '-'; 
+                        cellHtml = `<td class="shrink-list">${val}</td>`;
                     } else if (opt.type === 'supp-open') {
                         let val = getGroupedSuppPdf(row, opt.level, 'open');
                         cellHtml = `<td class="shrink-list">${val}</td>`;
@@ -1809,7 +1796,6 @@
         printWin.document.close();
         printWin.focus();
         
-        // Wait for the window to render the styles, trigger print, and safely close only after print dialog resolves
         setTimeout(() => { 
             printWin.onafterprint = function() { printWin.close(); };
             printWin.print(); 
@@ -1832,12 +1818,6 @@
             let display = aTag ? `<a href="${aTag.href}" target="_blank">${text}</a>` : text;
             return `<td class="uncolored-cell">${display}</td>`;
         }
-    }
-
-    function extractSummaryCellForPdf(cell) {
-        if (!cell) return '<td>-</td>';
-        let val = cell.innerText.trim();
-        return `<td class="shrink-list">${val}</td>`;
     }
 </script>
 </body>
