@@ -110,7 +110,7 @@
         }
 
         /* GLOBALLY CENTERS ALL SUBHEADERS */
-        .header-cell {
+        .header-cell, .asset-part-header, .area-part-header {
             border-right: 2px solid #78909c !important;
             display: flex; justify-content: center; align-items: center; text-align: center; font-size: 11px; font-weight: bold; text-transform: uppercase; padding: 0 6px;
         }
@@ -137,7 +137,9 @@
         .frozen-combined {
             flex-direction: row;
             padding: 0 !important;
+            border-right: none !important;
         }
+        
         .asset-part, .asset-part-header {
             width: var(--asset-col-width);
             min-width: var(--asset-col-width);
@@ -148,6 +150,7 @@
             border-right: 2px solid #78909c;
             overflow: hidden;
         }
+        
         .area-part, .area-part-header {
             width: var(--area-col-width);
             min-width: var(--area-col-width);
@@ -155,7 +158,13 @@
             display: flex;
             align-items: center;
             padding: 0 6px;
+            border-right: 2px solid #78909c;
             overflow: hidden;
+        }
+        
+        /* DEFAULT AREA TEXT COLOR (REPLACES INLINE STYLE) */
+        .area-part-header .title-wrap {
+            color: #a5d6a7; 
         }
         
         /* CENTERS THE ASSET AND AREA SUBHEADERS */
@@ -172,8 +181,8 @@
         .cell-row .area-part { justify-content: center; text-align: center; font-size: 12px; color: #555; font-weight: bold; }
 
         .frozen-group-bar .frozen-combined { background-color: #1b5e20; border-right: 1px solid #0d3b10 !important; justify-content: center; align-items: center;}
-        .frozen-col-bar .frozen-combined { background-color: #2e7d32; border-right: 2px solid #1b5e20 !important; }
-        .cell-row .frozen-combined { background-color: #e8eaed !important; border-right: 2px solid #78909c !important; }
+        .frozen-col-bar .frozen-combined { background-color: #2e7d32; border-right: none !important; }
+        .cell-row .frozen-combined { background-color: #e8eaed !important; border-right: none !important; }
 
         /* GLOBALLY CENTERS ALL WRAPPERS */
         .title-wrap { display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; width: 100%; justify-content: center; text-align: center; }
@@ -265,11 +274,28 @@
         /* --- SEARCH FILTER ARCHITECTURE --- */
         .filter-icon { cursor: pointer; font-size: 10px; color: #a5d6a7; padding: 2px; }
         .filter-icon.active { color: #ffeb3b; }
-        .header-cell.is-filtered { background-color: #fff9c4 !important; color: #f57f17 !important; }
-        .header-cell.is-filtered .filter-icon { color: #f57f17 !important; }
+        
+        /* INDEPENDENT FILTER HIGHLIGHTING */
+        .header-cell.is-filtered,
+        .asset-part-header.is-filtered,
+        .area-part-header.is-filtered { 
+            background-color: #fff9c4 !important; 
+            color: #f57f17 !important; 
+        }
+        
+        .header-cell.is-filtered .filter-icon,
+        .asset-part-header.is-filtered .filter-icon,
+        .area-part-header.is-filtered .filter-icon { 
+            color: #f57f17 !important; 
+        }
+        
+        /* OVERRIDES DEFAULT AREA COLOR WHEN FILTERED */
+        .area-part-header.is-filtered .title-wrap {
+            color: #f57f17 !important;
+        }
+
         .filter-dropdown { position: absolute; background: white; border: 1px solid #ccc; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 10px; z-index: 2000; border-radius: 4px; color: #333; font-size: 13px; min-width: 180px; max-height: 350px; display: flex; flex-direction: column; }
         .filter-search-input { width: 100%; padding: 6px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px; }
-        .filter-dropdown label { display: block; margin-bottom: 6px; cursor: pointer; }
         .filter-actions { margin-top: 10px; display: flex; justify-content: space-between; border-top: 1px solid #eee; padding-top: 10px; }
         .filter-btn { background: #2e7d32; color: white; border: none; padding: 6px 10px; cursor: pointer; border-radius: 4px; font-weight: bold; flex: 1; margin-left: 5px;}
         .filter-btn.clear { background: #f5f5f5; color: #333; border: 1px solid #ccc; margin-left: 0; margin-right: 5px;}
@@ -301,7 +327,7 @@
             }
             .cell-row .asset-part { justify-content: flex-start; text-align: left; }
             .cell-row .area-part { justify-content: flex-start; text-align: left; font-size: 10px; }
-            .frozen-col-bar .area-part-header { margin-top: 2px; color: #a5d6a7; font-size: 10px; }
+            .frozen-col-bar .area-part-header { margin-top: 2px; font-size: 10px; }
         }
     </style>
 </head>
