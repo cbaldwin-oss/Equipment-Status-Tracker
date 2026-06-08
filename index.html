@@ -100,10 +100,10 @@
         }
 
         .summary-cell { 
-            flex: 0 0 140px !important; 
-            width: 140px !important; 
-            min-width: 140px !important; 
-            max-width: 140px !important;
+            flex: 0 0 190px !important; 
+            width: 190px !important; 
+            min-width: 190px !important; 
+            max-width: 190px !important;
             border-right: 2px solid #78909c !important; 
             overflow: hidden; 
             padding: 0;
@@ -1105,7 +1105,7 @@
             let gateL2 = globalConfig.showL2Gate !== false ? 100 : 0;
             let gateL3 = globalConfig.showL3Gate !== false ? 100 : 0;
             let gateL4 = globalConfig.showL4Gate !== false ? 100 : 0;
-            let summaryW = 140; 
+            let summaryW = 190; 
             
             document.getElementById('group-l2').style.flex = `0 0 ${gateL2 + summaryW}px`;
             document.getElementById('group-l3').style.flex = `0 0 ${gateL3 + summaryW}px`;
@@ -1358,7 +1358,7 @@
             let isSuppShown = globalConfig[`show${level.toUpperCase()}Supp`] !== false;
 
             let gateWidth = isGateShown ? 100 : 0;
-            let summaryWidth = 140;
+            let summaryWidth = 190;
             let baseWidth = gateWidth + summaryWidth;
             let exactWidth = (state && isSuppShown) ? (baseWidth + (maxCols * 100)) : baseWidth;
             
@@ -1388,7 +1388,7 @@
                 btn.style.background = state ? "#b71c1c" : "#4caf50";
             }
 
-            let summaryWidth = 140;
+            let summaryWidth = 190;
             let maxIss = globalConfig.maxCols.iss || 0;
             let exactIssWidth = state ? (summaryWidth + (maxIss * 100)) : summaryWidth;
             
