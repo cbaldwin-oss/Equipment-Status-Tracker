@@ -13,7 +13,7 @@
         :root {
             /* --- Desktop Side-by-Side Widths --- */
             --asset-col-width: 150px;  
-            --area-col-width: 110px; /* <--- Easily adjust Area column width here */
+            --area-col-width: 70px; /* <--- Easily adjust Area column width here */
             --frozen-total-width: calc(var(--asset-col-width) + var(--area-col-width));
         }
 
@@ -312,8 +312,8 @@
         <div class="gear-big">⚙️</div>
         <div class="gear-small">⚙️</div>
     </div>
-    <div class="loading-status" id="loading-status-text">Fetching Relational Data...</div>
-    <div class="loading-subtext">Connecting to Google Sheets Backend</div>
+    <div class="loading-status" id="loading-status-text">Fetching Equipment Data...</div>
+    <div class="loading-subtext">Connecting to Database</div>
 </div>
 
 <div class="header">
@@ -328,7 +328,7 @@
 <div id="app-body">
     <div class="subheader">
         <div class="subheader-left">
-            <div style="font-weight: bold; color: #555; white-space: nowrap;"><span id="zone-title-display">Zone 1</span> • Relational Asset Status Tracker</div>
+            <div style="font-weight: bold; color: #555; white-space: nowrap;"><span id="zone-title-display">Site</span> • Equipment Status Tracker</div>
             <div class="global-search-wrapper">
                 <span style="padding-left: 8px; color: #999;">🔍</span>
                 <input type="text" id="global-search-input" placeholder="Find instance..." oninput="performGlobalSearch()">
@@ -733,7 +733,6 @@
         { id: 'l4-status', label: 'L4 Overall Status', type: 'status', level: 'l4' },
         { id: 'l4-open', label: 'Open L4 Tests', type: 'supp-open', level: 'l4' },
         { id: 'l4-closed', label: 'Completed L4 Tests', type: 'supp-closed', level: 'l4' },
-        { id: 'iss-status', label: 'Open Issues Count', type: 'iss-count' },
         { id: 'iss-open-gate', label: 'Open Gating Issues', type: 'iss-group', group: 'open-gate' },
         { id: 'iss-open-non', label: 'Open Non-Gating Issues', type: 'iss-group', group: 'open-non' },
         { id: 'iss-closed-gate', label: 'Closed Gating Issues', type: 'iss-group', group: 'closed-gate' },
@@ -1184,7 +1183,7 @@
             
             container.innerHTML = htmlChunks.join('');
             window.rowNodes = Array.from(document.querySelectorAll('.cell-row'));
-            document.getElementById('sync-status').innerText = 'Live Relational Sync Active 🟢';
+            document.getElementById('sync-status').innerText = 'Live Sync Active 🟢';
             
             const overlay = document.getElementById('loading-overlay');
             overlay.style.opacity = '0';
@@ -1596,14 +1595,14 @@
             if ((opt.id === 'l4-open' || opt.id === 'l4-closed') && globalConfig.showL4Supp === false) return;
 
             let displayLabel = opt.label;
-            if(opt.id === 'asset') displayLabel = 'Asset Details';
+            if(opt.id === 'asset') displayLabel = 'Assets';
             if(opt.id === 'area') displayLabel = globalConfig.customHeaders.areaPrefix || 'Area';
-            if(opt.id === 'l2-gate') displayLabel = 'L2 ' + globalConfig.customHeaders.l2Gate;
-            if(opt.id === 'l2-status') displayLabel = 'L2 ' + globalConfig.customHeaders.l2Status;
-            if(opt.id === 'l3-gate') displayLabel = 'L3 ' + globalConfig.customHeaders.l3Gate;
-            if(opt.id === 'l3-status') displayLabel = 'L3 ' + globalConfig.customHeaders.l3Status;
-            if(opt.id === 'l4-gate') displayLabel = 'L4 ' + globalConfig.customHeaders.l4Gate;
-            if(opt.id === 'l4-status') displayLabel = 'L4 ' + globalConfig.customHeaders.l4Status;
+            if(opt.id === 'l2-gate') displayLabel = '' + globalConfig.customHeaders.l2Gate;
+            if(opt.id === 'l2-status') displayLabel = '' + globalConfig.customHeaders.l2Status;
+            if(opt.id === 'l3-gate') displayLabel = '' + globalConfig.customHeaders.l3Gate;
+            if(opt.id === 'l3-status') displayLabel = '' + globalConfig.customHeaders.l3Status;
+            if(opt.id === 'l4-gate') displayLabel = '' + globalConfig.customHeaders.l4Gate;
+            if(opt.id === 'l4-status') displayLabel = '' + globalConfig.customHeaders.l4Status;
             if(opt.id === 'iss-status') displayLabel = globalConfig.customHeaders.issStatus;
             
             html += `<label class="checkbox-row"><input type="checkbox" class="pdf-col-cb" value="${index}" checked> ${displayLabel}</label>`;
@@ -1719,7 +1718,7 @@
                 ${logo1 && !logo1.includes('empty') ? `<img class="logo" src="${logo1}" alt="Logo 1" />` : ''}
             </div>
             <div style="flex: 2;">
-                <h2>${zTitle} • Relational Asset Status Tracker Export</h2>
+                <h2>${zTitle} • Equipment Status Tracker Export</h2>
             </div>
             <div style="flex: 1; text-align: right;">
                 ${logo2 && !logo2.includes('empty') ? `<img class="logo" src="${logo2}" alt="Logo 2" />` : ''}
