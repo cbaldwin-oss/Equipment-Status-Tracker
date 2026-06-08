@@ -6,10 +6,18 @@
     <title>Equipment Status Tracker</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
     <style>
-        /* --- EASY SIZING CONFIGURATION --- */
+        /* --- DYNAMIC SIZING CONFIGURATION --- */
         :root {
-            /* Combined Asset and Area into one frozen column for iPad optimization */
-            --frozen-total-width: 180px;
+            /* Desktop Default */
+            --frozen-total-width: 260px; 
+            --asset-part-width: 150px;
+        }
+
+        @media (max-width: 1024px) {
+            :root {
+                /* iPad / Mobile Stacked Default */
+                --frozen-total-width: 160px;
+            }
         }
 
         /* --- BASE STYLES --- */
@@ -50,8 +58,7 @@
         .search-nav-btn:hover { background: #e0e0e0; }
         
         .cell-row.highlight-search { background-color: #fffde7 !important; outline: 2px solid #fbc02d; outline-offset: -2px; z-index: 9; position: relative; }
-        .cell-row.highlight-search .group-asset-details { background-color: #fff9c4 !important; }
-        .cell-row.highlight-search .asset-part { color: #d32f2f !important; }
+        .cell-row.highlight-search .frozen-combined { background-color: #fff9c4 !important; }
         .highlight-cell { box-shadow: inset 0 0 0 4px #d32f2f, inset 0 0 15px rgba(211,47,47,0.2) !important; z-index: 50 !important; position: relative; }
 
         .pdf-btn { background: #2e7d32; color: white; border: 1px solid #1b5e20; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s; }
@@ -109,8 +116,9 @@
             transition: all 0.2s ease;
         } 
 
-        /* --- STACKED ASSET / AREA FROZEN COLUMN --- */
-        .group-asset-details { 
+        /* --- DYNAMIC ASSET / AREA FROZEN COLUMN --- */
+        .frozen-combined { 
+            display: flex;
             flex: 0 0 var(--frozen-total-width) !important; 
             width: var(--frozen-total-width) !important; 
             min-width: var(--frozen-total-width) !important; 
@@ -120,41 +128,34 @@
             z-index: 12; 
         }
 
-        .frozen-group-bar .group-asset-details {
-            background-color: #1b5e20; 
-            border-right: 1px solid #0d3b10 !important;
-            justify-content: center;
+        /* Default Desktop: Side-by-Side */
+        .frozen-combined {
+            flex-direction: row;
+            padding: 0 !important;
         }
+        .asset-part, .asset-part-header {
+            width: var(--asset-part-width);
+            min-width: var(--asset-part-width);
+            display: flex;
+            align-items: center;
+            padding: 0 6px;
+            border-right: 2px solid #78909c;
+            overflow: hidden;
+        }
+        .area-part, .area-part-header {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding: 0 6px;
+            overflow: hidden;
+        }
+        .asset-part-header, .area-part-header { justify-content: space-between; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .cell-row .asset-part { justify-content: center; text-align: center; font-weight: bold; font-size: 13px; color: #333; }
+        .cell-row .area-part { justify-content: center; text-align: center; font-size: 12px; color: #555; font-weight: bold; }
 
-        .frozen-col-bar .group-asset-details {
-            background-color: #2e7d32; 
-            border-right: 2px solid #1b5e20 !important;
-            flex-direction: column;
-            align-items: stretch;
-            justify-content: center;
-            padding: 4px 8px;
-            gap: 2px;
-        }
-
-        .cell-row .group-asset-details {
-            background-color: #e8eaed !important; 
-            border-right: 2px solid #78909c !important; 
-            display: flex !important; 
-            flex-direction: column;
-            justify-content: center;
-            padding: 6px 8px;
-            gap: 4px;
-        }
-
-        .asset-part {
-            font-weight: bold; font-size: 13px; color: #333;
-            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%;
-        }
-        
-        .area-part {
-            font-weight: bold; font-size: 10px; color: #777;
-            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%;
-        }
+        .frozen-group-bar .frozen-combined { background-color: #1b5e20; border-right: 1px solid #0d3b10 !important; justify-content: center; align-items: center;}
+        .frozen-col-bar .frozen-combined { background-color: #2e7d32; border-right: 2px solid #1b5e20 !important; }
+        .cell-row .frozen-combined { background-color: #e8eaed !important; border-right: 2px solid #78909c !important; }
 
         .title-wrap { display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; width: 100%; justify-content: space-between; }
         
@@ -255,7 +256,7 @@
         .filter-btn { background: #2e7d32; color: white; border: none; padding: 6px 10px; cursor: pointer; border-radius: 4px; font-weight: bold; flex: 1; margin-left: 5px;}
         .filter-btn.clear { background: #f5f5f5; color: #333; border: 1px solid #ccc; margin-left: 0; margin-right: 5px;}
 
-        /* --- MEDIA QUERIES FOR IPAD / TABLET --- */
+        /* --- MEDIA QUERIES FOR IPAD / TABLET DYNAMIC RESPONSIVENESS --- */
         @media (max-width: 1024px) {
             .header { height: 75px; padding: 0 15px; }
             .app-logo { height: 50px; }
@@ -264,6 +265,24 @@
             .global-search-wrapper { margin-left: 0; margin-top: 5px; width: 100%; }
             .global-search-wrapper input { flex: 1; }
             .btn, .pdf-btn, .clear-filters-btn, .setup-btn { padding: 6px 10px; font-size: 12px; }
+            
+            /* Dynamically Stack the Asset and Area columns on iPad */
+            .frozen-combined {
+                flex-direction: column !important;
+                justify-content: center !important;
+                padding: 4px 8px !important;
+                gap: 4px;
+            }
+            .asset-part, .asset-part-header, .area-part, .area-part-header {
+                width: 100% !important;
+                min-width: 100% !important;
+                border-right: none !important;
+                padding: 0 !important;
+                height: auto !important;
+            }
+            .cell-row .asset-part { justify-content: flex-start; text-align: left; }
+            .cell-row .area-part { justify-content: flex-start; text-align: left; font-size: 10px; }
+            .frozen-col-bar .area-part-header { margin-top: 2px; color: #a5d6a7; font-size: 10px; }
         }
     </style>
 </head>
@@ -315,7 +334,7 @@
     <div class="tracker-container">
         <div class="tracker-header-wrapper">
             <div class="frozen-group-bar">
-                <div class="header-cell group-asset-details" style="justify-content: center;">Asset Details</div>
+                <div class="header-cell frozen-combined">Asset Details</div>
                 <div class="phase-gap"></div>
                 <div class="header-cell group-header" id="group-l2">L2 Verification</div>
                 <div class="phase-gap"></div>
@@ -328,12 +347,12 @@
             
             <div class="frozen-col-bar" id="main-column-headers">
                 
-                <div class="header-cell group-asset-details">
-                    <div class="title-wrap">
+                <div class="header-cell frozen-combined">
+                    <div class="asset-part-header">
                         <span class="col-title" data-original="Asset">Asset</span> 
                         <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span>
                     </div>
-                    <div class="title-wrap" style="color: #a5d6a7; font-size: 10px; margin-top: 2px;">
+                    <div class="area-part-header">
                         <span class="col-title" id="area-title" data-original="Area">Area</span> 
                         <span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span>
                     </div>
@@ -597,6 +616,7 @@
                 let matchFound = false;
                 let matchedCells = [];
                 
+                // Deep scan using [data-val] so we grab EVERY cell, including the dynamically hidden ones.
                 row.querySelectorAll('[data-val]').forEach(cell => {
                     let cellVal = cell.dataset.val ? String(cell.dataset.val).toLowerCase() : '';
                     let cellText = cell.textContent ? String(cell.textContent).toLowerCase() : '';
@@ -618,6 +638,7 @@
             }
         });
 
+        // Automatically expand any hidden column that contains a search match
         columnsToExpand.forEach(col => {
             if (col === 'iss') {
                 if (!expandedStates.iss) window.toggleGlobalIssues();
@@ -628,6 +649,7 @@
 
         if (searchMatches.length > 0) {
             currentSearchIndex = 0;
+            // Delay UI update slightly so expansion has time to apply CSS before scrolling
             setTimeout(updateSearchUI, 100); 
         } else {
             counter.innerText = '0/0';
