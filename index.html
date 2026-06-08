@@ -106,10 +106,9 @@
             padding: 0;
         }
 
-        /* GLOBALLY CENTERS ALL SUBHEADERS */
         .header-cell {
             border-right: 2px solid #78909c !important;
-            display: flex; justify-content: center; align-items: center; text-align: center; font-size: 11px; font-weight: bold; text-transform: uppercase; padding: 0 6px;
+            display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: bold; text-transform: uppercase; padding: 0 6px;
         }
 
         .group-header, .group-issues { 
@@ -157,12 +156,11 @@
         
         /* CENTERS THE ASSET AND AREA SUBHEADERS */
         .asset-part-header, .area-part-header { 
-            justify-content: center !important; 
+            justify-content: center; 
             gap: 6px; 
             font-size: 11px; 
             font-weight: bold; 
             text-transform: uppercase; 
-            text-align: center;
         }
         
         .cell-row .asset-part { justify-content: center; text-align: center; font-weight: bold; font-size: 13px; color: #333; }
@@ -172,8 +170,7 @@
         .frozen-col-bar .frozen-combined { background-color: #2e7d32; border-right: 2px solid #1b5e20 !important; }
         .cell-row .frozen-combined { background-color: #e8eaed !important; border-right: 2px solid #78909c !important; }
 
-        /* GLOBALLY CENTERS ALL WRAPPERS */
-        .title-wrap { display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; width: 100%; justify-content: center; text-align: center; }
+        .title-wrap { display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; width: 100%; justify-content: space-between; }
         
         .phase-gap { 
             flex: 0 0 24px !important; 
@@ -342,8 +339,8 @@
             <button onclick="clearAllFilters()" class="clear-filters-btn">
                 <span style="font-size: 14px;">🧹</span> Remove Filters
             </button>
-            <button onclick="openExportModal()" class="pdf-btn">
-                <span style="font-size: 14px;">📊</span> Export CSV
+            <button onclick="openPdfModal()" class="pdf-btn">
+                <span style="font-size: 14px;">📄</span> Export PDF
             </button>
         </div>
     </div>
@@ -366,16 +363,12 @@
                 
                 <div class="header-cell frozen-combined">
                     <div class="asset-part-header">
-                        <div class="title-wrap">
-                            <span class="col-title" data-original="Asset">Asset</span> 
-                            <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span>
-                        </div>
+                        <span class="col-title" data-original="Asset">Asset</span> 
+                        <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span>
                     </div>
                     <div class="area-part-header">
-                        <div class="title-wrap" style="color: #a5d6a7;">
-                            <span class="col-title" id="area-title" data-original="Area">Area</span> 
-                            <span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span>
-                        </div>
+                        <span class="col-title" id="area-title" data-original="Area">Area</span> 
+                        <span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span>
                     </div>
                 </div>
 
@@ -416,20 +409,20 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="export-modal">
+<div class="modal-overlay" id="pdf-modal">
     <div class="modal-box" style="width: 450px;">
         <div class="modal-header">
-            <h2>Export to CSV</h2>
-            <button class="close-btn" onclick="closeExportModal()">×</button>
+            <h2>Export to PDF</h2>
+            <button class="close-btn" onclick="closePdfModal()">×</button>
         </div>
         <div class="modal-body">
-            <h3 style="margin-top: 0; color: #555; font-size: 14px; border-bottom: 2px solid #eee; padding-bottom: 8px;">Select columns to include in CSV:</h3>
-            <div id="export-column-list" style="display: flex; flex-direction: column; gap: 8px;">
+            <h3 style="margin-top: 0; color: #555; font-size: 14px; border-bottom: 2px solid #eee; padding-bottom: 8px;">Select columns to include in PDF:</h3>
+            <div id="pdf-column-list" style="display: flex; flex-direction: column; gap: 8px;">
                 </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-cancel" onclick="closeExportModal()">Cancel</button>
-            <button class="btn btn-save" onclick="generateCSV()">Generate & Download CSV</button>
+            <button class="btn btn-cancel" onclick="closePdfModal()">Cancel</button>
+            <button class="btn btn-save" onclick="generatePDF()">Generate & Print PDF</button>
         </div>
     </div>
 </div>
@@ -707,8 +700,8 @@
         }
     }
 
-    // --- EXPORT CONFIGURATION ARRAY ---
-    window.EXPORT_OPTIONS = [
+    // --- PDF CONFIGURATION ARRAY ---
+    window.PDF_OPTIONS = [
         { id: 'asset', label: 'Assets', type: 'asset' },
         { id: 'area', label: 'Area', type: 'area' },
         { id: 'l2-gate', label: 'L2 Gate CL', type: 'gate', level: 'l2' },
@@ -1438,13 +1431,13 @@
     function closeFilterMenu() { if (currentDropdown) { document.body.removeChild(currentDropdown); currentDropdown = null; } }
     document.addEventListener('click', (e) => { if (currentDropdown && !currentDropdown.contains(e.target) && !e.target.classList.contains('filter-icon')) closeFilterMenu(); });
 
-    // --- CSV EXPORT LOGIC (WITH WORKING HYPERLINKS) ---
-    window.openExportModal = function() {
-        const listContainer = document.getElementById('export-column-list');
-        listContainer.innerHTML = '<label class="checkbox-row" style="border-bottom: 1px solid #ccc; padding-bottom: 8px; margin-bottom: 8px;"><input type="checkbox" id="export-select-all" checked onchange="toggleAllExportCols(this)"> Select All</label>';
+    // --- SMART EXPORT ENGINE LOGIC ---
+    window.openPdfModal = function() {
+        const listContainer = document.getElementById('pdf-column-list');
+        listContainer.innerHTML = '<label class="checkbox-row" style="border-bottom: 1px solid #ccc; padding-bottom: 8px; margin-bottom: 8px;"><input type="checkbox" id="pdf-select-all" checked onchange="toggleAllPdfCols(this)"> Select All</label>';
         
         let html = '<div style="display: flex; flex-direction: column; gap: 8px;">';
-        window.EXPORT_OPTIONS.forEach((opt, index) => {
+        window.PDF_OPTIONS.forEach((opt, index) => {
             if (opt.id === 'l2-gate' && globalConfig.showL2Gate === false) return;
             if (opt.id === 'l3-gate' && globalConfig.showL3Gate === false) return;
             if (opt.id === 'l4-gate' && globalConfig.showL4Gate === false) return;
@@ -1464,22 +1457,22 @@
             if(opt.id === 'l4-status') displayLabel = 'L4 ' + globalConfig.customHeaders.l4Status;
             if(opt.id === 'iss-status') displayLabel = globalConfig.customHeaders.issStatus;
             
-            html += `<label class="checkbox-row"><input type="checkbox" class="export-col-cb" value="${index}" checked> ${displayLabel}</label>`;
+            html += `<label class="checkbox-row"><input type="checkbox" class="pdf-col-cb" value="${index}" checked> ${displayLabel}</label>`;
         });
         html += '</div>';
         listContainer.innerHTML += html;
-        document.getElementById('export-modal').classList.add('active');
+        document.getElementById('pdf-modal').classList.add('active');
     };
 
-    window.closeExportModal = function() {
-        document.getElementById('export-modal').classList.remove('active');
+    window.closePdfModal = function() {
+        document.getElementById('pdf-modal').classList.remove('active');
     };
 
-    window.toggleAllExportCols = function(source) {
-        document.querySelectorAll('.export-col-cb').forEach(cb => cb.checked = source.checked);
+    window.toggleAllPdfCols = function(source) {
+        document.querySelectorAll('.pdf-col-cb').forEach(cb => cb.checked = source.checked);
     };
 
-    function getGroupedSuppCsv(row, level, state) {
+    function getGroupedSupp(row, level, state) {
         let cells = row.querySelectorAll(`.${level}-supp-details`);
         let items = [];
         let openArr = (level === 'l4') ? (globalConfig.testOpenStatuses || []) : (globalConfig.openStatuses || []);
@@ -1496,22 +1489,17 @@
                     let isOpen = isStatusMatch(status, openArr) || (!isStatusMatch(status, closedArr) && !status.toLowerCase().includes('no cl'));
                     let isClosed = isStatusMatch(status, closedArr);
                     
-                    if ((state === 'open' && isOpen) || (state === 'closed' && isClosed)) {
-                        items.push({ id, link });
-                    }
+                    let idDisplay = link ? `<a href="${link}" target="_blank" style="color: inherit; text-decoration: none;">${id}</a>` : id;
+
+                    if (state === 'open' && isOpen) items.push(idDisplay);
+                    if (state === 'closed' && isClosed) items.push(idDisplay);
                 }
             }
         });
-        
-        if (items.length === 0) return '-';
-        if (items.length === 1 && items[0].link) {
-            return `=HYPERLINK("${items[0].link}", "${items[0].id.replace(/"/g, '""')}")`;
-        } else {
-            return items.map(item => item.link ? `${item.id} (${item.link})` : item.id).join(', ');
-        }
+        return items.length > 0 ? items.join(', ') : '-';
     }
 
-    function getGroupedIssCsv(row, type) {
+    function getGroupedIss(row, type) {
         let cells = row.querySelectorAll(`.global-iss-details`);
         let items = [];
         let issueOpenArr = globalConfig.issueOpenStatuses || [];
@@ -1531,47 +1519,64 @@
                     let isClosed = isStatusMatch(status, issueClosedArr);
                     let isGating = isStatusMatch(status, gatingArr);
                     
-                    if (type === 'open-gate' && isOpen && isGating) items.push({ id, link });
-                    if (type === 'open-non' && isOpen && !isGating) items.push({ id, link });
-                    if (type === 'closed-gate' && isClosed && isGating) items.push({ id, link });
-                    if (type === 'closed-non' && isClosed && !isGating) items.push({ id, link });
+                    let idDisplay = link ? `<a href="${link}" target="_blank" style="color: inherit; text-decoration: none;">${id}</a>` : id;
+
+                    if (type === 'open-gate' && isOpen && isGating) items.push(idDisplay);
+                    if (type === 'open-non' && isOpen && !isGating) items.push(idDisplay);
+                    if (type === 'closed-gate' && isClosed && isGating) items.push(idDisplay);
+                    if (type === 'closed-non' && isClosed && !isGating) items.push(idDisplay);
                 }
             }
         });
-        
-        if (items.length === 0) return '-';
-        if (items.length === 1 && items[0].link) {
-            return `=HYPERLINK("${items[0].link}", "${items[0].id.replace(/"/g, '""')}")`;
-        } else {
-            return items.map(item => item.link ? `${item.id} (${item.link})` : item.id).join(', ');
-        }
+        return items.length > 0 ? items.join(', ') : '-';
     }
 
-    function extractStackedCellForCsv(cell) {
-        if (!cell) return '-';
-        let hdrNode = cell.querySelector('.checklist-header');
-        if (!hdrNode) return '-';
-        
-        let aTag = hdrNode.querySelector('a');
-        let text = hdrNode.innerText.trim();
-        
-        if(text === '-' || text === '') {
-            return '-';
-        } else {
-            return aTag ? `=HYPERLINK("${aTag.href}", "${text.replace(/"/g, '""')}")` : text;
-        }
-    }
-
-    window.generateCSV = function() {
-        const selectedIndices = Array.from(document.querySelectorAll('.export-col-cb:checked')).map(cb => parseInt(cb.value));
+    window.generatePDF = function() {
+        const selectedIndices = Array.from(document.querySelectorAll('.pdf-col-cb:checked')).map(cb => parseInt(cb.value));
         if (selectedIndices.length === 0) { alert('Please select at least one column.'); return; }
         
-        const selectedOptions = selectedIndices.map(i => window.EXPORT_OPTIONS[i]);
+        const selectedOptions = selectedIndices.map(i => window.PDF_OPTIONS[i]);
         
-        let csvContent = "";
+        let logo1 = document.getElementById('app-logo-1').src;
+        let logo2 = document.getElementById('app-logo-2').src;
+        let zTitle = globalConfig.customHeaders.zoneTitle || 'Zone 1';
         
-        // Build CSV Headers
-        let headers = selectedOptions.map(opt => {
+        let printWin = window.open('', '_blank');
+        let html = `<html><head><title>LaunchPad PDF Export</title><style>
+            @page { size: landscape; margin: 10mm; }
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; font-size: 10px; }
+            .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #2e7d32; padding-bottom: 10px; }
+            h2 { color: #2e7d32; margin: 0; font-size: 18px; text-transform: uppercase; text-align: center; }
+            img.logo { height: 70px; object-fit: contain; }
+            table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+            th, td { border: 1px solid #aeb6ba; padding: 6px 4px; text-align: center; vertical-align: middle; word-wrap: break-word; overflow: hidden; }
+            th { background-color: #2e7d32 !important; color: white !important; font-size: 10px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .bg-gray { background-color: #f5f5f5 !important; color: #616161 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+            
+            /* PDF Hyperlink Styling */
+            a { color: #1b5e20; text-decoration: none; border-bottom: 1px dotted #1b5e20; }
+            .uncolored-cell { background-color: #ffffff !important; color: #222 !important; font-size: 10px !important; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+            .shrink-list { font-size: 10px; line-height: 1.2; color: #222; text-align: left; background-color: #ffffff !important;}
+            
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        </style></head><body>
+        
+        <div class="header-container">
+            <div style="flex: 1; text-align: left;">
+                ${logo1 && !logo1.includes('empty') ? `<img class="logo" src="${logo1}" alt="Logo 1" />` : ''}
+            </div>
+            <div style="flex: 2;">
+                <h2>${zTitle} • Relational Asset Status Tracker Export</h2>
+            </div>
+            <div style="flex: 1; text-align: right;">
+                ${logo2 && !logo2.includes('empty') ? `<img class="logo" src="${logo2}" alt="Logo 2" />` : ''}
+            </div>
+        </div>
+        
+        <table>`;
+        
+        html += '<thead><tr>';
+        selectedOptions.forEach(opt => {
             let displayLabel = opt.label;
             if(opt.id === 'asset') displayLabel = 'Asset';
             if(opt.id === 'area') displayLabel = globalConfig.customHeaders.areaPrefix || 'Area';
@@ -1582,68 +1587,84 @@
             if(opt.id === 'l4-gate') displayLabel = 'L4 ' + globalConfig.customHeaders.l4Gate;
             if(opt.id === 'l4-status') displayLabel = 'L4 ' + globalConfig.customHeaders.l4Status;
             if(opt.id === 'iss-status') displayLabel = globalConfig.customHeaders.issStatus;
-            return `"${displayLabel.replace(/"/g, '""')}"`;
+            html += `<th>${displayLabel}</th>`;
         });
-        csvContent += headers.join(",") + "\n";
+        html += '</tr></thead><tbody>';
 
-        // Build CSV Rows
         const rows = document.querySelectorAll('.cell-row');
         rows.forEach(row => {
             if (window.getComputedStyle(row).display !== 'none') {
-                let rowData = [];
+                html += '<tr>';
                 
                 selectedOptions.forEach(opt => {
-                    let cellValue = '-';
+                    let cellHtml = '<td>-</td>';
                     
                     if (opt.type === 'asset') {
                         let assetNode = row.querySelector('.asset-part');
                         let aTag = assetNode ? assetNode.querySelector('a') : null;
                         let text = assetNode ? assetNode.innerText.trim() : '';
-                        cellValue = aTag ? `=HYPERLINK("${aTag.href}", "${text.replace(/"/g, '""')}")` : text;
+                        let display = aTag ? `<a href="${aTag.href}" target="_blank" style="color: inherit; text-decoration: none;">${text}</a>` : text;
+                        cellHtml = `<td class="uncolored-cell">${display}</td>`;
                     } else if (opt.type === 'area') {
                         let areaNode = row.querySelector('.area-part');
-                        cellValue = areaNode ? areaNode.innerText.trim() : '';
+                        let val = areaNode ? areaNode.innerText : '';
+                        cellHtml = `<td class="shrink-list">${val}</td>`;
                     } else if (opt.type === 'gate') {
                         let cell = row.querySelector(`.${opt.level}-gate-col`);
-                        cellValue = extractStackedCellForCsv(cell);
+                        cellHtml = extractStackedCellForPdf(cell);
                     } else if (opt.type === 'status') {
                         let cell = row.querySelector(`.${opt.level}-supp-summary`);
-                        cellValue = cell ? cell.innerText.trim() : '-';
+                        cellHtml = extractSummaryCellForPdf(cell);
                     } else if (opt.type === 'iss-count') {
                         let cell = row.querySelector(`.global-iss-summary`);
-                        cellValue = cell ? cell.innerText.trim() : '-';
+                        cellHtml = extractSummaryCellForPdf(cell);
                     } else if (opt.type === 'supp-open') {
-                        cellValue = getGroupedSuppCsv(row, opt.level, 'open');
+                        let val = getGroupedSupp(row, opt.level, 'open');
+                        cellHtml = `<td class="shrink-list">${val}</td>`;
                     } else if (opt.type === 'supp-closed') {
-                        cellValue = getGroupedSuppCsv(row, opt.level, 'closed');
+                        let val = getGroupedSupp(row, opt.level, 'closed');
+                        cellHtml = `<td class="shrink-list">${val}</td>`;
                     } else if (opt.type === 'iss-group') {
-                        cellValue = getGroupedIssCsv(row, opt.group);
+                        let val = getGroupedIss(row, opt.group);
+                        cellHtml = `<td class="shrink-list">${val}</td>`;
                     }
                     
-                    if (cellValue.startsWith('=HYPERLINK')) {
-                        rowData.push(`"${cellValue}"`);
-                    } else {
-                        rowData.push(`"${cellValue.replace(/"/g, '""')}"`);
-                    }
+                    html += cellHtml;
                 });
                 
-                csvContent += rowData.join(",") + "\n";
+                html += '</tr>';
             }
         });
         
-        // Download Trigger
-        let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        let url = URL.createObjectURL(blob);
-        let link = document.createElement("a");
-        let dateStr = new Date().toISOString().split('T')[0];
-        link.setAttribute("href", url);
-        link.setAttribute("download", `Equipment_Status_Tracker_${dateStr}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        closeExportModal();
+        html += '</tbody></table></body></html>';
+        printWin.document.write(html);
+        printWin.document.close();
+        printWin.focus();
+        setTimeout(() => { printWin.print(); printWin.close(); }, 500);
+        closePdfModal();
     };
+
+    function extractStackedCellForPdf(cell) {
+        if (!cell) return '<td>-</td>';
+        let hdrNode = cell.querySelector('.checklist-header');
+        if (!hdrNode) return `<td>-</td>`;
+        
+        let aTag = hdrNode.querySelector('a');
+        let text = hdrNode.innerText.trim();
+        
+        if(text === '-') {
+            return `<td>-</td>`;
+        } else {
+            let display = aTag ? `<a href="${aTag.href}" target="_blank" style="color: inherit; text-decoration: none;">${text}</a>` : text;
+            return `<td class="uncolored-cell">${display}</td>`;
+        }
+    }
+
+    function extractSummaryCellForPdf(cell) {
+        if (!cell) return '<td>-</td>';
+        let val = cell.innerText.trim();
+        return `<td class="shrink-list">${val}</td>`;
+    }
 </script>
 </body>
 </html>
