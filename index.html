@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Equipment Status Tracker</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
+    
+    <base target="_blank">
+
     <style>
         /* --- EASY SIZING CONFIGURATION --- */
         :root {
@@ -857,7 +860,7 @@
         
         let idDisplay = id;
         if (id !== '' && link) {
-            idDisplay = `<a href="${link}" target="_blank" class="chk-link">${id}</a>`;
+            idDisplay = `<a href="${link}" class="chk-link">${id}</a>`;
         }
         
         if (id === '') {
@@ -1098,7 +1101,7 @@
             rows.forEach(row => {
                 const assetId = row['Asset'] || 'N/A';
                 const assetLink = row['Asset_Link'];
-                const assetDisplay = assetLink ? `<a href="${assetLink}" target="_blank" class="asset-link">${assetId}</a>` : assetId;
+                const assetDisplay = assetLink ? `<a href="${assetLink}" class="asset-link">${assetId}</a>` : assetId;
                 
                 const areaVal = row['Area'] || 'N/A';
                 
@@ -1549,7 +1552,9 @@
         let zTitle = globalConfig.customHeaders.zoneTitle || 'Zone 1';
         
         let printWin = window.open('', '_blank');
-        let html = `<html><head><title>LaunchPad PDF Export</title><style>
+        let html = `<html><head><title>LaunchPad PDF Export</title>
+        <base target="_blank">
+        <style>
             @page { size: landscape; margin: 10mm; }
             body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; font-size: 10px; }
             .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #2e7d32; padding-bottom: 10px; }
