@@ -74,7 +74,7 @@
         /* --- HYPERLINK STYLES --- */
         .asset-link { color: #1b5e20; text-decoration: none; border-bottom: 1px dotted #1b5e20; }
         .asset-link:hover { color: #0d3b10; text-decoration: underline; border-bottom: none; }
-        .chk-link { color: inherit; text-decoration: none; padding-bottom: 1px; border-bottom: 1px dotted rgba(0,0,0,0.5); pointer-events: auto; }
+        .chk-link { color: #1b5e20; text-decoration: none; padding-bottom: 1px; border-bottom: 1px dotted rgba(0,0,0,0.5); pointer-events: auto; }
         .chk-link:hover { text-decoration: underline; }
 
         /* --- EQUIPMENT TRACKER GRID --- */
@@ -270,7 +270,6 @@
         .filter-dropdown { position: absolute; background: white; border: 1px solid #ccc; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 10px; z-index: 2000; border-radius: 4px; color: #333; font-size: 13px; min-width: 180px; max-height: 350px; display: flex; flex-direction: column; }
         .filter-search-input { width: 100%; padding: 6px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px; }
         .filter-dropdown label { display: block; margin-bottom: 6px; cursor: pointer; }
-        .filter-dropdown input[type="checkbox"] { margin-right: 8px; cursor: pointer; }
         .filter-actions { margin-top: 10px; display: flex; justify-content: space-between; border-top: 1px solid #eee; padding-top: 10px; }
         .filter-btn { background: #2e7d32; color: white; border: none; padding: 6px 10px; cursor: pointer; border-radius: 4px; font-weight: bold; flex: 1; margin-left: 5px;}
         .filter-btn.clear { background: #f5f5f5; color: #333; border: 1px solid #ccc; margin-left: 0; margin-right: 5px;}
@@ -714,7 +713,7 @@
         }
     }
 
-    // --- EXPORT CONFIGURATION ARRAY ---
+    // --- PDF CONFIGURATION ARRAY ---
     window.PDF_OPTIONS = [
         { id: 'asset', label: 'Assets', type: 'asset' },
         { id: 'area', label: 'Area', type: 'area' },
@@ -847,6 +846,7 @@
         return statusArray.some(item => item.name && s.includes(String(item.name).toLowerCase().trim()));
     }
 
+    // --- STRICT LINK ENFORCEMENT ENGINE ---
     function renderStackedCell(val, extraClasses = '', type = 'checklist', link = '') {
         let id = '', status = '', styleStr = '', rawVal = '';
         
@@ -854,7 +854,7 @@
             rawVal = String(val).trim();
             const match = rawVal.match(/(.+?)\s*\((.+)\)/);
             if (match) {
-                id = match[1]; status = match[2];
+                id = match[1].trim(); status = match[2].trim();
                 styleStr = getDynamicStyle(status, type, false);
             } else { 
                 id = rawVal; status = 'Unknown'; 
@@ -863,8 +863,11 @@
         }
         
         let idDisplay = id;
-        if (id !== '' && link) {
-            idDisplay = `<a href="${link}" target="_blank" class="chk-link">${id}</a>`;
+        let safeLink = String(link || '').trim();
+        
+        // Ensure link exists and is actually a string before building the <a> tag
+        if (id !== '' && safeLink && safeLink !== 'undefined' && safeLink !== 'null' && safeLink !== '') {
+            idDisplay = `<a href="${safeLink}" target="_blank" class="chk-link">${id}</a>`;
         }
         
         if (id === '') {
@@ -873,7 +876,7 @@
                         <div class="checklist-status" style="background-color:#f5f5f5; color:#616161;">-</div>
                     </div>`;
         } else {
-            return `<div class="filter-target stacked-cell ${extraClasses}" data-val="${rawVal}" data-link="${link}">
+            return `<div class="filter-target stacked-cell ${extraClasses}" data-val="${rawVal}" data-link="${safeLink}">
                         <div class="checklist-header">${idDisplay}</div>
                         <div class="checklist-status" style="${styleStr}">${status}</div>
                     </div>`;
@@ -1432,8 +1435,8 @@
         // Setup dropdown structure with a loading text placeholder
         dropdown.innerHTML = `
             <input type="text" id="filter-search" class="filter-search-input" placeholder="Search values..." autocomplete="off">
-            <label style="font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:8px; margin-bottom:8px;">
-                <input type="checkbox" id="filter-select-all" checked> <span style="cursor:pointer;">(Select All)</span>
+            <label style="font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:8px; margin-bottom:8px; cursor:pointer; display:block;">
+                <input type="checkbox" id="filter-select-all" checked style="margin-right:8px; cursor:pointer;"> (Select All)
             </label>
             <div id="filter-loading" style="padding: 10px; font-size: 12px; color: #777; text-align: center;">Loading...</div>
             <div id="val-container" style="overflow-y: auto; flex: 1; display: none;"></div>
@@ -1455,7 +1458,7 @@
             Array.from(uniqueValues).sort().forEach(val => { 
                 const isChecked = activeFilters[colIndex] ? activeFilters[colIndex].has(val) : true; 
                 const safeVal = val.replace(/"/g, '&quot;');
-                valHTML.push(`<label class="filter-val-label" style="display:block; margin-bottom: 6px; cursor: pointer;"><input type="checkbox" class="filter-val-cb" value="${safeVal}" style="margin-right:8px; cursor:pointer;" ${isChecked ? 'checked' : ''}><span class="val-text">${val || '(Blank)'}</span></label>`); 
+                valHTML.push(`<label class="filter-val-label" style="display:block; margin-bottom: 6px; cursor: pointer;"><input type="checkbox" value="${safeVal}" style="margin-right:8px; cursor:pointer;" ${isChecked ? 'checked' : ''}><span class="val-text">${val || '(Blank)'}</span></label>`); 
             });
             valContainer.innerHTML = valHTML.join('');
             
@@ -1472,6 +1475,7 @@
             searchInput.addEventListener('input', (e) => { 
                 const term = e.target.value.toLowerCase(); 
                 let vis = 0, chkVis = 0; 
+                valContainer.style.display = 'none'; // Prevent layout thrashing
                 const labels = valContainer.children;
                 for(let i=0; i<labels.length; i++) {
                     let lbl = labels[i];
@@ -1483,6 +1487,7 @@
                         lbl.style.display = 'none'; 
                     }
                 }
+                valContainer.style.display = 'block'; // Restore visibility
                 selectAllCb.checked = (vis > 0 && vis === chkVis); 
             });
             
@@ -1513,12 +1518,14 @@
             });
             
             searchInput.focus();
-        }, 10);
+        }, 50); 
     }
     
     window.applyFilter = function(colIndex) {
         if (!currentDropdown) return; 
-        const valCbs = currentDropdown.querySelectorAll('.filter-val-cb'); 
+        
+        // Grab values directly using querySelectorAll on the checkboxes
+        const valCbs = currentDropdown.querySelectorAll('#val-container input[type="checkbox"]'); 
         const selected = new Set(); 
         valCbs.forEach(cb => { if (cb.checked) selected.add(cb.value); });
         
@@ -1538,7 +1545,7 @@
         }
         
         closeFilterMenu(); 
-        // Execute the heavy DOM hiding asynchronously to unfreeze the mouse
+        // Execute the heavy DOM hiding asynchronously to keep mouse unfrozen
         setTimeout(executeFilters, 10);
     };
     
@@ -1646,7 +1653,8 @@
                     let isOpen = isStatusMatch(status, openArr) || (!isStatusMatch(status, closedArr) && !status.toLowerCase().includes('no cl'));
                     let isClosed = isStatusMatch(status, closedArr);
                     
-                    let idDisplay = link && link !== 'null' && link !== '' ? `<a href="${link}" target="_blank">${id}</a>` : id;
+                    let safeLink = String(link || '').trim();
+                    let idDisplay = (safeLink && safeLink !== 'undefined' && safeLink !== 'null') ? `<a href="${safeLink}" target="_blank">${id}</a>` : id;
 
                     if (state === 'open' && isOpen) items.push(idDisplay);
                     if (state === 'closed' && isClosed) items.push(idDisplay);
@@ -1676,7 +1684,8 @@
                     let isClosed = isStatusMatch(status, issueClosedArr);
                     let isGating = isStatusMatch(status, gatingArr);
                     
-                    let idDisplay = link && link !== 'null' && link !== '' ? `<a href="${link}" target="_blank">${id}</a>` : id;
+                    let safeLink = String(link || '').trim();
+                    let idDisplay = (safeLink && safeLink !== 'undefined' && safeLink !== 'null') ? `<a href="${safeLink}" target="_blank">${id}</a>` : id;
 
                     if (type === 'open-gate' && isOpen && isGating) items.push(idDisplay);
                     if (type === 'open-non' && isOpen && !isGating) items.push(idDisplay);
