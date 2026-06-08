@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Equipment Status Tracker</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
+    
+    <base target="_blank">
+
     <style>
         /* --- EASY SIZING CONFIGURATION --- */
         :root {
@@ -342,8 +345,8 @@
             <button onclick="clearAllFilters()" class="clear-filters-btn">
                 <span style="font-size: 14px;">🧹</span> Remove Filters
             </button>
-            <button onclick="openPdfModal()" class="pdf-btn">
-                <span style="font-size: 14px;">📄</span> Export PDF
+            <button onclick="openExportModal()" class="pdf-btn">
+                <span style="font-size: 14px;">📊</span> Export CSV
             </button>
         </div>
     </div>
@@ -416,20 +419,20 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="pdf-modal">
+<div class="modal-overlay" id="export-modal">
     <div class="modal-box" style="width: 450px;">
         <div class="modal-header">
-            <h2>Export to PDF</h2>
-            <button class="close-btn" onclick="closePdfModal()">×</button>
+            <h2>Export to CSV</h2>
+            <button class="close-btn" onclick="closeExportModal()">×</button>
         </div>
         <div class="modal-body">
-            <h3 style="margin-top: 0; color: #555; font-size: 14px; border-bottom: 2px solid #eee; padding-bottom: 8px;">Select columns to include in PDF:</h3>
-            <div id="pdf-column-list" style="display: flex; flex-direction: column; gap: 8px;">
+            <h3 style="margin-top: 0; color: #555; font-size: 14px; border-bottom: 2px solid #eee; padding-bottom: 8px;">Select columns to include in CSV:</h3>
+            <div id="export-column-list" style="display: flex; flex-direction: column; gap: 8px;">
                 </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-cancel" onclick="closePdfModal()">Cancel</button>
-            <button class="btn btn-save" onclick="generatePDF()">Generate & Print PDF</button>
+            <button class="btn btn-cancel" onclick="closeExportModal()">Cancel</button>
+            <button class="btn btn-save" onclick="generateCSV()">Generate & Download CSV</button>
         </div>
     </div>
 </div>
@@ -594,6 +597,11 @@
 </div>
 
 <script>
+    // --- PERFORMANCE OPTIMIZATION CACHE ---
+    window.filterCache = { 0: new Set(), 1: new Set(), 2: new Set(), 3: new Set(), 4: new Set(), 5: new Set(), 6: new Set(), 7: new Set(), 8: new Set() };
+    window.rowFilterData = [];
+    window.rowNodes = [];
+
     const API_URL = 'https://script.google.com/macros/s/AKfycbwcZdFdg90pf2LfQzbEsLf2WRIzMuC1gsB6hsaBMAx05PJmzkXESTGWPfPUa_8CiHcfiw/exec'; 
 
     let globalConfig = { 
@@ -630,13 +638,13 @@
         }
 
         let columnsToExpand = new Set();
-        const rows = document.querySelectorAll('.cell-row');
         
-        rows.forEach(row => {
+        window.rowNodes.forEach(row => {
             if (window.getComputedStyle(row).display !== 'none') {
                 let matchFound = false;
                 let matchedCells = [];
                 
+                // Deep scan using [data-val] so we grab EVERY cell, including the dynamically hidden ones.
                 row.querySelectorAll('[data-val]').forEach(cell => {
                     let cellVal = cell.dataset.val ? String(cell.dataset.val).toLowerCase() : '';
                     let cellText = cell.textContent ? String(cell.textContent).toLowerCase() : '';
@@ -706,8 +714,8 @@
         }
     }
 
-    // --- PDF CONFIGURATION ARRAY ---
-    window.PDF_OPTIONS = [
+    // --- EXPORT CONFIGURATION ARRAY ---
+    window.EXPORT_OPTIONS = [
         { id: 'asset', label: 'Assets', type: 'asset' },
         { id: 'area', label: 'Area', type: 'area' },
         { id: 'l2-gate', label: 'L2 Gate CL', type: 'gate', level: 'l2' },
@@ -856,7 +864,7 @@
         
         let idDisplay = id;
         if (id !== '' && link) {
-            idDisplay = `<a href="${link}" target="_blank" class="chk-link">${id}</a>`;
+            idDisplay = `<a href="${link}" class="chk-link">${id}</a>`;
         }
         
         if (id === '') {
@@ -970,6 +978,11 @@
         if (openIds.length === 0) return { display: "-", count: 0 };
         return { display: openIds.join(', '), count: openIds.length };
     }
+
+    const getGateVal = (val) => {
+        if (val && val !== 'N/A' && val !== 'Clear' && val !== '-') return String(val).trim();
+        return "";
+    };
 
     function generateHeaderHTML(level, max) {
         let html = '';
@@ -1093,13 +1106,15 @@
 
             const container = document.getElementById('tracker-rows');
             let htmlChunks = []; 
+            
+            // Re-initialize cache arrays before the loop
+            window.filterCache = { 0: new Set(), 1: new Set(), 2: new Set(), 3: new Set(), 4: new Set(), 5: new Set(), 6: new Set(), 7: new Set(), 8: new Set() };
+            window.rowFilterData = [];
 
             rows.forEach(row => {
                 const assetId = row['Asset'] || 'N/A';
                 const assetLink = row['Asset_Link'];
-                
-                // --- EXPLICITLY HARDCODED TARGET="_BLANK" ---
-                const assetDisplay = assetLink ? `<a href="${assetLink}" target="_blank" class="asset-link">${assetId}</a>` : assetId;
+                const assetDisplay = assetLink ? `<a href="${assetLink}" class="asset-link">${assetId}</a>` : assetId;
                 
                 const areaVal = row['Area'] || 'N/A';
                 
@@ -1107,6 +1122,32 @@
                 const l3Open = combineOpenSupportCLs(row, 'L3', globalConfig.maxCols.l3);
                 const l4Open = combineOpenSupportCLs(row, 'L4', globalConfig.maxCols.l4);
                 const issuesOpen = combineOpenIssues(row, globalConfig.maxCols.iss);
+
+                // --- BUILD INSTANT FILTER CACHE ---
+                let fVal0 = String(assetId).trim();
+                let fVal1 = String(areaVal).trim();
+                let fVal2 = getGateVal(row['L2 Gate CL 1']);
+                let fVal3 = String(row['L2 Overall Status'] || 'N/A').trim();
+                let fVal4 = getGateVal(row['L3 Gate CL 1']);
+                let fVal5 = String(row['L3 Overall Status'] || 'N/A').trim();
+                let fVal6 = getGateVal(row['L4 Gate CL 1']);
+                let fVal7 = String(row['L4 Overall Status'] || 'N/A').trim();
+                let fVal8 = String(issuesOpen.display).trim();
+
+                window.filterCache[0].add(fVal0);
+                window.filterCache[1].add(fVal1);
+                window.filterCache[2].add(fVal2);
+                window.filterCache[3].add(fVal3);
+                window.filterCache[4].add(fVal4);
+                window.filterCache[5].add(fVal5);
+                window.filterCache[6].add(fVal6);
+                window.filterCache[7].add(fVal7);
+                window.filterCache[8].add(fVal8);
+
+                window.rowFilterData.push({
+                    0: fVal0, 1: fVal1, 2: fVal2, 3: fVal3, 4: fVal4, 5: fVal5, 6: fVal6, 7: fVal7, 8: fVal8
+                });
+                // ----------------------------------
                 
                 const rowHTML = `
                 <div class="cell-row">
@@ -1138,6 +1179,10 @@
             });
             
             container.innerHTML = htmlChunks.join('');
+            
+            // Map the DOM rows globally so executeFilters can access them instantly
+            window.rowNodes = Array.from(document.querySelectorAll('.cell-row'));
+
             document.getElementById('sync-status').innerText = 'Live Relational Sync Active 🟢';
             
             const overlay = document.getElementById('loading-overlay');
@@ -1290,21 +1335,13 @@
 
         try {
             await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-            globalConfig.openStatuses = payload.openStatuses; globalConfig.closedStatuses = payload.closedStatuses;
-            globalConfig.testOpenStatuses = payload.testOpenStatuses; globalConfig.testClosedStatuses = payload.testClosedStatuses;
-            globalConfig.issueOpenStatuses = payload.issueOpenStatuses; globalConfig.issueClosedStatuses = payload.issueClosedStatuses;
-            globalConfig.gatingIssues = payload.gatingIssues; globalConfig.nonGatingIssues = payload.nonGatingIssues;
-            globalConfig.phaseRules = payload.phaseRules;
-            globalConfig.fallbackColor = payload.fallbackColor;
-            globalConfig.customHeaders = payload.customHeaders;
-            globalConfig.showL2Gate = payload.showL2Gate; globalConfig.showL3Gate = payload.showL3Gate; globalConfig.showL4Gate = payload.showL4Gate;
-            globalConfig.showL2Supp = payload.showL2Supp; globalConfig.showL3Supp = payload.showL3Supp; globalConfig.showL4Supp = payload.showL4Supp;
             
-            closeSettingsModal(); fetchTrackerData(); 
+            // Reload the page to reflect all changes cleanly
+            window.location.reload(); 
         } catch(e) {
             console.error("Save failed", e); alert("Failed to save to Google Sheets.");
+            btn.innerText = 'Save & Sync to Sheet'; btn.disabled = false;
         }
-        btn.innerText = 'Save & Sync to Sheet'; btn.disabled = false;
     }
 
     window.toggleExpansion = function(level) {
@@ -1374,14 +1411,14 @@
     };
 
     let activeFilters = {}; let currentDropdown = null;
+    
     function toggleFilter(event, colIndex) {
         event.stopPropagation();
         if (currentDropdown) { let wasSame = (currentDropdown.dataset.col == colIndex); closeFilterMenu(); if (wasSame) return; }
-        const rows = document.querySelectorAll('.cell-row'); const uniqueValues = new Set();
-        rows.forEach(row => { 
-            const inputs = row.querySelectorAll('.filter-target'); 
-            if(inputs[colIndex]) { let cell = inputs[colIndex]; uniqueValues.add(String(cell.tagName === 'INPUT' ? cell.value : (cell.dataset.val || cell.innerText || '')).trim()); }
-        });
+        
+        // --- ⚡ INSTANT MEMORY CACHE LOOKUP ---
+        const uniqueValues = window.filterCache[colIndex] || new Set();
+
         const dropdown = document.createElement('div'); dropdown.className = 'filter-dropdown'; dropdown.dataset.col = colIndex;
         
         const rect = event.target.getBoundingClientRect(); 
@@ -1392,28 +1429,64 @@
 
         dropdown.style.top = dropTop + 'px'; dropdown.style.left = dropLeft + 'px';
         dropdown.innerHTML = `<input type="text" id="filter-search" class="filter-search-input" placeholder="Search values..." autocomplete="off"><label style="font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:8px; margin-bottom:8px;"><input type="checkbox" id="filter-select-all" checked> (Select All)</label>`;
+        
         const valContainer = document.createElement('div'); valContainer.style.overflowY = 'auto'; valContainer.style.flex = '1';
-        Array.from(uniqueValues).sort().forEach(val => { const isChecked = activeFilters[colIndex] ? activeFilters[colIndex].has(val) : true; valContainer.innerHTML += `<label class="filter-val-label"><input type="checkbox" class="filter-val-cb" value="${val}" ${isChecked ? 'checked' : ''}> <span class="val-text">${val || '(Blank)'}</span></label>`; });
+        
+        let valHTML = '';
+        Array.from(uniqueValues).sort().forEach(val => { 
+            const isChecked = activeFilters[colIndex] ? activeFilters[colIndex].has(val) : true; 
+            const safeVal = val.replace(/"/g, '&quot;');
+            valHTML += `<label class="filter-val-label"><input type="checkbox" class="filter-val-cb" value="${safeVal}" ${isChecked ? 'checked' : ''}> <span class="val-text">${val || '(Blank)'}</span></label>`; 
+        });
+        valContainer.innerHTML = valHTML;
+        
         dropdown.appendChild(valContainer);
         const actions = document.createElement('div'); actions.className = 'filter-actions'; actions.innerHTML = `<button class="filter-btn clear" onclick="clearFilter(${colIndex})">Clear</button><button class="filter-btn" onclick="applyFilter(${colIndex})">OK</button>`;
         dropdown.appendChild(actions); document.body.appendChild(dropdown); currentDropdown = dropdown;
         setTimeout(() => document.getElementById('filter-search').focus(), 10);
+        
         const searchInput = dropdown.querySelector('#filter-search'); const selectAllCb = dropdown.querySelector('#filter-select-all'); const allLabels = dropdown.querySelectorAll('.filter-val-label'); const valCbs = dropdown.querySelectorAll('.filter-val-cb');
         if (activeFilters[colIndex] && activeFilters[colIndex].size < uniqueValues.size) selectAllCb.checked = false;
+        
         searchInput.addEventListener('input', (e) => { const term = e.target.value.toLowerCase(); let vis = 0, chkVis = 0; allLabels.forEach(lbl => { if (lbl.querySelector('.val-text').textContent.toLowerCase().includes(term)) { lbl.style.display = 'block'; vis++; if (lbl.querySelector('.filter-val-cb').checked) chkVis++; } else lbl.style.display = 'none'; }); selectAllCb.checked = (vis > 0 && vis === chkVis); });
         selectAllCb.addEventListener('change', (e) => { allLabels.forEach(lbl => { if (lbl.style.display !== 'none') lbl.querySelector('.filter-val-cb').checked = e.target.checked; }); });
         valCbs.forEach(cb => { cb.addEventListener('change', () => { let allVisChk = true; allLabels.forEach(lbl => { if (lbl.style.display !== 'none' && !lbl.querySelector('.filter-val-cb').checked) allVisChk = false; }); selectAllCb.checked = allVisChk; }); });
     }
     
     window.applyFilter = function(colIndex) {
-        if (!currentDropdown) return; const valCbs = currentDropdown.querySelectorAll('.filter-val-cb'); const selected = new Set(); valCbs.forEach(cb => { if (cb.checked) selected.add(cb.value); });
-        const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); const titleSpan = icon.closest('.header-cell').querySelector('.col-title');
-        if (selected.size === valCbs.length) { delete activeFilters[colIndex]; icon.classList.remove('active'); icon.closest('.header-cell').classList.remove('is-filtered'); titleSpan.textContent = titleSpan.dataset.original; } 
-        else { activeFilters[colIndex] = selected; icon.classList.add('active'); icon.closest('.header-cell').classList.add('is-filtered'); titleSpan.textContent = titleSpan.dataset.original; }
-        closeFilterMenu(); executeFilters();
+        if (!currentDropdown) return; 
+        const valCbs = currentDropdown.querySelectorAll('.filter-val-cb'); 
+        const selected = new Set(); 
+        valCbs.forEach(cb => { if (cb.checked) selected.add(cb.value); });
+        
+        const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); 
+        const titleSpan = icon.closest('.header-cell').querySelector('.col-title');
+        
+        if (selected.size === valCbs.length) { 
+            delete activeFilters[colIndex]; 
+            icon.classList.remove('active'); 
+            icon.closest('.header-cell').classList.remove('is-filtered'); 
+            titleSpan.textContent = titleSpan.dataset.original; 
+        } else { 
+            activeFilters[colIndex] = selected; 
+            icon.classList.add('active'); 
+            icon.closest('.header-cell').classList.add('is-filtered'); 
+            titleSpan.textContent = titleSpan.dataset.original; 
+        }
+        closeFilterMenu(); 
+        executeFilters();
     };
     
-    window.clearFilter = function(colIndex) { delete activeFilters[colIndex]; const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); icon.classList.remove('active'); icon.closest('.header-cell').classList.remove('is-filtered'); const titleSpan = icon.closest('.header-cell').querySelector('.col-title'); titleSpan.textContent = titleSpan.dataset.original; closeFilterMenu(); executeFilters(); };
+    window.clearFilter = function(colIndex) { 
+        delete activeFilters[colIndex]; 
+        const icon = document.querySelector(`.filter-icon[data-col="${colIndex}"]`); 
+        icon.classList.remove('active'); 
+        icon.closest('.header-cell').classList.remove('is-filtered'); 
+        const titleSpan = icon.closest('.header-cell').querySelector('.col-title'); 
+        titleSpan.textContent = titleSpan.dataset.original; 
+        closeFilterMenu(); 
+        executeFilters(); 
+    };
     
     window.clearAllFilters = function() {
         activeFilters = {};
@@ -1428,24 +1501,35 @@
     };
     
     function executeFilters() {
-        document.querySelectorAll('.cell-row').forEach(row => { 
-            const inputs = row.querySelectorAll('.filter-target'); let isVisible = true; 
-            for (let col in activeFilters) { if (inputs[col]) { let val = String(inputs[col].tagName === 'INPUT' ? inputs[col].value : (inputs[col].dataset.val || inputs[col].innerText || '')); if (!activeFilters[col].has(val.trim())) { isVisible = false; break; } } } 
-            row.style.display = isVisible ? 'flex' : 'none'; 
-        });
+        if (!window.rowNodes || window.rowNodes.length === 0) return;
+        
+        // --- ⚡ INSTANT MEMORY CACHE LOOKUP ---
+        for (let i = 0; i < window.rowFilterData.length; i++) {
+            let rData = window.rowFilterData[i];
+            let isVisible = true;
+            
+            for (let col in activeFilters) { 
+                if (!activeFilters[col].has(rData[col])) { 
+                    isVisible = false; 
+                    break; 
+                } 
+            } 
+            
+            window.rowNodes[i].style.display = isVisible ? 'flex' : 'none'; 
+        }
         if (typeof performGlobalSearch === 'function') performGlobalSearch();
     }
     
     function closeFilterMenu() { if (currentDropdown) { document.body.removeChild(currentDropdown); currentDropdown = null; } }
     document.addEventListener('click', (e) => { if (currentDropdown && !currentDropdown.contains(e.target) && !e.target.classList.contains('filter-icon')) closeFilterMenu(); });
 
-    // --- PDF EXPORT LOGIC WITH CLICKABLE HYPERLINKS ---
-    window.openPdfModal = function() {
-        const listContainer = document.getElementById('pdf-column-list');
-        listContainer.innerHTML = '<label class="checkbox-row" style="border-bottom: 1px solid #ccc; padding-bottom: 8px; margin-bottom: 8px;"><input type="checkbox" id="pdf-select-all" checked onchange="toggleAllPdfCols(this)"> Select All</label>';
+    // --- CSV EXPORT LOGIC (WITH DYNAMIC EXPANSION AND WORKING HYPERLINKS) ---
+    window.openExportModal = function() {
+        const listContainer = document.getElementById('export-column-list');
+        listContainer.innerHTML = '<label class="checkbox-row" style="border-bottom: 1px solid #ccc; padding-bottom: 8px; margin-bottom: 8px;"><input type="checkbox" id="export-select-all" checked onchange="toggleAllExportCols(this)"> Select All</label>';
         
         let html = '<div style="display: flex; flex-direction: column; gap: 8px;">';
-        window.PDF_OPTIONS.forEach((opt, index) => {
+        window.EXPORT_OPTIONS.forEach((opt, index) => {
             if (opt.id === 'l2-gate' && globalConfig.showL2Gate === false) return;
             if (opt.id === 'l3-gate' && globalConfig.showL3Gate === false) return;
             if (opt.id === 'l4-gate' && globalConfig.showL4Gate === false) return;
@@ -1465,22 +1549,22 @@
             if(opt.id === 'l4-status') displayLabel = 'L4 ' + globalConfig.customHeaders.l4Status;
             if(opt.id === 'iss-status') displayLabel = globalConfig.customHeaders.issStatus;
             
-            html += `<label class="checkbox-row"><input type="checkbox" class="pdf-col-cb" value="${index}" checked> ${displayLabel}</label>`;
+            html += `<label class="checkbox-row"><input type="checkbox" class="export-col-cb" value="${index}" checked> ${displayLabel}</label>`;
         });
         html += '</div>';
         listContainer.innerHTML += html;
-        document.getElementById('pdf-modal').classList.add('active');
+        document.getElementById('export-modal').classList.add('active');
     };
 
-    window.closePdfModal = function() {
-        document.getElementById('pdf-modal').classList.remove('active');
+    window.closeExportModal = function() {
+        document.getElementById('export-modal').classList.remove('active');
     };
 
-    window.toggleAllPdfCols = function(source) {
-        document.querySelectorAll('.pdf-col-cb').forEach(cb => cb.checked = source.checked);
+    window.toggleAllExportCols = function(source) {
+        document.querySelectorAll('.export-col-cb').forEach(cb => cb.checked = source.checked);
     };
 
-    function getGroupedSuppPdf(row, level, state) {
+    function getGroupedSuppCsvArray(row, level, state) {
         let cells = row.querySelectorAll(`.${level}-supp-details`);
         let items = [];
         let openArr = (level === 'l4') ? (globalConfig.testOpenStatuses || []) : (globalConfig.openStatuses || []);
@@ -1497,17 +1581,16 @@
                     let isOpen = isStatusMatch(status, openArr) || (!isStatusMatch(status, closedArr) && !status.toLowerCase().includes('no cl'));
                     let isClosed = isStatusMatch(status, closedArr);
                     
-                    let idDisplay = link ? `<a href="${link}" target="_blank">${id}</a>` : id;
-
-                    if (state === 'open' && isOpen) items.push(idDisplay);
-                    if (state === 'closed' && isClosed) items.push(idDisplay);
+                    if ((state === 'open' && isOpen) || (state === 'closed' && isClosed)) {
+                        items.push({ id, link });
+                    }
                 }
             }
         });
-        return items.length > 0 ? items.join(', ') : '-';
+        return items;
     }
 
-    function getGroupedIssPdf(row, type) {
+    function getGroupedIssCsvArray(row, type) {
         let cells = row.querySelectorAll(`.global-iss-details`);
         let items = [];
         let issueOpenArr = globalConfig.issueOpenStatuses || [];
@@ -1527,68 +1610,94 @@
                     let isClosed = isStatusMatch(status, issueClosedArr);
                     let isGating = isStatusMatch(status, gatingArr);
                     
-                    let idDisplay = link ? `<a href="${link}" target="_blank">${id}</a>` : id;
-
-                    if (type === 'open-gate' && isOpen && isGating) items.push(idDisplay);
-                    if (type === 'open-non' && isOpen && !isGating) items.push(idDisplay);
-                    if (type === 'closed-gate' && isClosed && isGating) items.push(idDisplay);
-                    if (type === 'closed-non' && isClosed && !isGating) items.push(idDisplay);
+                    if (type === 'open-gate' && isOpen && isGating) items.push({ id, link });
+                    if (type === 'open-non' && isOpen && !isGating) items.push({ id, link });
+                    if (type === 'closed-gate' && isClosed && isGating) items.push({ id, link });
+                    if (type === 'closed-non' && isClosed && !isGating) items.push({ id, link });
                 }
             }
         });
-        return items.length > 0 ? items.join(', ') : '-';
+        return items;
     }
 
-    window.generatePDF = function() {
-        const selectedIndices = Array.from(document.querySelectorAll('.pdf-col-cb:checked')).map(cb => parseInt(cb.value));
+    function extractStackedCellForCsvObj(cell) {
+        if (!cell) return { id: '-', link: null };
+        let hdrNode = cell.querySelector('.checklist-header');
+        if (!hdrNode) return { id: '-', link: null };
+        
+        let aTag = hdrNode.querySelector('a');
+        let text = hdrNode.innerText.trim();
+        
+        if(text === '-' || text === '') {
+            return { id: '-', link: null };
+        } else {
+            return { id: text, link: aTag ? aTag.href : null };
+        }
+    }
+
+    window.generateCSV = function() {
+        const selectedIndices = Array.from(document.querySelectorAll('.export-col-cb:checked')).map(cb => parseInt(cb.value));
         if (selectedIndices.length === 0) { alert('Please select at least one column.'); return; }
         
-        const selectedOptions = selectedIndices.map(i => window.PDF_OPTIONS[i]);
+        const selectedOptions = selectedIndices.map(i => window.EXPORT_OPTIONS[i]);
+        const rows = document.querySelectorAll('.cell-row');
+        let parsedRows = [];
         
-        let logo1 = document.getElementById('app-logo-1').src;
-        let logo2 = document.getElementById('app-logo-2').src;
-        let zTitle = globalConfig.customHeaders.zoneTitle || 'Zone 1';
-        
-        let printWin = window.open('', '_blank');
-        let html = `<html><head><title>LaunchPad PDF Export</title>
-        <base target="_blank">
-        <style>
-            @page { size: landscape; margin: 10mm; }
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; font-size: 10px; }
-            .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #2e7d32; padding-bottom: 10px; }
-            h2 { color: #2e7d32; margin: 0; font-size: 18px; text-transform: uppercase; text-align: center; }
-            img.logo { height: 70px; object-fit: contain; }
-            table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-            th, td { border: 1px solid #aeb6ba; padding: 6px 4px; text-align: center; vertical-align: middle; word-wrap: break-word; overflow: hidden; }
-            th { background-color: #2e7d32 !important; color: white !important; font-size: 10px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .bg-gray { background-color: #f5f5f5 !important; color: #616161 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
-            
-            /* PDF Hyperlink Styling - Crucial for PDF readers to recognize them */
-            a { color: #0563c1 !important; text-decoration: underline !important; cursor: pointer; }
-            .uncolored-cell { background-color: #ffffff !important; color: #222 !important; font-size: 10px !important; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
-            .shrink-list { font-size: 10px; line-height: 1.2; color: #222; text-align: left; background-color: #ffffff !important;}
-            
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-        </style></head><body>
-        
-        <div class="header-container">
-            <div style="flex: 1; text-align: left;">
-                ${logo1 && !logo1.includes('empty') ? `<img class="logo" src="${logo1}" alt="Logo 1" />` : ''}
-            </div>
-            <div style="flex: 2;">
-                <h2>${zTitle} • Relational Asset Status Tracker Export</h2>
-            </div>
-            <div style="flex: 1; text-align: right;">
-                ${logo2 && !logo2.includes('empty') ? `<img class="logo" src="${logo2}" alt="Logo 2" />` : ''}
-            </div>
-        </div>
-        
-        <table>`;
-        
-        html += '<thead><tr>';
-        selectedOptions.forEach(opt => {
+        // Step 1: Pre-process and parse all visible rows
+        rows.forEach(row => {
+            if (window.getComputedStyle(row).display !== 'none') {
+                let rowData = [];
+                selectedOptions.forEach(opt => {
+                    let items = [];
+                    if (opt.type === 'asset') {
+                        let assetNode = row.querySelector('.asset-part');
+                        let aTag = assetNode ? assetNode.querySelector('a') : null;
+                        let text = assetNode ? assetNode.innerText.trim() : '';
+                        items.push({ text: text || '-', link: aTag ? aTag.href : null });
+                    } else if (opt.type === 'area') {
+                        let areaNode = row.querySelector('.area-part');
+                        items.push({ text: areaNode ? areaNode.innerText.trim() : '-', link: null });
+                    } else if (opt.type === 'gate') {
+                        let cell = row.querySelector(`.${opt.level}-gate-col`);
+                        let obj = extractStackedCellForCsvObj(cell);
+                        items.push({ text: obj.id, link: obj.link });
+                    } else if (opt.type === 'status') {
+                        let cell = row.querySelector(`.${opt.level}-supp-summary`);
+                        items.push({ text: cell ? cell.innerText.trim() : '-', link: null });
+                    } else if (opt.type === 'iss-count') {
+                        let cell = row.querySelector(`.global-iss-summary`);
+                        items.push({ text: cell ? cell.innerText.trim() : '-', link: null });
+                    } else if (opt.type === 'supp-open') {
+                        let arr = getGroupedSuppCsvArray(row, opt.level, 'open');
+                        items = arr.length ? arr.map(a => ({ text: a.id, link: a.link })) : [{ text: '-', link: null }];
+                    } else if (opt.type === 'supp-closed') {
+                        let arr = getGroupedSuppCsvArray(row, opt.level, 'closed');
+                        items = arr.length ? arr.map(a => ({ text: a.id, link: a.link })) : [{ text: '-', link: null }];
+                    } else if (opt.type === 'iss-group') {
+                        let arr = getGroupedIssCsvArray(row, opt.group);
+                        items = arr.length ? arr.map(a => ({ text: a.id, link: a.link })) : [{ text: '-', link: null }];
+                    }
+                    rowData.push(items);
+                });
+                parsedRows.push(rowData);
+            }
+        });
+
+        // Step 2: Find the maximum number of items inside each column so we can dynamically expand the CSV horizontally
+        let maxColsPerOption = selectedOptions.map(() => 1);
+        parsedRows.forEach(rowData => {
+            rowData.forEach((items, i) => {
+                if (items.length > maxColsPerOption[i]) {
+                    maxColsPerOption[i] = items.length;
+                }
+            });
+        });
+
+        // Step 3: Build CSV Headers dynamically
+        let headers = [];
+        selectedOptions.forEach((opt, i) => {
             let displayLabel = opt.label;
-            if(opt.id === 'asset') displayLabel = 'Asset';
+            if(opt.id === 'asset') displayLabel = 'Asset Details';
             if(opt.id === 'area') displayLabel = globalConfig.customHeaders.areaPrefix || 'Area';
             if(opt.id === 'l2-gate') displayLabel = 'L2 ' + globalConfig.customHeaders.l2Gate;
             if(opt.id === 'l2-status') displayLabel = 'L2 ' + globalConfig.customHeaders.l2Status;
@@ -1597,90 +1706,63 @@
             if(opt.id === 'l4-gate') displayLabel = 'L4 ' + globalConfig.customHeaders.l4Gate;
             if(opt.id === 'l4-status') displayLabel = 'L4 ' + globalConfig.customHeaders.l4Status;
             if(opt.id === 'iss-status') displayLabel = globalConfig.customHeaders.issStatus;
-            html += `<th>${displayLabel}</th>`;
-        });
-        html += '</tr></thead><tbody>';
-
-        const rows = document.querySelectorAll('.cell-row');
-        rows.forEach(row => {
-            if (window.getComputedStyle(row).display !== 'none') {
-                html += '<tr>';
-                
-                selectedOptions.forEach(opt => {
-                    let cellHtml = '<td>-</td>';
-                    
-                    if (opt.type === 'asset') {
-                        let assetNode = row.querySelector('.asset-part');
-                        let aTag = assetNode ? assetNode.querySelector('a') : null;
-                        let text = assetNode ? assetNode.innerText.trim() : '';
-                        let display = aTag ? `<a href="${aTag.href}" target="_blank">${text}</a>` : text;
-                        cellHtml = `<td class="uncolored-cell">${display}</td>`;
-                    } else if (opt.type === 'area') {
-                        let areaNode = row.querySelector('.area-part');
-                        let val = areaNode ? areaNode.innerText : '';
-                        cellHtml = `<td class="shrink-list">${val}</td>`;
-                    } else if (opt.type === 'gate') {
-                        let cell = row.querySelector(`.${opt.level}-gate-col`);
-                        cellHtml = extractStackedCellForPdf(cell);
-                    } else if (opt.type === 'status') {
-                        let cell = row.querySelector(`.${opt.level}-supp-summary`);
-                        cellHtml = extractSummaryCellForPdf(cell);
-                    } else if (opt.type === 'iss-count') {
-                        let cell = row.querySelector(`.global-iss-summary`);
-                        cellHtml = extractSummaryCellForPdf(cell);
-                    } else if (opt.type === 'supp-open') {
-                        let val = getGroupedSuppPdf(row, opt.level, 'open');
-                        cellHtml = `<td class="shrink-list">${val}</td>`;
-                    } else if (opt.type === 'supp-closed') {
-                        let val = getGroupedSuppPdf(row, opt.level, 'closed');
-                        cellHtml = `<td class="shrink-list">${val}</td>`;
-                    } else if (opt.type === 'iss-group') {
-                        let val = getGroupedIssPdf(row, opt.group);
-                        cellHtml = `<td class="shrink-list">${val}</td>`;
-                    }
-                    
-                    html += cellHtml;
-                });
-                
-                html += '</tr>';
+            
+            let maxC = maxColsPerOption[i];
+            if (maxC > 1) {
+                // If a column needs to spread out, add numbers to the header (e.g. Open L2 CHK 1, Open L2 CHK 2)
+                for (let c = 1; c <= maxC; c++) {
+                    headers.push(`"${displayLabel} ${c}"`);
+                }
+            } else {
+                headers.push(`"${displayLabel.replace(/"/g, '""')}"`);
             }
         });
+
+        let csvContent = headers.join(",") + "\n";
+
+        // Step 4: Properly escape and format the cells so Excel reads the =HYPERLINK formula flawlessly
+        const formatCell = (item) => {
+            if (!item || item.text === '-') return '"-"';
+            if (item.link && item.link !== '') {
+                // Excel requires double double-quotes inside CSV for formulas to parse strings correctly
+                let url = item.link.replace(/"/g, '""');
+                let txt = item.text.replace(/"/g, '""');
+                return `"=HYPERLINK(""${url}"", ""${txt}"")"`;
+            } else {
+                let txt = item.text.replace(/"/g, '""');
+                return `"${txt}"`;
+            }
+        };
+
+        // Step 5: Build out the final CSV rows, filling empty expansion spaces with blank cells
+        parsedRows.forEach(rowData => {
+            let rowCsv = [];
+            rowData.forEach((items, i) => {
+                let maxC = maxColsPerOption[i];
+                for (let c = 0; c < maxC; c++) {
+                    if (c < items.length) {
+                        rowCsv.push(formatCell(items[c]));
+                    } else {
+                        rowCsv.push('""'); // blank space so columns stay perfectly aligned
+                    }
+                }
+            });
+            csvContent += rowCsv.join(",") + "\n";
+        });
         
-        html += '</tbody></table></body></html>';
-        printWin.document.write(html);
-        printWin.document.close();
-        printWin.focus();
+        // Trigger the automatic download
+        let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        let url = URL.createObjectURL(blob);
+        let link = document.createElement("a");
+        let dateStr = new Date().toISOString().split('T')[0];
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Equipment_Status_Tracker_${dateStr}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
         
-        // Wait for the window to render the styles, trigger print, and safely close only after print dialog resolves
-        setTimeout(() => { 
-            printWin.onafterprint = function() { printWin.close(); };
-            printWin.print(); 
-        }, 500);
-        
-        closePdfModal();
+        closeExportModal();
     };
-
-    function extractStackedCellForPdf(cell) {
-        if (!cell) return '<td>-</td>';
-        let hdrNode = cell.querySelector('.checklist-header');
-        if (!hdrNode) return `<td>-</td>`;
-        
-        let aTag = hdrNode.querySelector('a');
-        let text = hdrNode.innerText.trim();
-        
-        if(text === '-') {
-            return `<td>-</td>`;
-        } else {
-            let display = aTag ? `<a href="${aTag.href}" target="_blank">${text}</a>` : text;
-            return `<td class="uncolored-cell">${display}</td>`;
-        }
-    }
-
-    function extractSummaryCellForPdf(cell) {
-        if (!cell) return '<td>-</td>';
-        let val = cell.innerText.trim();
-        return `<td class="shrink-list">${val}</td>`;
-    }
 </script>
 </body>
 </html>
