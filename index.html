@@ -6,17 +6,17 @@
     <title>Equipment Status Tracker</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
     <style>
-        /* --- DYNAMIC SIZING CONFIGURATION --- */
+        /* --- EASY SIZING CONFIGURATION --- */
         :root {
-            /* Desktop Default */
-            --frozen-total-width: 260px; 
-            --asset-part-width: 150px;
-            --area-col-width: 70px;
+            /* --- Desktop Side-by-Side Widths --- */
+            --asset-col-width: 150px;  
+            --area-col-width: 110px; /* <--- Easily adjust Area column width here */
+            --frozen-total-width: calc(var(--asset-col-width) + var(--area-col-width));
         }
 
         @media (max-width: 1024px) {
             :root {
-                /* iPad / Mobile Stacked Default */
+                /* --- iPad / Mobile Stacked Total Width --- */
                 --frozen-total-width: 160px;
             }
         }
@@ -135,8 +135,9 @@
             padding: 0 !important;
         }
         .asset-part, .asset-part-header {
-            width: var(--asset-part-width);
-            min-width: var(--asset-part-width);
+            width: var(--asset-col-width);
+            min-width: var(--asset-col-width);
+            max-width: var(--asset-col-width);
             display: flex;
             align-items: center;
             padding: 0 6px;
@@ -144,13 +145,24 @@
             overflow: hidden;
         }
         .area-part, .area-part-header {
-            flex: 1;
+            width: var(--area-col-width);
+            min-width: var(--area-col-width);
+            max-width: var(--area-col-width);
             display: flex;
             align-items: center;
             padding: 0 6px;
             overflow: hidden;
         }
-        .asset-part-header, .area-part-header { justify-content: space-between; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        
+        /* CENTERS THE ASSET AND AREA SUBHEADERS */
+        .asset-part-header, .area-part-header { 
+            justify-content: center; 
+            gap: 6px; 
+            font-size: 11px; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+        }
+        
         .cell-row .asset-part { justify-content: center; text-align: center; font-weight: bold; font-size: 13px; color: #333; }
         .cell-row .area-part { justify-content: center; text-align: center; font-size: 12px; color: #555; font-weight: bold; }
 
@@ -277,6 +289,7 @@
             .asset-part, .asset-part-header, .area-part, .area-part-header {
                 width: 100% !important;
                 min-width: 100% !important;
+                max-width: 100% !important;
                 border-right: none !important;
                 padding: 0 !important;
                 height: auto !important;
@@ -639,7 +652,6 @@
             }
         });
 
-        // Automatically expand any hidden column that contains a search match
         columnsToExpand.forEach(col => {
             if (col === 'iss') {
                 if (!expandedStates.iss) window.toggleGlobalIssues();
@@ -650,7 +662,6 @@
 
         if (searchMatches.length > 0) {
             currentSearchIndex = 0;
-            // Delay UI update slightly so expansion has time to apply CSS before scrolling
             setTimeout(updateSearchUI, 100); 
         } else {
             counter.innerText = '0/0';
@@ -1436,7 +1447,7 @@
             if ((opt.id === 'l4-open' || opt.id === 'l4-closed') && globalConfig.showL4Supp === false) return;
 
             let displayLabel = opt.label;
-            if(opt.id === 'asset') displayLabel = 'Asset';
+            if(opt.id === 'asset') displayLabel = 'Asset Details';
             if(opt.id === 'area') displayLabel = globalConfig.customHeaders.areaPrefix || 'Area';
             if(opt.id === 'l2-gate') displayLabel = 'L2 ' + globalConfig.customHeaders.l2Gate;
             if(opt.id === 'l2-status') displayLabel = 'L2 ' + globalConfig.customHeaders.l2Status;
