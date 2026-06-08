@@ -393,14 +393,14 @@
             <div class="frozen-col-bar" id="main-column-headers">
                 
                 <div class="header-cell frozen-combined">
-                    <div class="asset-part-header filter-container">
+                    <div class="asset-part-header">
                         <div class="title-wrap">
                             <span class="col-title" data-original="Asset">Asset</span> 
                             <span class="filter-icon" data-col="0" onclick="toggleFilter(event, 0)">▼</span>
                         </div>
                     </div>
-                    <div class="area-part-header filter-container">
-                        <div class="title-wrap">
+                    <div class="area-part-header">
+                        <div class="title-wrap" style="color: #ffffff;">
                             <span class="col-title" id="area-title" data-original="Area">Area</span> 
                             <span class="filter-icon" data-col="1" onclick="toggleFilter(event, 1)">▼</span>
                         </div>
@@ -469,7 +469,150 @@
             <button class="close-btn" onclick="closeSettingsModal()">×</button>
         </div>
         <div class="modal-body">
-            <h3 style="text-align:center; color: #666; margin-top:40px;">(Settings are auto-configured by sheet)</h3>
+            
+            <div class="global-config-wrap">
+                <div style="flex: 1 1 20%; display: flex; flex-direction: column; gap: 8px;">
+                    <h3 style="margin: 0;">Fallback Color</h3>
+                    <input type="color" id="fallback-color-picker" value="#f5f5f5" style="width: 40px; height: 30px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div style="flex: 1 1 30%; border-left: 2px solid #c8e6c9; padding-left: 15px; display: flex; flex-direction: column; gap: 8px;">
+                    <h3 style="margin: 0;">Zone Title Prefix</h3>
+                    <input type="text" id="cust-zone-title" placeholder="e.g. Zone 1" style="padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 90%;">
+                </div>
+                <div style="flex: 1 1 30%; border-left: 2px solid #c8e6c9; padding-left: 15px; display: flex; flex-direction: column; gap: 8px;">
+                    <h3 style="margin: 0;">Area Header Prefix</h3>
+                    <input type="text" id="cust-area-prefix" placeholder="e.g. Area" style="padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 90%;">
+                </div>
+            </div>
+
+            <div class="rules-section">
+                <h3>Phase Setup & Toggles</h3>
+                <div class="status-config-wrap">
+                    <div class="settings-col">
+                        <h4>Phase 1 (L2)</h4>
+                        <div class="status-row"><input type="text" id="cust-l2-phase" placeholder="Phase Name (e.g. L2 Verification)"></div>
+                        <div class="status-row"><input type="text" id="cust-l2-gate" placeholder="Gate Header (e.g. Gate CL)"></div>
+                        <div class="status-row"><input type="text" id="cust-l2-status" placeholder="Status Header (e.g. Status)"></div>
+                        <div style="margin-top: 15px;">
+                            <label class="checkbox-row"><input type="checkbox" id="show-l2-gate"> Show Gate Column</label>
+                            <label class="checkbox-row"><input type="checkbox" id="show-l2-supp"> Enable Support CLs</label>
+                        </div>
+                    </div>
+                    <div class="settings-col">
+                        <h4>Phase 2 (L3)</h4>
+                        <div class="status-row"><input type="text" id="cust-l3-phase" placeholder="Phase Name (e.g. L3 Functional)"></div>
+                        <div class="status-row"><input type="text" id="cust-l3-gate" placeholder="Gate Header (e.g. Gate CL)"></div>
+                        <div class="status-row"><input type="text" id="cust-l3-status" placeholder="Status Header (e.g. Status)"></div>
+                        <div style="margin-top: 15px;">
+                            <label class="checkbox-row"><input type="checkbox" id="show-l3-gate"> Show Gate Column</label>
+                            <label class="checkbox-row"><input type="checkbox" id="show-l3-supp"> Enable Support CLs</label>
+                        </div>
+                    </div>
+                    <div class="settings-col">
+                        <h4>Phase 3 (L4)</h4>
+                        <div class="status-row"><input type="text" id="cust-l4-phase" placeholder="Phase Name (e.g. L4 Integrated)"></div>
+                        <div class="status-row"><input type="text" id="cust-l4-gate" placeholder="Gate Header (e.g. Gate CL)"></div>
+                        <div class="status-row"><input type="text" id="cust-l4-status" placeholder="Status Header (e.g. Status)"></div>
+                        <div style="margin-top: 15px;">
+                            <label class="checkbox-row"><input type="checkbox" id="show-l4-gate"> Show Gate Column</label>
+                            <label class="checkbox-row"><input type="checkbox" id="show-l4-supp"> Enable Support CLs</label>
+                        </div>
+                    </div>
+                    <div class="settings-col">
+                        <h4>Global Issues</h4>
+                        <div class="status-row"><input type="text" id="cust-iss-phase" placeholder="Phase Name (e.g. Asset Issues)"></div>
+                        <div class="status-row" style="visibility:hidden;"><input type="text"></div>
+                        <div class="status-row"><input type="text" id="cust-iss-status" placeholder="Status Header (e.g. Open Issues)"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-config-wrap">
+                <div class="settings-col">
+                    <h3>Checklists (L2 & L3)</h3>
+                    <div class="status-group">
+                        <h4>Active / Open</h4>
+                        <div id="cl-open-list"></div>
+                        <button class="btn btn-add" onclick="addStatusRow('cl-open-list', '#fff9c4')">+ Add Status</button>
+                    </div>
+                    <div class="status-group">
+                        <h4>Completed / Closed</h4>
+                        <div id="cl-closed-list"></div>
+                        <button class="btn btn-add" onclick="addStatusRow('cl-closed-list', '#c8e6c9')">+ Add Status</button>
+                    </div>
+                </div>
+                
+                <div class="settings-col">
+                    <h3>Tests (L4)</h3>
+                    <div class="status-group">
+                        <h4>Active / Open</h4>
+                        <div id="test-open-list"></div>
+                        <button class="btn btn-add" onclick="addStatusRow('test-open-list', '#fff9c4')">+ Add Status</button>
+                    </div>
+                    <div class="status-group">
+                        <h4>Completed / Closed</h4>
+                        <div id="test-closed-list"></div>
+                        <button class="btn btn-add" onclick="addStatusRow('test-closed-list', '#c8e6c9')">+ Add Status</button>
+                    </div>
+                </div>
+
+                <div class="settings-col">
+                    <h3>Global Issues</h3>
+                    <div class="status-group">
+                        <h4>Active / Open</h4>
+                        <div id="iss-open-list"></div>
+                        <button class="btn btn-add" onclick="addStatusRow('iss-open-list', '#ffcdd2')">+ Add Status</button>
+                    </div>
+                    <div class="status-group">
+                        <h4>Completed / Closed</h4>
+                        <div id="iss-closed-list"></div>
+                        <button class="btn btn-add" onclick="addStatusRow('iss-closed-list', '#c8e6c9')">+ Add Status</button>
+                    </div>
+                </div>
+
+                <div class="settings-col">
+                    <h3>Issue Severities</h3>
+                    <div class="status-group">
+                        <h4>Gating Issues</h4>
+                        <div id="iss-gating-list"></div>
+                        <button class="btn btn-add" onclick="addStatusRow('iss-gating-list', '#ffcdd2')">+ Add Status</button>
+                    </div>
+                    <div class="status-group">
+                        <h4>Non-Gating Issues</h4>
+                        <div id="iss-nongating-list"></div>
+                        <button class="btn btn-add" onclick="addStatusRow('iss-nongating-list', '#fff9c4')">+ Add Status</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="rules-section">
+                <h3>Phase Rules Engine</h3>
+                <div class="table-responsive">
+                    <table id="phase-rules-table">
+                        <thead>
+                            <tr>
+                                <th>Active?</th>
+                                <th>Phase</th>
+                                <th>Req. Prev Status</th>
+                                <th title="Max Gate CL Open">Max Gate</th>
+                                <th title="Max Support CL Open">Max Supp</th>
+                                <th title="Max Gating Issues Open">Max Gate Iss.</th>
+                                <th title="Max Non-Gating Issues Open">Max Non-Gate Iss.</th>
+                                <th>Result Status</th>
+                                <th title="Include Open CHKs Per Phase" style="text-align:center;">Inc. Open CHKs</th>
+                                <th title="Include Open Gating Issues" style="text-align:center;">Inc. Gate Iss.</th>
+                                <th>Color</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="phase-rules-list">
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn btn-add" style="width:auto; padding: 6px 15px;" onclick="addPhaseRuleRow()">+ Add Rule</button>
+            </div>
+
         </div>
         <div class="modal-footer">
             <button class="btn btn-cancel" onclick="closeSettingsModal()">Cancel</button>
